@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-09-2024 a las 20:43:19
+-- Tiempo de generación: 03-09-2024 a las 06:01:15
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -65,15 +65,28 @@ CREATE TABLE `available_dates` (
 
 CREATE TABLE `business_information` (
   `BUIF_CODE` int(11) NOT NULL,
-  `BUIF_NAME` varchar(50) NOT NULL,
-  `BUIF_LOGO` varchar(50) NOT NULL,
-  `BUIF_MISSION` text NOT NULL,
-  `BUIF_VISION` text NOT NULL,
-  `BUIF_IMAGE` varchar(50) NOT NULL,
-  `BUIF_STATE` tinyint(1) NOT NULL,
-  `BUIF_ADDRESS` varchar(100) NOT NULL,
-  `BUIF_CONTACT` varchar(25) NOT NULL
+  `BUIF_NAME` varchar(50) DEFAULT NULL,
+  `BUIF_LOGO` varchar(50) DEFAULT NULL,
+  `BUIF_MISSION` text DEFAULT NULL,
+  `BUIF_VISION` text DEFAULT NULL,
+  `BUIF_IMAGE` varchar(50) DEFAULT NULL,
+  `BUIF_STATE` tinyint(1) DEFAULT NULL,
+  `BUIF_ADDRESS` varchar(100) DEFAULT NULL,
+  `BUIF_CONTACT` varchar(25) DEFAULT NULL,
+  `BUIF_USER_INSERT` varchar(100) DEFAULT NULL,
+  `BUIF_USER_DELETE` varchar(100) DEFAULT NULL,
+  `BUIF_USER_UPDATE` varchar(100) DEFAULT NULL,
+  `BUIF_INSERT_DATE` datetime DEFAULT NULL,
+  `BUIF_UPDATE_DATE` datetime DEFAULT NULL,
+  `BUIF_DELETE_DATE` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `business_information`
+--
+
+INSERT INTO `business_information` (`BUIF_CODE`, `BUIF_NAME`, `BUIF_LOGO`, `BUIF_MISSION`, `BUIF_VISION`, `BUIF_IMAGE`, `BUIF_STATE`, `BUIF_ADDRESS`, `BUIF_CONTACT`, `BUIF_USER_INSERT`, `BUIF_USER_DELETE`, `BUIF_USER_UPDATE`, `BUIF_INSERT_DATE`, `BUIF_UPDATE_DATE`, `BUIF_DELETE_DATE`) VALUES
+(1, 'Universidad Regional Autónoma de los Andes', '', 'Somos una Universidad particular, que tiene como propósito formar profesionales de tercer y cuarto nivel, de investigación, responsables, competitivos, con conciencia ética y solidaria capaces de contribuir al desarrollo nacional e internacional, mediante una educación humanista, cultural y científica dirigida a bachilleres y profesionales nacionales y extranjeros.', 'Hasta el 2024, ser una institución reconocida a nivel nacional e internacional por su calidad, manteniendo entre sus fortalezas un cuerpo docente de alto nivel académico, ético; y un proceso de formación profesional centrado en el estudiante, acorde con los avances científicos, tecnológicos, de investigación en vínculo permanente con la identificación y solución de problemas de los sectores sociales y productivos.', '', 1, 'Vía a Baños km 5 1/2. Ambato, Ecuador', '097 983 4941 / 099 372 01', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -201,6 +214,13 @@ CREATE TABLE `user_admin` (
   `USAD_DATE_CREATED` date NOT NULL,
   `BUIF_CODE` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `user_admin`
+--
+
+INSERT INTO `user_admin` (`USAD_CODE`, `USAD_USERNAME`, `USAD_EMAIL`, `USAD_PASSWORD`, `USAD_EMAIL_RECOVERY`, `USAD_ROLE`, `USAD_DATE_CREATED`, `BUIF_CODE`) VALUES
+(1, 'Jhonny ', 'miranda3791167@gmail.com', '123456', 'zzz', 'Administrador', '2024-09-02', 1);
 
 -- --------------------------------------------------------
 
@@ -333,7 +353,7 @@ ALTER TABLE `available_dates`
 -- AUTO_INCREMENT de la tabla `business_information`
 --
 ALTER TABLE `business_information`
-  MODIFY `BUIF_CODE` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `BUIF_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `court`
@@ -381,7 +401,7 @@ ALTER TABLE `team_player`
 -- AUTO_INCREMENT de la tabla `user_admin`
 --
 ALTER TABLE `user_admin`
-  MODIFY `USAD_CODE` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `USAD_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `vocalia_sheet`
