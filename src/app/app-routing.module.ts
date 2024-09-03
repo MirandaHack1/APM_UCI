@@ -59,7 +59,11 @@ const routes: Routes = [
   {
     path: 'profile-players',
     loadChildren: () => import('./Pages/Secure/profile-players/profile-players.module').then( m => m.ProfilePlayersPageModule)
+  },  {
+    path: 'tabs',
+    loadChildren: () => import('./tabs/tabs.module').then( m => m.TabsPageModule)
   },
+
 
 
 ];
