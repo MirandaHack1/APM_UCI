@@ -1,5 +1,5 @@
 ion-content {
-  --background: #0a2538;
+  --background: #111b22; /* Fondo afuera */
   color: white;
 }
 
@@ -14,4 +14,21 @@ ion-content {
 ion-card {
   width: 100%;
   max-width: 400px;
+  background-color: #0a2538; /* Fondo azul adentro */
+  color: white;
+}
+
+ion-card-title,
+ion-label,
+ion-button,
+ion-input::part(native) {
+  color: white !important; /* Asegura que todo el texto sea blanco */
+}
+
+ion-button {
+  --color: white; /* Asegura que el texto del botón sea blanco */
+}
+
+ion-item::part(native) {
+  color: white; /* Asegura que el texto de los inputs sea blanco */
 }
