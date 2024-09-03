@@ -8,6 +8,8 @@ import { Preferences } from '@capacitor/preferences';
 @Injectable({
   providedIn: 'root'
 })
+
+//url donde esta el webservice
 export class AuthService {
   serve : string="http://localhost/APM_UCI/Ws_APM_BACK/ws_apm_back.php"
 
@@ -23,6 +25,7 @@ export class AuthService {
     return this.http.post(this.serve,JSON.stringify(body),options);
 
   }
+  // toast para mostrar mensajes
   async showToast(mensaje:string) {
     const toast = await this.toastCtrl.create({
       message: mensaje,
@@ -31,12 +34,14 @@ export class AuthService {
     });
     toast.present();
   }
+  // crear sesion y guardar el id y un valor
   async createSession(id: string, valor:string){
     await Preferences.set({
       key: id, 
       value: valor
     });
   }
+  //obtener la id sel usuario
   async getSession(id: string){
     const item= await Preferences.get({ key: id });
     return item.value;
