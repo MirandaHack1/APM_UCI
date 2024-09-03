@@ -26,10 +26,10 @@ if ($post['accion'] == "loggin") {
                 'BUIF_CODE' => $row['BUIF_CODE']
             );
         }
-        $respupesta = json_encode(array('estado' => true, "user_admin" => $datos));
+        $respuesta = json_encode(array('estado' => true, "user_admin" => $datos, "mensaje" => "EXITO:BIENVENIDOS AL SISTEMA"));
     } else {
-        $respupesta = json_encode(array('estado' => false, "mensaje" => "ERROR: CORREO O CONTRASEÑA INCORRECTOS"));
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR: CORREO O CONTRASEÑA INCORRECTOS"));
     }
-    echo $respupesta;
+    echo $respuesta;
 }
 /*********************************************************************************************************************************************************************************************************************/
