@@ -6,10 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
+  ngOnInit() {}
+  login() {
+    // Aquí puedes agregar la lógica de autenticación
+    console.log('Intento de inicio de sesión');
   }
-
 }
