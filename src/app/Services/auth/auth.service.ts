@@ -4,49 +4,41 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ToastController } from '@ionic/angular';
 import { Preferences } from '@capacitor/preferences';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
-//url donde esta el webservice
 export class AuthService {
-  serve : string="http://localhost/APM_UCI/Ws_APM_BACK/ws_apm_back.php"
+  serve: string = 'http://localhost/APM_UCI/Ws_APM_BACK/ws_apm_back.php';
 
-  constructor(
-    public http: HttpClient,
-    public toastCtrl: ToastController
-  ) { }
-  postData(body:any){
-    let head= new HttpHeaders({'Content-Type':'application/json, charset:utf8'});
-    let options= {
-      headers:head
-    }
-    return this.http.post(this.serve,JSON.stringify(body),options);
-
+  constructor(public http: HttpClient, public toastCtrl: ToastController) {}
+  postData(body: any) {
+    let head = new HttpHeaders({
+      'Content-Type': 'application/json, charset:utf8',
+    });
+    let options = {
+      headers: head,
+    };
+    return this.http.post(this.serve, JSON.stringify(body), options);
   }
-  // toast para mostrar mensajes
-  async showToast(mensaje:string) {
+  async showToast(mensaje: string) {
     const toast = await this.toastCtrl.create({
       message: mensaje,
       duration: 2000,
-      position: 'top'
+      position: 'top',
     });
     toast.present();
   }
-  // crear sesion y guardar el id y un valor
-  async createSession(id: string, valor:string){
+  async createSession(id: string, valor: string) {
     await Preferences.set({
-      key: id, 
-      value: valor
+      key: id,
+      value: valor,
     });
   }
-  //obtener la id sel usuario
-  async getSession(id: string){
-    const item= await Preferences.get({ key: id });
+  async getSession(id: string) {
+    const item = await Preferences.get({ key: id });
     return item.value;
   }
-async closeSession(id: string){
-  await Preferences.clear();
+  async closeSession(id: string) {
+    await Preferences.clear();
   }
 }
