@@ -1,0 +1,7 @@
+{
+  "name": "APM_UCI",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
