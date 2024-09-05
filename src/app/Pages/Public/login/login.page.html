@@ -24,14 +24,22 @@
             >Correo Electrónico</ion-label
           >
           <!-- Etiqueta para el campo de correo electrónico -->
-          <ion-input type="email" color="light" [(ngModel)]="USAD_EMAIL"></ion-input>
+          <ion-input
+            type="email"
+            color="light"
+            [(ngModel)]="USAD_EMAIL"
+          ></ion-input>
           <!-- Campo de entrada para el correo electrónico -->
         </ion-item>
 
         <ion-item>
           <ion-label position="floating" color="light">Contraseña</ion-label>
           <!-- Etiqueta para el campo de contraseña -->
-          <ion-input type="password" color="light" [(ngModel)]="USAD_PASSWORD"></ion-input>
+          <ion-input
+            type="password"
+            color="light"
+            [(ngModel)]="USAD_PASSWORD"
+          ></ion-input>
           <!-- Campo de entrada para la contraseña -->
         </ion-item>
 
@@ -54,7 +62,7 @@
           expand="block"
           fill="clear"
           color="secondary"
-          routerLink="/register"
+          (click)="createUser()"
         >
           Crear una cuenta
         </ion-button>
