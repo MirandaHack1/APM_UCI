@@ -40,10 +40,7 @@ const routes: Routes = [
     path: 'information-cordinator',
     loadChildren: () => import('./Pages/Secure/information-cordinator/information-cordinator.module').then( m => m.InformationCordinatorPageModule)
   },
-  {
-    path: 'profile-cordinator',
-    loadChildren: () => import('./Pages/Secure/profile-cordinator/profile-cordinator.module').then( m => m.ProfileCordinatorPageModule)
-  },
+  
   {
     path: 'profile-students',
     loadChildren: () => import('./Pages/Secure/profile-students/profile-students.module').then( m => m.ProfileStudentsPageModule)
@@ -57,8 +54,8 @@ const routes: Routes = [
     loadChildren: () => import('./Pages/Secure/information-players/information-players.module').then( m => m.InformationPlayersPageModule)
   },
   {
-    path: 'profile-players',
-    loadChildren: () => import('./Pages/Secure/profile-players/profile-players.module').then( m => m.ProfilePlayersPageModule)
+    path: 'tabs',
+    loadChildren: () => import('./tabs/tabs.module').then( m => m.TabsPageModule)
   },
 
 
