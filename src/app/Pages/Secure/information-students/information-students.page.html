@@ -10,34 +10,83 @@
 
 <ion-content [fullscreen]="true">
   <ion-item>
-    <ion-label>Cedula: </ion-label>
-    <ion-input type="text" ></ion-input>
+    <ion-label>Cédula: </ion-label>
+    <ion-input type="text" [(ngModel)]="ICLI_CARD" name="ICLI_CARD"></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>Nombres: </ion-label>
-    <ion-input type="text" ></ion-input>
+    <ion-input type="text" [(ngModel)]="ICLI_FIRST_NAME" name="ICLI_FIRST_NAME"></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>Apellidos: </ion-label>
-    <ion-input type="text" ></ion-input>
+    <ion-input type="text" [(ngModel)]="ICLI_LAST_NAME" name="ICLI_LAST_NAME"></ion-input>
   </ion-item>
   <ion-item>
-    <ion-label>Sede: </ion-label>
-    <ion-input type="text" ></ion-input>
+    <ion-label>Teléfono: </ion-label>
+    <ion-input type="text" [(ngModel)]="ICLI_PHONE_NUMBER" name="ICLI_PHONE_NUMBER"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Dirección: </ion-label>
+    <ion-input type="text" [(ngModel)]="ICLI_ADDRESS" name="ICLI_ADDRESS"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Ciudad: </ion-label>
+    <ion-input type="text" [(ngModel)]="ICLI_CITY" name="ICLI_CITY"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Provincia: </ion-label>
+    <ion-input type="text" [(ngModel)]="ICLI_PROVINCE" name="ICLI_PROVINCE"></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>Carrera: </ion-label>
-    <ion-input type="text" ></ion-input>
+    <ion-input type="text" [(ngModel)]="ICLI_CAREER" name="ICLI_CAREER"></ion-input>
   </ion-item>
   <ion-item>
-    <ion-label>Telefono: </ion-label>
-    <ion-input type="text" ></ion-input>
+    <ion-label>Semestre: </ion-label>
+    <ion-input type="text" [(ngModel)]="ICLI_SEMESTER" name="ICLI_SEMESTER"></ion-input>
   </ion-item>
   <ion-item>
-    <ion-label>Correo: </ion-label>
-    <ion-input type="text" ></ion-input>
+    <ion-label>Edad: </ion-label>
+    <ion-input type="number" [(ngModel)]="ICLI_AGE" name="ICLI_AGE"></ion-input>
   </ion-item>
-    <ion-button  expand="block"  shape="round"  [routerLink]="[ '/information-students']">
-      Editar perfil
-    </ion-button>
+  <ion-item>
+    <ion-label>Género: </ion-label>
+    <ion-input type="text" [(ngModel)]="ICLI_GENDER" name="ICLI_GENDER"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Peso: </ion-label>
+    <ion-input type="number" [(ngModel)]="ICLI_WEIGHT" name="ICLI_WEIGHT"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Altura: </ion-label>
+    <ion-input type="number" [(ngModel)]="ICLI_HEIGHT" name="ICLI_HEIGHT"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Correo Institucional: </ion-label>
+    <ion-input type="email" [(ngModel)]="ICLI_INSTITUTIONAL_EMAIL" name="ICLI_INSTITUTIONAL_EMAIL"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Fecha de Nacimiento: </ion-label>
+    <ion-input type="date" [(ngModel)]="ICLI_DATE_OF_BIRTH" name="ICLI_DATE_OF_BIRTH"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Nombre de Usuario: </ion-label>
+    <ion-input type="text" [(ngModel)]="USAD_USERNAME" name="USAD_USERNAME"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Correo Electrónico: </ion-label>
+    <ion-input type="email" [(ngModel)]="USAD_EMAIL" name="USAD_EMAIL"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Contraseña: </ion-label>
+    <ion-input type="password" [(ngModel)]="USAD_PASSWORD" name="USAD_PASSWORD"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Correo de Recuperación: </ion-label>
+    <ion-input type="email" [(ngModel)]="USAD_EMAIL_RECOVERY" name="USAD_EMAIL_RECOVERY"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Código de Usuario: </ion-label>
+    <ion-input type="text" [(ngModel)]="USAD_CODE" name="USAD_CODE"></ion-input>
+  </ion-item>
 </ion-content>
