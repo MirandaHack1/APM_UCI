@@ -52,8 +52,11 @@ const routes: Routes = [
   {
     path: 'information-players',
     loadChildren: () => import('./Pages/Secure/information-players/information-players.module').then( m => m.InformationPlayersPageModule)
-  }
- 
+  },
+  {
+    path: 'tabs',
+    loadChildren: () => import('./tabs/tabs.module').then( m => m.TabsPageModule)
+  },
 
 
 ];
