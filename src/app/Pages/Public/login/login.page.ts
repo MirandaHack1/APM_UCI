@@ -41,5 +41,8 @@ export class LoginPage implements OnInit {
       }
     })
   }
+  recuperarclave(){
+    this.navCtrl.navigateForward('password-recovery');
+  }
 
 }

@@ -11,5 +11,8 @@ export class PasswordRecoveryPage implements OnInit {
 
   ngOnInit() {
   }
+  verificarcorreo(){
+    
+  }
 
 }

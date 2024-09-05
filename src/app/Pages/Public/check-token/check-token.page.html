@@ -1,18 +1,19 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Recuperar contraseña</ion-title>
+    <ion-title>Verificar token</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-label>Ingrese su correo de recuperación: </ion-label>
+  <ion-label>Ingrese el codigo enviado a su correo de recuperación: </ion-label>
   <br>
   <br>
   <ion-item>
     <ion-input type="text" ></ion-input>
   </ion-item>
 
-  <ion-button (click)="verificarcorreo()" expand="block" fill="outline" shape="round">
+  <ion-button (click)="verificartoken()" expand="block" fill="outline" shape="round">
     Verificar
   </ion-button>
 </ion-content>
+

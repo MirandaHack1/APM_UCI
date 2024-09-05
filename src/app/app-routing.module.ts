@@ -56,7 +56,15 @@ const routes: Routes = [
   {
     path: 'tabs',
     loadChildren: () => import('./tabs/tabs.module').then( m => m.TabsPageModule)
+  },  {
+    path: 'check-token',
+    loadChildren: () => import('./Pages/Public/check-token/check-token.module').then( m => m.CheckTokenPageModule)
   },
+  {
+    path: 'change-password',
+    loadChildren: () => import('./Pages/Public/change-password/change-password.module').then( m => m.ChangePasswordPageModule)
+  },
+
 
 
 ];
