@@ -40,7 +40,6 @@ const routes: Routes = [
     path: 'information-cordinator',
     loadChildren: () => import('./Pages/Secure/information-cordinator/information-cordinator.module').then( m => m.InformationCordinatorPageModule)
   },
-  
   {
     path: 'profile-students',
     loadChildren: () => import('./Pages/Secure/profile-students/profile-students.module').then( m => m.ProfileStudentsPageModule)
