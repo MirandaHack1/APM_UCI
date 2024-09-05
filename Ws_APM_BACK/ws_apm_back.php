@@ -23,7 +23,7 @@ if ($post['accion'] == "loggin") {
                 'USAD_EMAIL_RECOVERY' => $row['USAD_EMAIL_RECOVERY'],
                 'USAD_ROLE' => $row['USAD_ROLE'],
                 'USAD_DATE_CREATED' => $row['USAD_DATE_CREATED'],
-                'BUIF_CODE' => $row['BUIF_CODE']
+                'ICLI_CODE' => $row['ICLI_CODE']
             );
         }
         $respuesta = json_encode(array('estado' => true, "user_admin" => $datos, "mensaje" => "EXITO:BIENVENIDOS AL SISTEMA"));

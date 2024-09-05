@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { addIcons } from 'ionicons';
-import { library, playCircle, radio, search } from 'ionicons/icons';
+import {
+  homeOutline,
+  peopleOutline,
+  fileTrayStackedOutline,
+  documentTextOutline,
+} from 'ionicons/icons';
+
 @Component({
   selector: 'app-tabs',
   templateUrl: './tabs.page.html',
@@ -8,7 +14,12 @@ import { library, playCircle, radio, search } from 'ionicons/icons';
 })
 export class TabsPage implements OnInit {
   constructor() {
-    addIcons({ library, playCircle, radio, search });
+    addIcons({
+      homeOutline,
+      peopleOutline,
+      fileTrayStackedOutline,
+      documentTextOutline,
+    });
   }
 
   ngOnInit() {}
