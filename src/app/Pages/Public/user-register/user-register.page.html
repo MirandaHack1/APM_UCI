@@ -1,13 +1,235 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>user_register</ion-title>
+    <ion-title>Registrar Cliente</ion-title>
   </ion-toolbar>
 </ion-header>
 
+<!-- CAMPOS PARA LLENAR DE INFORMACION AL CLIENTE -->
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">user_register</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-item>
+    <ion-label position="stacked">Nombres:</ion-label>
+    <ion-input
+      placeholder="Ingrese su nombre:"
+      [(ngModel)]="firstName"
+      (ionBlur)="validateTextInput(firstName)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Apellidos:</ion-label>
+    <ion-input
+      placeholder="Ingrese su apellido:"
+      [(ngModel)]="lastName"
+      (ionBlur)="validateTextInput(lastName)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">¿Es extranjero?</ion-label>
+    <ion-checkbox
+      [(ngModel)]="isForeigner"
+      (ionChange)="togglePassportField()"
+    ></ion-checkbox>
+  </ion-item>
+
+  <ion-item *ngIf="!isForeigner">
+    <ion-label position="stacked">Cédula:</ion-label>
+    <ion-input
+      placeholder="Ingrese su cédula:"
+      [(ngModel)]="cardNumber"
+      (ionBlur)="validateID(cardNumber)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="isForeigner">
+    <ion-label position="stacked">Pasaporte:</ion-label>
+    <ion-input
+      placeholder="Ingrese su pasaporte:"
+      [(ngModel)]="passportNumber"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Teléfono:</ion-label>
+    <ion-input
+      placeholder="Ingrese su teléfono"
+      [(ngModel)]="phoneNumber"
+      type="tel"
+      (ionBlur)="validatePhone(phoneNumber)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Dirección:</ion-label>
+    <ion-input
+      placeholder="Ingrese su dirección:"
+      [(ngModel)]="address"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Ciudad:</ion-label>
+    <ion-input
+      placeholder="Ingrese su ciudad:"
+      [(ngModel)]="city"
+      (ionBlur)="validateTextInput(city)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Provincia:</ion-label>
+    <ion-input
+      placeholder="Ingrese su provincia:"
+      [(ngModel)]="province"
+      (ionBlur)="validateTextInput(province)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Carrera:</ion-label>
+    <ion-input
+      placeholder="Ingrese su carrera:"
+      [(ngModel)]="career"
+      (ionBlur)="validateTextInput(career)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Semestre:</ion-label>
+    <ion-input
+      placeholder="Ingrese su semestre:"
+      [(ngModel)]="semester"
+      type="number"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Edad:</ion-label>
+    <ion-input
+      placeholder="Ingrese su edad:"
+      [(ngModel)]="age"
+      type="number"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Género:</ion-label>
+    <ion-select [(ngModel)]="gender">
+      <ion-select-option value="male">Masculino</ion-select-option>
+      <ion-select-option value="female">Femenino</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Peso (kg):</ion-label>
+    <ion-input
+      placeholder="Ingrese su peso:"
+      [(ngModel)]="weight"
+      type="number"
+      inputmode="decimal"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Altura (cm):</ion-label>
+    <ion-input
+      placeholder="Ingrese su altura:"
+      [(ngModel)]="height"
+      type="number"
+      inputmode="decimal"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Correo Institucional:</ion-label>
+    <ion-input
+      placeholder="Ingrese su correo institucional:"
+      [(ngModel)]="institutionalEmail"
+      type="email"
+      (ionBlur)="validateEmail(institutionalEmail)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Fecha de cumpleaños:</ion-label>
+    <ion-datetime
+      display-format="MM/DD/YYYY"
+      placeholder="Seleccione fecha de cumpleaños"
+      [(ngModel)]="dateOfBirth"
+      class="center-datetime"
+    ></ion-datetime>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Sede:</ion-label>
+    <ion-select [(ngModel)]="sede">
+      <!-- Opciones de sede -->
+    </ion-select>
+  </ion-item>
+
+  <!-- CAMPOS AL LLENAR DEL USER_ADMIN QUE SON PARA INICIAR SESION  -->
+
+  <ion-item>
+    <ion-label position="stacked">Nombre Usuario:</ion-label>
+    <ion-input
+      placeholder="Ingrese su Nombre Usuario:"
+      [(ngModel)]="user_name"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Correo:</ion-label>
+    <ion-input
+      placeholder="Ingrese su correo:"
+      [(ngModel)]="email_user"
+      type="email"
+      (ionBlur)="validateEmail(email_user)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Contraseña:</ion-label>
+    <ion-input
+      [type]="showPassword ? 'text' : 'password'"
+      placeholder="Ingrese su Contraseña:"
+      [(ngModel)]="password_user"
+      (ionBlur)="validatePassword(password_user)"
+    ></ion-input>
+    <ion-icon
+      name="{{ showPassword ? 'eye-off' : 'eye' }}"
+      slot="end"
+      (click)="togglePasswordVisibility()"
+    ></ion-icon>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Ingrese de nuevo Contraseña:</ion-label>
+    <ion-input
+      [type]="showPassword ? 'text' : 'password'"
+      placeholder="Ingrese su Contraseña:"
+      [(ngModel)]="password_user2"
+      (ionBlur)="validatePassword(password_user2)"
+    ></ion-input>
+    <ion-icon
+      name="{{ showPassword ? 'eye-off' : 'eye' }}"
+      slot="end"
+      (click)="togglePasswordVisibility()"
+    ></ion-icon>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Correo Recuperacion:</ion-label>
+    <ion-input
+      placeholder="Ingrese su correo Recuperacion:"
+      [(ngModel)]="email_user_re"
+      type="email"
+      (ionBlur)="validateEmail(email_user_re)"
+    ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-button expand="block" color="success" (click)="userRegister()">
+      Registrar
+    </ion-button>
+  </ion-item>
 </ion-content>
