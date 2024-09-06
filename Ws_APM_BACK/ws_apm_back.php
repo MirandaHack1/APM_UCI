@@ -5,6 +5,12 @@ header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Content-Type, Authorization, Accept, X-Requested-With, x-xsrf-token');
 header('Content-Type: application/json; charset=utf-8');
+require 'vendor/PHPMailer-master/src/PHPMailer.php';
+require 'vendor/PHPMailer-master/src/SMTP.php';
+require 'vendor/PHPMailer-master/src/Exception.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 $post = json_decode(file_get_contents("php://input"), true);
 $respuesta = "";
 
@@ -54,6 +60,43 @@ if ($post['accion'] == "checkEmail") {
     echo $respuesta;
 }
 /*********************************************************************************************************************************************************************************************************************/
+if ($post['accion'] == "sendTokenEmail") {
+    $email = $post['email'];
+    $token = $post['token'];
+
+    // Inicializa PHPMailer
+    $mail = new PHPMailer(true); // Enable exceptions
+
+    try {
+        // Configuración del servidor SMTP
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com'; // Cambia esto a tu servidor SMTP
+        $mail->SMTPAuth = true;
+        $mail->Username = 'keevsanchez37@gmail.com'; // Cambia esto a tu usuario de correo SMTP
+        $mail->Password = 'cymp oiyo tzyh gyid'; // Cambia esto a tu contraseña
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // Protocolo de seguridad (TLS/SSL)
+        $mail->Port = 587; // Puerto del servidor SMTP (587 para TLS, 465 para SSL)
+
+        // Configuración del remitente y destinatarios
+        $mail->setFrom('no-reply@tu-dominio.com', 'Recuperación de contraseña'); // Cambia esto a tu correo de envío
+        $mail->addAddress($email); // Destinatario: el correo de recuperación
+
+        // Contenido del correo
+        $mail->isHTML(true); // Establece el formato HTML
+        $mail->Subject = 'Recuperación de contraseña';
+        $mail->Body = "Aquí está tu token de recuperación: <b>$token</b>";
+
+        // Enviar el correo
+        $mail->send();
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Token enviado"));
+    } catch (Exception $e) {
+        // Manejo de errores
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al enviar el token: {$mail->ErrorInfo}"));
+    }
+
+    echo $respuesta;
+}
+
 
 if ($post['accion'] == "userRegister") {
     // Paso 1: Insertar en la tabla info_client
@@ -97,6 +140,28 @@ if ($post['accion'] == "userRegister") {
         }
     } else {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar cliente"));
+    }
+
+    echo $respuesta;
+}
+//updatePassword
+if ($post['accion'] == "updatePassword") {
+    $clave = $post['clave'];
+    $codigo = $post['codigo'];
+
+    // Cifra la nueva contraseña
+    //$hashedPassword = password_hash($clave, PASSWORD_BCRYPT);
+
+    $update_query = sprintf(
+        "UPDATE user_admin SET USAD_PASSWORD='%s' WHERE USAD_CODE='%s'",
+        $clave,
+        $codigo
+    );
+
+    if (mysqli_query($mysqli, $update_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Contraseña actualizada correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la contraseña"));
     }
 
     echo $respuesta;
