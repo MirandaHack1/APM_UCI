@@ -33,3 +33,24 @@ if ($post['accion'] == "loggin") {
     echo $respuesta;
 }
 /*********************************************************************************************************************************************************************************************************************/
+// verificar que el email de recuperacion exista
+if ($post['accion'] == "checkEmail") {
+    $sentencia = sprintf("SELECT `USAD_CODE`, `USAD_EMAIL_RECOVERY` FROM `user_admin`  where USAD_EMAIL_RECOVERY='%s'", 
+    $post['email']
+   
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'USAD_CODE' => $row['USAD_CODE'],
+                'USAD_EMAIL_RECOVERY' => $row['USAD_EMAIL_RECOVERY']   
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "user_admin" => $datos, "mensaje" => "EXISTE"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR: EL CORREO NO EXISTE"));
+    }
+    echo $respuesta;
+}
+/*********************************************************************************************************************************************************************************************************************/

@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./check-token.page.scss'],
 })
 export class CheckTokenPage implements OnInit {
+  
+  token: string ="";
 
   constructor() { }
 

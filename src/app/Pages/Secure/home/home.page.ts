@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personCircle, personCircleOutline, sunny, sunnyOutline } from 'ionicons/icons';
+import { AuthService } from 'src/app/Services/auth/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -8,10 +10,30 @@ import { personCircle, personCircleOutline, sunny, sunnyOutline } from 'ionicons
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
+  rol :string="";
   paletteToggle = false;
+  menuVisible: boolean = false;
+  constructor(
+    public servicio:AuthService,
+    public navCtrl:NavController,
+  
+  ) 
+  {
+    this.servicio.getSession('USAD_ROLE').then((res:any)=>{
+      this.rol = res;
+    });
+    addIcons({ personCircle, personCircleOutline, sunny, sunnyOutline }); 
 
-  constructor() {
-    addIcons({ personCircle, personCircleOutline, sunny, sunnyOutline });
+  }
+  // Función para alternar el estado de visibilidad del menú
+  toggleMenu() {
+    this.menuVisible = !this.menuVisible;
+  }
+
+  // Acción al seleccionar una opción del menú
+  selectOption(option: string) {
+    console.log('Seleccionaste:', option);
+    this.menuVisible = false; // Cierra el menú después de seleccionar
   }
 
   ngOnInit() {
