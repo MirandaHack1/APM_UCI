@@ -10,21 +10,20 @@ import { UserRegisterPage } from '../user-register/user-register.page';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-
-  USAD_EMAIL: string="";
-  USAD_PASSWORD:string="";
+  USAD_EMAIL: string = '';
+  USAD_PASSWORD: string = '';
 
   constructor(
-    public servicio:AuthService,
-    public modalCtrl:ModalController,
-    public navCtrl:NavController
+    public servicio: AuthService,
+    public modalCtrl: ModalController,
+    public navCtrl: NavController
   ) {}
 
   ngOnInit() {}
   //----------------login-----------------------------
   login() {
-    let datos={
-      accion:'loggin',
+    let datos = {
+      accion: 'loggin',
       USAD_EMAIL: this.USAD_EMAIL,
       USAD_PASSWORD: this.USAD_PASSWORD
     }
@@ -36,14 +35,23 @@ export class LoginPage implements OnInit {
         this.servicio.createSession('USAD_ROLE',res.user_admin[0].USAD_ROLE);
         this.servicio.showToast(res.mensaje);
         this.navCtrl.navigateRoot(['/home']);
-      }
-      else{
+      } else {
         this.servicio.showToast(res.mensaje);
       }
-    })
+    });
   }
-  recuperarclave(){
+  recuperarclave() {
     this.navCtrl.navigateForward('password-recovery');
   }
+  //DIRECIONANDO AL FORMULARIO DE USER-REGISTER
+  createUser() {
+    this.navCtrl.navigateForward('user-register');
+    
+
+  }
+  
+
+
+
 
 }
