@@ -24,28 +24,19 @@
     ></ion-input>
   </ion-item>
 
-  <ion-item>
+  <!-- <ion-item>
     <ion-label position="stacked">¿Es extranjero?</ion-label>
     <ion-checkbox
       [(ngModel)]="isForeigner"
-      (ionChange)="togglePassportField()"
     ></ion-checkbox>
-  </ion-item>
+  </ion-item> -->
 
-  <ion-item *ngIf="!isForeigner">
+  <ion-item >
     <ion-label position="stacked">Cédula:</ion-label>
     <ion-input
       placeholder="Ingrese su cédula:"
       [(ngModel)]="cardNumber"
       (ionBlur)="validateID(cardNumber)"
-    ></ion-input>
-  </ion-item>
-
-  <ion-item *ngIf="isForeigner">
-    <ion-label position="stacked">Pasaporte:</ion-label>
-    <ion-input
-      placeholder="Ingrese su pasaporte:"
-      [(ngModel)]="passportNumber"
     ></ion-input>
   </ion-item>
 
