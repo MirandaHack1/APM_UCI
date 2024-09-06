@@ -31,8 +31,9 @@ export class LoginPage implements OnInit {
     this.servicio.postData(datos).subscribe((res:any)=>{
       if(res.estado==true)
       {
-       // this.servicio.createSession('USAD_CODE',res.persona[0].codigo);
-       // this.servicio.createSession('USAD_USERNAME',res.persona[0].nombre);
+        this.servicio.createSession('USAD_CODE',res.user_admin[0].USAD_CODE);
+        this.servicio.createSession('USAD_USERNAME',res.user_admin[0].USAD_USERNAME);
+        this.servicio.createSession('USAD_ROLE',res.user_admin[0].USAD_ROLE);
         this.servicio.showToast(res.mensaje);
         this.navCtrl.navigateRoot(['/home']);
       }

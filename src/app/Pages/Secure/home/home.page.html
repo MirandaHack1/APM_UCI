@@ -1,37 +1,59 @@
+<!-- Menú lateral -->
 <ion-menu contentId="main-content">
   <ion-header>
     <ion-toolbar>
-      <ion-title>Menu Content</ion-title>
+      <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding">This is the menu content.</ion-content>
+  <ion-content class="ion-padding">
+    <!-- Mostrar todos los botones si el rol es administrador -->
+    <ion-button *ngIf="rol === 'administrador'" expand="full">Editar</ion-button>
+    <ion-button *ngIf="rol === 'administrador'" expand="full">Reportes</ion-button>
+    
+    <!-- Mostrar el botón "Partidos" si el rol es administrador, jugador o estudiante -->
+    <ion-button *ngIf="rol === 'administrador' || rol === 'jugador' || rol === 'estudiante'" expand="full">Partidos</ion-button>
+
+    <!-- Mostrar el botón "Mis Partidos" solo si el rol es jugador -->
+    <ion-button *ngIf="rol === 'jugador'" expand="full">Mis Partidos</ion-button>
+  </ion-content>
 </ion-menu>
+
+<!-- Contenido principal -->
 <div class="ion-page" id="main-content">
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-title>Menu</ion-title>
-        <!-- AQUI PONER EL LINK DEPENDIENDO EL ROL DEL USUARIO-->
-      <ion-buttons slot="end" [routerLink]="[ '/profile-students']">
-        <ion-button color="dark" >
+      <ion-title>Menú</ion-title>
+
+      <ion-buttons slot="end">
+        <!-- Botón para mostrar el menú flotante -->
+        <ion-button color="dark" (click)="toggleMenu()">
           <ion-icon slot="icon-only" ios="person-circle-outline" md="person-circle"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
+<!-- Menú flotante -->
+<div *ngIf="menuVisible" class="menu-content">
+  <ion-list>
+    <ion-item button (click)="selectOption('Eventos')">Perfil</ion-item>
+    <ion-item button (click)="selectOption('Amigos')">Acceso</ion-item>
+  </ion-list>
+</div>
 
-  
   <ion-content>
+    
+    <!-- Contenido de la página -->
+    <ion-item>
+      <ion-label>Bienvenido {{rol}}</ion-label>
+    </ion-item>
     <ion-list-header>Appearance</ion-list-header>
     <ion-list [inset]="true">
       <ion-item>
-        <ion-toggle [(ngModel)]="paletteToggle" (ionChange)="toggleChange($event)" justify="space-between"
-          >Dark Mode</ion-toggle
-        >
+        <ion-toggle [(ngModel)]="paletteToggle" (ionChange)="toggleChange($event)">Dark Mode</ion-toggle>
       </ion-item>
     </ion-list>
-  
   </ion-content>
 </div>
