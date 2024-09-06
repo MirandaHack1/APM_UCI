@@ -54,3 +54,50 @@ if ($post['accion'] == "checkEmail") {
     echo $respuesta;
 }
 /*********************************************************************************************************************************************************************************************************************/
+
+if ($post['accion'] == "userRegister") {
+    // Paso 1: Insertar en la tabla info_client
+    $insert_client_query = sprintf(
+        "INSERT INTO info_client (`ICLI_FIRST_NAME`, `ICLI_LAST_NAME`, `ICLI_CARD`, `ICLI_PHONE_NUMBER`, `ICLI_ADDRESS`, `ICLI_CITY`, `ICLI_PROVINCE`, `ICLI_CAREER`, `ICLI_SEMESTER`, `ICLI_AGE`, `ICLI_GENDER`, `ICLI_WEIGHT`, `ICLI_HEIGHT`, `ICLI_INSTITUTIONAL_EMAIL`, `ICLI_DATE_OF_BIRTH`, `BUIF_CODE`) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+        $post['firstName'],
+        $post['lastName'],
+        $post['cardNumber'],
+        $post['phoneNumber'],
+        $post['address'],
+        $post['city'],
+        $post['province'],
+        $post['career'],
+        $post['semester'],
+        $post['age'],
+        $post['gender'],
+        $post['weight'],
+        $post['height'],
+        $post['institutionalEmail'],
+        $post['dateOfBirth'],
+        $post['sede']
+    );
+
+    if (mysqli_query($mysqli, $insert_client_query)) {
+        $icli_code = mysqli_insert_id($mysqli);
+
+        // Paso 2: Insertar en la tabla user_admin con el ICLI_CODE obtenido
+        $insert_user_query = sprintf(
+            "INSERT INTO user_admin (`USAD_USERNAME`, `USAD_EMAIL`, `USAD_PASSWORD`, `USAD_EMAIL_RECOVERY`, `USAD_ROLE`, `USAD_DATE_CREATED`, `ICLI_CODE`) VALUES ('%s', '%s', '%s', '%s', 'Estudiante', NOW(), '%s')",
+            $post['user_name'],
+            $post['email_user'],
+            password_hash($post['password_user'], PASSWORD_BCRYPT),
+            $post['email_user_re'],
+            $icli_code
+        );
+
+        if (mysqli_query($mysqli, $insert_user_query)) {
+            $respuesta = json_encode(array('estado' => true, "mensaje" => "Registro exitoso"));
+        } else {
+            $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar usuario"));
+        }
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar cliente"));
+    }
+
+    echo $respuesta;
+}

@@ -150,13 +150,13 @@
       class="center-datetime"
     ></ion-datetime>
   </ion-item>
-
+<!--  cargar las sedes
   <ion-item>
     <ion-label position="stacked">Sede:</ion-label>
     <ion-select [(ngModel)]="sede">
-      <!-- Opciones de sede -->
+     
     </ion-select>
-  </ion-item>
+  </ion-item>-->
 
   <!-- CAMPOS AL LLENAR DEL USER_ADMIN QUE SON PARA INICIAR SESION  -->
 
@@ -184,7 +184,8 @@
       [type]="showPassword ? 'text' : 'password'"
       placeholder="Ingrese su Contraseña:"
       [(ngModel)]="password_user"
-      (ionBlur)="validatePassword(password_user)"
+      
+      (focusout)="validatePassword()"
     ></ion-input>
     <ion-icon
       name="{{ showPassword ? 'eye-off' : 'eye' }}"
@@ -199,7 +200,8 @@
       [type]="showPassword ? 'text' : 'password'"
       placeholder="Ingrese su Contraseña:"
       [(ngModel)]="password_user2"
-      (ionBlur)="validatePassword(password_user2)"
+      
+      (focusout)="validatePassword()"
     ></ion-input>
     <ion-icon
       name="{{ showPassword ? 'eye-off' : 'eye' }}"
@@ -207,6 +209,7 @@
       (click)="togglePasswordVisibility()"
     ></ion-icon>
   </ion-item>
+  <ion-label>{{mensaje}}</ion-label>
 
   <ion-item>
     <ion-label position="stacked">Correo Recuperacion:</ion-label>
