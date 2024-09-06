@@ -116,7 +116,11 @@ const routes: Routes = [
 {
   path: 'change-password',
   loadChildren: () => import('./Pages/Public/change-password/change-password.module').then( m => m.ChangePasswordPageModule)
-},
+},  {
+    path: 'edit-rol',
+    loadChildren: () => import('./pages/secure/edit-rol/edit-rol.module').then( m => m.EditRolPageModule)
+  },
+
 
 
 
