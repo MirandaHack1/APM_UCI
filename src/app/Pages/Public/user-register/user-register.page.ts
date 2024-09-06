@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
+import { AuthService } from 'src/app/Services/auth/auth.service';
+
+
 
 @Component({
   selector: 'app-user-register',
@@ -35,7 +39,15 @@ export class UserRegisterPage implements OnInit {
   // Variable para manejar la visibilidad de la contraseña
   showPassword: boolean = false;
 
-  constructor() {}
+  //mandar mensajes de contraseñas
+  mensaje : string ="";
+
+  constructor(
+    public servicio: AuthService,
+    public navCtrl: NavController
+
+
+  ) {}
 
   ngOnInit() {}
 
@@ -72,17 +84,65 @@ export class UserRegisterPage implements OnInit {
     if (!this.firstName || !this.lastName || !this.cardNumber ||
       !this.phoneNumber || !this.address || !this.city || !this.province || !this.career ||
       !this.semester || !this.age || !this.gender || !this.weight || !this.height ||
-      !this.institutionalEmail || !this.dateOfBirth || !this.sede) {
+      !this.institutionalEmail || !this.dateOfBirth) {
       console.log("Por favor, complete todos los campos");
       return;
+    }
+    else{
+      let datos={
+        accion:'userRegister',
+        firstName:this.firstName,
+        lastName:this.lastName,
+        cardNumber:this.cardNumber,
+        phoneNumber:this.phoneNumber,
+        address:this.address,
+        city:this.city,
+        province:this.province,
+        career:this.career,
+        semester:this.semester,
+        age:this.age,
+        gender:this.gender,
+        weight:this.weight,
+        height:this.height,
+        institutionalEmail:this.institutionalEmail,
+        dateOfBirth:this.dateOfBirth,
+        //TOCA TRAER LAS SEDES Y GUARDAR EL CODIGO
+        sede:"4",
+        //user admin
+        email_user:this.email_user,
+        user_name:this.user_name,
+        password_user:this.password_user,
+        email_user_re:this.email_user_re
+
+      }
+      this.servicio.postData(datos).subscribe((res:any)=>{
+        if(res.estado==true)
+        {
+          
+          
+          this.servicio.showToast(res.mensaje);
+  
+         
+         
+        }
+        else{
+          this.servicio.showToast(res.mensaje);
+        }
+      })
     }
 
     console.log("Registro exitoso");
   }
 
-  validatePassword(password: string) {
-    // Lógica para validar la contraseña
+  validatePassword() {
+    if(this.password_user == this.password_user2){
+      this.mensaje = "";
+    }else{
+      this.mensaje = "Las claves no coinciden";
+    }
+    
   }
+
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
