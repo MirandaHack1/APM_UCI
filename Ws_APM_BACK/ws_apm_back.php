@@ -41,6 +41,7 @@ if ($post['accion'] == "loggin") {
 /*********************************************************************************************************************************************************************************************************************/
 // verificar que el email de recuperacion exista
 if ($post['accion'] == "checkEmail") {
+    $token = bin2hex(random_bytes(16));
     $sentencia = sprintf("SELECT `USAD_CODE`, `USAD_EMAIL_RECOVERY` FROM `user_admin`  where USAD_EMAIL_RECOVERY='%s'", 
     $post['email']
    
@@ -50,7 +51,8 @@ if ($post['accion'] == "checkEmail") {
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 'USAD_CODE' => $row['USAD_CODE'],
-                'USAD_EMAIL_RECOVERY' => $row['USAD_EMAIL_RECOVERY']   
+                'USAD_EMAIL_RECOVERY' => $row['USAD_EMAIL_RECOVERY'],  
+                'token'=> $token
             );
         }
         $respuesta = json_encode(array('estado' => true, "user_admin" => $datos, "mensaje" => "EXISTE"));
@@ -60,6 +62,7 @@ if ($post['accion'] == "checkEmail") {
     echo $respuesta;
 }
 /*********************************************************************************************************************************************************************************************************************/
+// MANDAR AL CORREO DE RECUPERACION EL TOKEN
 if ($post['accion'] == "sendTokenEmail") {
     $email = $post['email'];
     $token = $post['token'];
@@ -97,9 +100,9 @@ if ($post['accion'] == "sendTokenEmail") {
     echo $respuesta;
 }
 
-
+ //REGISTRAR EL USUARIO 
 if ($post['accion'] == "userRegister") {
-    // Paso 1: Insertar en la tabla info_client
+  
     $insert_client_query = sprintf(
         "INSERT INTO info_client (`ICLI_FIRST_NAME`, `ICLI_LAST_NAME`, `ICLI_CARD`, `ICLI_PHONE_NUMBER`, `ICLI_ADDRESS`, `ICLI_CITY`, `ICLI_PROVINCE`, `ICLI_CAREER`, `ICLI_SEMESTER`, `ICLI_AGE`, `ICLI_GENDER`, `ICLI_WEIGHT`, `ICLI_HEIGHT`, `ICLI_INSTITUTIONAL_EMAIL`, `ICLI_DATE_OF_BIRTH`, `BUIF_CODE`) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
         $post['firstName'],
@@ -123,7 +126,7 @@ if ($post['accion'] == "userRegister") {
     if (mysqli_query($mysqli, $insert_client_query)) {
         $icli_code = mysqli_insert_id($mysqli);
 
-        // Paso 2: Insertar en la tabla user_admin con el ICLI_CODE obtenido
+        
         $insert_user_query = sprintf(
             "INSERT INTO user_admin (`USAD_USERNAME`, `USAD_EMAIL`, `USAD_PASSWORD`, `USAD_EMAIL_RECOVERY`, `USAD_ROLE`, `USAD_DATE_CREATED`, `ICLI_CODE`) VALUES ('%s', '%s', '%s', '%s', 'Estudiante', NOW(), '%s')",
             $post['user_name'],
@@ -144,7 +147,7 @@ if ($post['accion'] == "userRegister") {
 
     echo $respuesta;
 }
-//updatePassword
+//ACTUALIZAR LA CLAVE POR MEDIO DE CONFIRMAR EL TOKEN
 if ($post['accion'] == "updatePassword") {
     $clave = $post['clave'];
     $codigo = $post['codigo'];

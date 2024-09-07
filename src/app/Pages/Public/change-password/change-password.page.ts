@@ -44,7 +44,7 @@ export class ChangePasswordPage implements OnInit {
         this.servicio.showToast(res.mensaje);
 
         // Navegar a la página de inicio de sesión u otra página
-        this.navCtrl.navigateBack('login'); // Ajusta esto a la página que desees
+        this.navCtrl.navigateRoot('login'); // Ajusta esto a la página que desees
       } else {
         this.servicio.showToast(res.mensaje);
       }
