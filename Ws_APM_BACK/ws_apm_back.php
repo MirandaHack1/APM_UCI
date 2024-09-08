@@ -37,7 +37,7 @@ if ($post['accion'] == "loggin") {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR: CORREO O CONTRASEÑA INCORRECTOS"));
     }
     echo $respuesta;
-}
+} 
 /*********************************************************************************************************************************************************************************************************************/
 // verificar que el email de recuperacion exista
 if ($post['accion'] == "checkEmail") {
@@ -55,7 +55,7 @@ if ($post['accion'] == "checkEmail") {
                 'token'=> $token
             );
         }
-        $respuesta = json_encode(array('estado' => true, "user_admin" => $datos, "mensaje" => "EXISTE"));
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos, "mensaje" => "EXISTE"));
     } else {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR: EL CORREO NO EXISTE"));
     }
@@ -131,7 +131,7 @@ if ($post['accion'] == "userRegister") {
             "INSERT INTO user_admin (`USAD_USERNAME`, `USAD_EMAIL`, `USAD_PASSWORD`, `USAD_EMAIL_RECOVERY`, `USAD_ROLE`, `USAD_DATE_CREATED`, `ICLI_CODE`) VALUES ('%s', '%s', '%s', '%s', 'Estudiante', NOW(), '%s')",
             $post['user_name'],
             $post['email_user'],
-            password_hash($post['password_user'], PASSWORD_BCRYPT),
+            $post['password_user'],
             $post['email_user_re'],
             $icli_code
         );
@@ -167,5 +167,24 @@ if ($post['accion'] == "updatePassword") {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la contraseña"));
     }
 
+    echo $respuesta;
+}
+//loadbusinessinfo
+if ($post['accion'] == "loadbusinessinfo") {
+    $token = bin2hex(random_bytes(16));
+    $sentencia = sprintf("SELECT `BUIF_CODE`, `BUIF_NAME` FROM `business_information`");
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'BUIF_CODE' => $row['BUIF_CODE'],
+                'BUIF_NAME' => $row['BUIF_NAME']
+             
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR"));
+    }
     echo $respuesta;
 }

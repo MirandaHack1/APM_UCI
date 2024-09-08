@@ -11,7 +11,7 @@
     <ion-input
       placeholder="Ingrese su nombre:"
       [(ngModel)]="firstName"
-      (ionBlur)="validateTextInput(firstName)"
+      type="text"
     ></ion-input>
   </ion-item>
 
@@ -20,7 +20,8 @@
     <ion-input
       placeholder="Ingrese su apellido:"
       [(ngModel)]="lastName"
-      (ionBlur)="validateTextInput(lastName)"
+      type="text"
+      
     ></ion-input>
   </ion-item>
 
@@ -37,6 +38,8 @@
       placeholder="Ingrese su cédula:"
       [(ngModel)]="cardNumber"
       (ionBlur)="validateID(cardNumber)"
+      type="number"
+      inputmode="numeric"
     ></ion-input>
   </ion-item>
 
@@ -45,8 +48,9 @@
     <ion-input
       placeholder="Ingrese su teléfono"
       [(ngModel)]="phoneNumber"
-      type="tel"
-      (ionBlur)="validatePhone(phoneNumber)"
+      type="number"
+      (ionInput)="checkMaxLength($event)"
+      inputmode="numeric"
     ></ion-input>
   </ion-item>
 
@@ -63,7 +67,7 @@
     <ion-input
       placeholder="Ingrese su ciudad:"
       [(ngModel)]="city"
-      (ionBlur)="validateTextInput(city)"
+      type="text"
     ></ion-input>
   </ion-item>
 
@@ -72,7 +76,7 @@
     <ion-input
       placeholder="Ingrese su provincia:"
       [(ngModel)]="province"
-      (ionBlur)="validateTextInput(province)"
+      type="text"
     ></ion-input>
   </ion-item>
 
@@ -81,7 +85,7 @@
     <ion-input
       placeholder="Ingrese su carrera:"
       [(ngModel)]="career"
-      (ionBlur)="validateTextInput(career)"
+      type="text"
     ></ion-input>
   </ion-item>
 
@@ -91,6 +95,7 @@
       placeholder="Ingrese su semestre:"
       [(ngModel)]="semester"
       type="number"
+      inputmode="numeric"
     ></ion-input>
   </ion-item>
 
@@ -100,6 +105,7 @@
       placeholder="Ingrese su edad:"
       [(ngModel)]="age"
       type="number"
+      inputmode="numeric"
     ></ion-input>
   </ion-item>
 
@@ -150,13 +156,15 @@
       class="center-datetime"
     ></ion-datetime>
   </ion-item>
-<!--  cargar las sedes
+
   <ion-item>
     <ion-label position="stacked">Sede:</ion-label>
     <ion-select [(ngModel)]="sede">
-     
+      <ion-select-option *ngFor="let item of businessInfo" [value]="item.BUIF_CODE">
+        {{ item.BUIF_NAME }}
+      </ion-select-option>
     </ion-select>
-  </ion-item>-->
+  </ion-item>
 
   <!-- CAMPOS AL LLENAR DEL USER_ADMIN QUE SON PARA INICIAR SESION  -->
 
