@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
+import { AuthService } from 'src/app/Services/auth/auth.service';
 
 @Component({
   selector: 'app-change-password',
@@ -6,26 +8,46 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./change-password.page.scss'],
 })
 export class ChangePasswordPage implements OnInit {
-  clave : string ="";
-  clave2 : string ="";
-  mensaje : string ="";
-  
+  clave: string = "";
+  clave2: string = "";
+  mensaje: string = "";
 
-  constructor() { }
+  constructor(
+    public navCtrl: NavController,
+    public servicio: AuthService
+  ) { }
 
   ngOnInit() {
   }
-  vclave(){
-    if(this.clave == this.clave2){
+
+  async vclave() {
+    if (this.clave === this.clave2) {
       this.mensaje = "";
-    }else{
+      await this.changePassword();
+    } else {
       this.mensaje = "Las claves no coinciden";
     }
-
   }
-  changePassword(){
-    
-  }
-  
 
+  async changePassword() {
+    // Obtén el código de usuario
+    const codigo = await this.servicio.getUserCode();
+
+    let datos = {
+      accion: 'updatePassword',
+      clave: this.clave,
+      codigo: codigo
+    };
+
+    this.servicio.postData(datos).subscribe((res: any) => {
+      if (res.estado === true) {
+        this.servicio.showToast(res.mensaje);
+
+        // Navegar a la página de inicio de sesión u otra página
+        this.navCtrl.navigateRoot('login'); // Ajusta esto a la página que desees
+      } else {
+        this.servicio.showToast(res.mensaje);
+      }
+    });
+  }
 }

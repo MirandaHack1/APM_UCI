@@ -1,6 +1,6 @@
 ion-content {
   --background: #111b22; /* Fondo afuera */
-  color: white;
+ 
 }
 
 .login-container {
@@ -15,7 +15,7 @@ ion-card {
   width: 100%;
   max-width: 400px;
   background-color: #0a2538; /* Fondo azul adentro */
-  color: white;
+ 
 }
 
 ion-card-title,
@@ -30,5 +30,5 @@ ion-button {
 }
 
 ion-item::part(native) {
-  color: white; /* Asegura que el texto de los inputs sea blanco */
+  color: rgb(0, 0, 0); /* Asegura que el texto de los inputs sea blanco */
 }

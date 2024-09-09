@@ -34,11 +34,35 @@ export class AuthService {
       value: valor,
     });
   }
+  
   async getSession(id: string) {
     const item = await Preferences.get({ key: id });
     return item.value;
   }
   async closeSession(id: string) {
     await Preferences.clear();
+  }
+
+  async saveToken(token: string) {
+    await Preferences.set({
+      key: 'recovery_token',
+      value: token,
+    });
+  }
+  
+  async getToken() {
+    const { value } = await Preferences.get({ key: 'recovery_token' });
+    return value;
+  }
+  async saveUserCode(userCode: string) {
+    await Preferences.set({
+      key: 'usad_code',
+      value: userCode,
+    });
+  }
+  
+  async getUserCode() {
+    const { value } = await Preferences.get({ key: 'usad_code' });
+    return value;
   }
 }

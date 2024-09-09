@@ -27,6 +27,7 @@ export class UserRegisterPage implements OnInit {
   institutionalEmail: string = '';
   dateOfBirth: string = '';
   sede: string = '';
+  businessInfo: any[] = [];
   isForeigner: boolean = false;
 
   // DECLARANDO VARIABLES PARA INICIAR SESION DEL CLIENTE 
@@ -49,14 +50,12 @@ export class UserRegisterPage implements OnInit {
 
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadbusinessinfo(); 
 
-  validateTextInput(value: string) {
-    const regex = /^[a-zA-Z\s]+$/;
-    if (!regex.test(value)) {
-      console.log("Este campo solo debe contener letras");
-    }
   }
+
+  
 
   validateID(cardNumber: string) {
     // Lógica de validación de cédula
@@ -66,10 +65,10 @@ export class UserRegisterPage implements OnInit {
     }
   }
 
-  validatePhone(phoneNumber: string) {
-    const regex = /^[0-9]{10}$/; // Ejemplo para un teléfono de 10 dígitos
-    if (!regex.test(phoneNumber)) {
-      console.log("Número de teléfono inválido");
+  checkMaxLength(event: any) {
+    const inputValue = event.target.value;
+    if (inputValue.length > 10) {
+      event.target.value = inputValue.slice(0, 10);
     }
   }
 
@@ -98,7 +97,7 @@ export class UserRegisterPage implements OnInit {
         address:this.address,
         city:this.city,
         province:this.province,
-        career:this.career,
+        career:this.career, 
         semester:this.semester,
         age:this.age,
         gender:this.gender,
@@ -119,8 +118,9 @@ export class UserRegisterPage implements OnInit {
         if(res.estado==true)
         {
           
-          
           this.servicio.showToast(res.mensaje);
+          this.navCtrl.navigateRoot('login');
+
   
          
          
@@ -146,5 +146,19 @@ export class UserRegisterPage implements OnInit {
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
+  }
+
+  loadbusinessinfo() {
+    let datos = {
+      "accion": "loadbusinessinfo",
+    }
+    this.servicio.postData(datos).subscribe((res: any) => {
+      if (res.estado == true) {
+        this.businessInfo = res.datos;  // Guarda los datos de las sedes
+        this.servicio.showToast(res.mensaje);
+      } else {
+        this.servicio.showToast(res.mensaje);
+      }
+    });
   }
 }
