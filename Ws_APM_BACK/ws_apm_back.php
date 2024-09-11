@@ -118,7 +118,7 @@ if ($post['accion'] == "sendTokenEmail") {
 if ($post['accion'] == "userRegister") {
 
     $insert_client_query = sprintf(
-        "INSERT INTO info_client (ICLI_FIRST_NAME, ICLI_LAST_NAME, ICLI_CARD, ICLI_PHONE_NUMBER, ICLI_ADDRESS, ICLI_CITY, ICLI_PROVINCE, ICLI_CAREER, ICLI_SEMESTER, ICLI_AGE, ICLI_GENDER, ICLI_WEIGHT, ICLI_HEIGHT, ICLI_INSTITUTIONAL_EMAIL, ICLI_DATE_OF_BIRTH, BUIF_CODE) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+        "INSERT INTO info_client (ICLI_FIRST_NAME, ICLI_LAST_NAME, ICLI_CARD, ICLI_PHONE_NUMBER, ICLI_ADDRESS, ICLI_CITY, ICLI_PROVINCE, ICLI_CAREER, ICLI_SEMESTER, ICLI_AGE, ICLI_GENDER, ICLI_WEIGHT, ICLI_HEIGHT, ICLI_INSTITUTIONAL_EMAIL, ICLI_DATE_OF_BIRTH, BUSH_CODE) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
         $post['firstName'],
         $post['lastName'],
         $post['cardNumber'],
@@ -188,20 +188,22 @@ if ($post['accion'] == "updatePassword") {
 }
 //loadbusinessinfo
 if ($post['accion'] == "loadbusinessinfo") {
-    $token = bin2hex(random_bytes(16));
-    $sentencia = sprintf("SELECT `BUIF_CODE`, `BUIF_NAME` FROM `business_information`");
+    // Realizamos el INNER JOIN para obtener BUSH_CODE y BUIF_NAME
+    $sentencia = sprintf("SELECT bh.BUSH_CODE, bi.BUIF_NAME FROM busineess_headquarters bh INNER JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE");
+
     $result = mysqli_query($mysqli, $sentencia);
+
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
-                'BUIF_CODE' => $row['BUIF_CODE'],
+                'BUSH_CODE' => $row['BUSH_CODE'],
                 'BUIF_NAME' => $row['BUIF_NAME']
-             
             );
         }
         $respuesta = json_encode(array('estado' => true, "datos" => $datos));
     } else {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR"));
     }
+
     echo $respuesta;
 }

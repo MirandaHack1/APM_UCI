@@ -83,57 +83,46 @@ export class UserRegisterPage implements OnInit {
     if (!this.firstName || !this.lastName || !this.cardNumber ||
       !this.phoneNumber || !this.address || !this.city || !this.province || !this.career ||
       !this.semester || !this.age || !this.gender || !this.weight || !this.height ||
-      !this.institutionalEmail || !this.dateOfBirth) {
+      !this.institutionalEmail || !this.dateOfBirth || !this.sede) {  // Asegurarse de que la sede esté seleccionada
       console.log("Por favor, complete todos los campos");
       return;
-    }
-    else{
-      let datos={
-        accion:'userRegister',
-        firstName:this.firstName,
-        lastName:this.lastName,
-        cardNumber:this.cardNumber,
-        phoneNumber:this.phoneNumber,
-        address:this.address,
-        city:this.city,
-        province:this.province,
-        career:this.career, 
-        semester:this.semester,
-        age:this.age,
-        gender:this.gender,
-        weight:this.weight,
-        height:this.height,
-        institutionalEmail:this.institutionalEmail,
-        dateOfBirth:this.dateOfBirth,
-        //TOCA TRAER LAS SEDES Y GUARDAR EL CODIGO
-        sede:"4",
-        //user admin
-        email_user:this.email_user,
-        user_name:this.user_name,
-        password_user:this.password_user,
-        email_user_re:this.email_user_re
-
-      }
-      this.servicio.postData(datos).subscribe((res:any)=>{
-        if(res.estado==true)
-        {
-          
+    } else {
+      let datos = {
+        accion: 'userRegister',
+        firstName: this.firstName,
+        lastName: this.lastName,
+        cardNumber: this.cardNumber,
+        phoneNumber: this.phoneNumber,
+        address: this.address,
+        city: this.city,
+        province: this.province,
+        career: this.career, 
+        semester: this.semester,
+        age: this.age,
+        gender: this.gender,
+        weight: this.weight,
+        height: this.height,
+        institutionalEmail: this.institutionalEmail,
+        dateOfBirth: this.dateOfBirth,
+        sede: this.sede,  // Aquí se manda el BUSH_CODE seleccionado
+        email_user: this.email_user,
+        user_name: this.user_name,
+        password_user: this.password_user,
+        email_user_re: this.email_user_re
+      };
+  
+      this.servicio.postData(datos).subscribe((res: any) => {
+        if (res.estado == true) {
           this.servicio.showToast(res.mensaje);
           this.navCtrl.navigateRoot('login');
-
-  
-         
-         
-        }
-        else{
+        } else {
           this.servicio.showToast(res.mensaje);
         }
-      })
+      });
     }
-
+  
     console.log("Registro exitoso");
   }
-
   validatePassword() {
     if(this.password_user == this.password_user2){
       this.mensaje = "";
