@@ -17,10 +17,17 @@ $respuesta = "";
 /*********************************************************************************************************************************************************************************************************************/
 /******************************************************************************************FUNCION PARA INICIO DE SESESION*************************************************************************************************/
 if ($post['accion'] == "loggin") {
-    $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_EMAIL='%s' AND USAD_PASSWORD='%s'", $post['USAD_EMAIL'], $post['USAD_PASSWORD']);
+    // Consulta el usuario por correo electrónico
+    $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_EMAIL='%s'", $post['USAD_EMAIL']);
     $result = mysqli_query($mysqli, $sentencia);
+
     if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_array($result)) {
+        // Obtener los datos del usuario
+        $row = mysqli_fetch_array($result);
+
+        // Verificar la contraseña usando password_verify
+        if (password_verify($post['USAD_PASSWORD'], $row['USAD_PASSWORD'])) {
+            // Si la contraseña es correcta, proceder con el inicio de sesión
             $datos[] = array(
                 'USAD_CODE' => $row['USAD_CODE'],
                 'USAD_USERNAME' => $row['USAD_USERNAME'],
@@ -31,13 +38,20 @@ if ($post['accion'] == "loggin") {
                 'USAD_DATE_CREATED' => $row['USAD_DATE_CREATED'],
                 'ICLI_CODE' => $row['ICLI_CODE']
             );
+
+            $respuesta = json_encode(array('estado' => true, "user_admin" => $datos, "mensaje" => "EXITO: BIENVENIDOS AL SISTEMA"));
+        } else {
+            // Contraseña incorrecta
+            $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR: CORREO O CONTRASEÑA INCORRECTOS"));
         }
-        $respuesta = json_encode(array('estado' => true, "user_admin" => $datos, "mensaje" => "EXITO:BIENVENIDOS AL SISTEMA"));
     } else {
+        // No se encontró el usuario
         $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR: CORREO O CONTRASEÑA INCORRECTOS"));
     }
+
     echo $respuesta;
-} 
+}
+
 /*********************************************************************************************************************************************************************************************************************/
 // verificar que el email de recuperacion exista
 if ($post['accion'] == "checkEmail") {
@@ -101,8 +115,8 @@ if ($post['accion'] == "sendTokenEmail") {
 }
 
  //REGISTRAR EL USUARIO 
- if ($post['accion'] == "userRegister") {
-  
+if ($post['accion'] == "userRegister") {
+
     $insert_client_query = sprintf(
         "INSERT INTO info_client (ICLI_FIRST_NAME, ICLI_LAST_NAME, ICLI_CARD, ICLI_PHONE_NUMBER, ICLI_ADDRESS, ICLI_CITY, ICLI_PROVINCE, ICLI_CAREER, ICLI_SEMESTER, ICLI_AGE, ICLI_GENDER, ICLI_WEIGHT, ICLI_HEIGHT, ICLI_INSTITUTIONAL_EMAIL, ICLI_DATE_OF_BIRTH, BUIF_CODE) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
         $post['firstName'],
@@ -126,12 +140,14 @@ if ($post['accion'] == "sendTokenEmail") {
     if (mysqli_query($mysqli, $insert_client_query)) {
         $icli_code = mysqli_insert_id($mysqli);
 
+        // Encriptar la contraseña antes de insertarla
+        $password_hashed = password_hash($post['password_user'], PASSWORD_BCRYPT);
         
         $insert_user_query = sprintf(
-            "INSERT INTO user_admin (USAD_USERNAME, USAD_EMAIL, USAD_PASSWORD, USAD_EMAIL_RECOVERY, USAD_ROLE, USAD_DATE_CREATED, ICLI_CODE) VALUES ('%s', '%s', '%s', '%s', 'Estudiante', NOW(), '%s')",
+            "INSERT INTO user_admin (USAD_USERNAME, USAD_EMAIL, USAD_PASSWORD, USAD_EMAIL_RECOVERY, USAD_ROLE, USAD_DATE_CREATED, ICLI_CODE) VALUES ('%s', '%s', '%s', '%s', 'estudiante', NOW(), '%s')",
             $post['user_name'],
             $post['email_user'],
-            $post['password_user'],
+            $password_hashed,  // Guardar la contraseña encriptada
             $post['email_user_re'],
             $icli_code
         );
@@ -147,6 +163,7 @@ if ($post['accion'] == "sendTokenEmail") {
 
     echo $respuesta;
 }
+
 //ACTUALIZAR LA CLAVE POR MEDIO DE CONFIRMAR EL TOKEN
 if ($post['accion'] == "updatePassword") {
     $clave = $post['clave'];
