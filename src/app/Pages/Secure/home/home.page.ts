@@ -3,6 +3,7 @@ import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personCircle, personCircleOutline, sunny, sunnyOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/Services/auth/auth.service';
+import { UserRolPage } from '../user-rol/user-rol.page';
 
 @Component({
   selector: 'app-home',
@@ -53,5 +54,9 @@ export class HomePage implements OnInit {
 
   toggleDarkPalette(shouldAdd: boolean) {
     document.documentElement.classList.toggle('ion-palette-dark', shouldAdd);
+  }
+
+  userRol() {
+    this.navCtrl.navigateForward('user-rol');
   }
 }
