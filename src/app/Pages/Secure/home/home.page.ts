@@ -35,6 +35,12 @@ export class HomePage implements OnInit {
     console.log('Seleccionaste:', option);
     this.menuVisible = false; // Cierra el menú después de seleccionar
   }
+  irPerfil(){
+    this.navCtrl.navigateForward('credentials-info');
+  }
+  irInfoPersonal(){
+    this.navCtrl.navigateForward('info-client');
+  }
 
   ngOnInit() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');

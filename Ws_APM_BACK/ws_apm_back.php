@@ -207,3 +207,82 @@ if ($post['accion'] == "loadbusinessinfo") {
 
     echo $respuesta;
 }
+
+//cargar informacion personal del usuario
+if ($post['accion'] == "loadCredentials") {
+    $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = '%s'", $post['codigo']);
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'username' => $row['USAD_USERNAME'],
+                'email' => $row['USAD_EMAIL'],
+                'emailr' => $row['USAD_EMAIL_RECOVERY'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'person' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+//insertcredentials
+if ($post['accion'] == "insertcredentials") {
+    $password_hashed = password_hash($post['password'], PASSWORD_BCRYPT);
+    
+
+    $update_query = sprintf(
+        "UPDATE user_admin SET USAD_USERNAME='%s', USAD_EMAIL='%s',USAD_PASSWORD='%s', USAD_EMAIL_RECOVERY='%s' WHERE USAD_CODE='%s'",
+        $post['username'],
+         $post['email'],
+         $password_hashed,
+         $post['emailr'],
+        $post['cod']
+    );
+
+    if (mysqli_query($mysqli, $update_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar los datos"));
+    }
+
+    echo $respuesta;
+}
+//loadinfo
+if ($post['accion'] == "loadinfo") {
+    $sentencia = sprintf("SELECT * FROM info_client WHERE ICLI_CODE = '%s'", $post['codigo']);
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'firstName' => $row['ICLI_FIRST_NAME'],
+                'lastName' => $row['ICLI_LAST_NAME'],
+                'cardNumber' => $row['ICLI_CARD'],
+                'phoneNumber' => $row['ICLI_PHONE_NUMBER'],
+                'address' => $row['ICLI_ADDRESS'],
+                'city' => $row['ICLI_CITY'],
+                'province' => $row['ICLI_PROVINCE'],
+                'career' => $row['ICLI_CAREER'],
+                'semester' => $row['ICLI_SEMESTER'],
+                'age' => $row['ICLI_AGE'],
+                'gender' => $row['ICLI_GENDER'],
+                'weight' => $row['ICLI_WEIGHT'],
+                'height' => $row['ICLI_HEIGHT'],
+                'institutionalEmail' => $row['ICLI_INSTITUTIONAL_EMAIL'],
+                'dateOfBirth' => $row['ICLI_DATE_OF_BIRTH'],
+                'sede' => $row['BUSH_CODE']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'person' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+//insertinfo
