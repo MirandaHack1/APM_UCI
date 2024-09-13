@@ -100,6 +100,35 @@ export class EditInfoClientPage implements OnInit {
     });
   }
   saveInfo(){
+    let datos = {
+      "accion": "updateinfo",
+      "codigo": this.cod,
+      "firstName": this.txt_firstName,
+      "lastName": this.txt_lastName,
+      "cardNumber": this.txt_card,
+      "phoneNumber": this.txt_phoneNumber,
+      "address": this.txt_address,
+      "city": this.txt_city,
+      "province": this.txt_province,
+      "career": this.txt_career,
+      "semester": this.txt_semester,
+      "age": this.txt_age,
+      "gender": this.txt_gender,
+      "weight": this.txt_weight,
+      "height": this.txt_height,
+      "institutionalEmail": this.txt_institutionalEmail,
+      "dateOfBirth": this.txt_dateOfBirth,
+      "sede": this.sede
+    }
+
+    this.servicio.postData(datos).subscribe((res: any) => {
+      if (res.estado == true) {
+        this.servicio.showToast(res.mensaje);
+        this.navCtrl.navigateRoot('/home');
+      } else {
+        this.servicio.showToast(res.mensaje);
+      }
+    });
     
   }
 

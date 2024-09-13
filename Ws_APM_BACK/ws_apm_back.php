@@ -285,4 +285,53 @@ if ($post['accion'] == "loadinfo") {
 
     echo $respuesta;
 }
-//insertinfo
+//UPDATE DE LA INFORMACION PERSONAL DEL USUARIO
+if ($post['accion'] == "updateinfo") {
+
+    // Preparar la consulta SQL para actualizar la información del cliente
+    $update_client_query = sprintf(
+        "UPDATE info_client SET 
+            ICLI_FIRST_NAME = '%s',
+            ICLI_LAST_NAME = '%s',
+            ICLI_CARD = '%s',
+            ICLI_PHONE_NUMBER = '%s',
+            ICLI_ADDRESS = '%s',
+            ICLI_CITY = '%s',
+            ICLI_PROVINCE = '%s',
+            ICLI_CAREER = '%s',
+            ICLI_SEMESTER = '%s',
+            ICLI_AGE = '%d',
+            ICLI_GENDER = '%s',
+            ICLI_WEIGHT = '%d',
+            ICLI_HEIGHT = '%d',
+            ICLI_INSTITUTIONAL_EMAIL = '%s',
+            ICLI_DATE_OF_BIRTH = '%s',
+            BUSH_CODE = '%s'
+        WHERE ICLI_CODE = '%s'",
+        $post['firstName'],
+        $post['lastName'],
+        $post['cardNumber'],
+        $post['phoneNumber'],
+        $post['address'],
+        $post['city'],
+        $post['province'],
+        $post['career'],
+        $post['semester'],
+        $post['age'],
+        $post['gender'],
+        $post['weight'],
+        $post['height'],
+        $post['institutionalEmail'],
+        $post['dateOfBirth'],
+        $post['sede'],
+        $post['codigo']
+    );
+
+    if (mysqli_query($mysqli, $update_client_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Información actualizada exitosamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la información del cliente: " . mysqli_error($mysqli)));
+    }
+
+    echo $respuesta;
+}
