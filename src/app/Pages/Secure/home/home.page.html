@@ -38,7 +38,8 @@
 <!-- Menú flotante -->
 <div *ngIf="menuVisible" class="menu-content">
   <ion-list>
-    <ion-item button (click)="selectOption('Eventos')">Perfil</ion-item>
+    <ion-item button (click)="irPerfil()">Perfil</ion-item>
+    <ion-item button (click)="irInfoPersonal()">Informacion Personal</ion-item>
     <ion-item button (click)="selectOption('Amigos')">Acceso</ion-item>
   </ion-list>
 </div>

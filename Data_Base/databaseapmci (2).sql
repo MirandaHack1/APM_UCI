@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-09-2024 a las 22:20:34
+-- Tiempo de generación: 11-09-2024 a las 22:00:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -22,34 +22,6 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `databaseapmci` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `databaseapmci`;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `administrator`
---
-
-DROP TABLE IF EXISTS `administrator`;
-CREATE TABLE `administrator` (
-  `ADM_CODE` int(11) NOT NULL COMMENT 'CODIGO',
-  `ADM_FIRST_NAME` varchar(50) NOT NULL COMMENT 'NOMBRE',
-  `ADM_LAST_NAME` varchar(50) NOT NULL COMMENT 'APELLIDO',
-  `ADM_CARD` varchar(20) NOT NULL COMMENT 'CEDULA',
-  `ADM_PHONE_NUMBER` varchar(15) NOT NULL COMMENT 'TELEFONO',
-  `ADM_CITY` varchar(50) NOT NULL COMMENT 'CIUDAD',
-  `ADM_PROVINCE` varchar(50) NOT NULL COMMENT 'PROVINCIA',
-  `ADM_ADDRESS` varchar(100) NOT NULL COMMENT 'DIRECCION',
-  `ADM_HEIGHT` decimal(5,2) NOT NULL COMMENT 'ALTURA',
-  `ADM_WEIGHT` decimal(5,2) NOT NULL COMMENT 'PESO',
-  `ADM_DATE_OF_BIRTH` date NOT NULL COMMENT 'FECHA-CUMPLEAÑOS',
-  `USAD_CODE` int(11) NOT NULL COMMENT 'CODIGO-USUARIO-CORREO'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `administrator`:
---   `USAD_CODE`
---       `user_admin` -> `USAD_CODE`
---
 
 -- --------------------------------------------------------
 
@@ -74,6 +46,42 @@ CREATE TABLE `available_dates` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `busineess_headquarters`
+--
+
+DROP TABLE IF EXISTS `busineess_headquarters`;
+CREATE TABLE `busineess_headquarters` (
+  `BUSH_CODE` int(11) NOT NULL,
+  `BUSH_ADDRES` varchar(100) NOT NULL COMMENT 'DIRECCIÓN SEDE',
+  `BUSH_CITY` varchar(50) NOT NULL COMMENT 'CIUDAD SEDE',
+  `BUSH_COUNTRY` varchar(50) NOT NULL COMMENT 'PAIS SEDE',
+  `BUSH_PHONE` varchar(25) NOT NULL COMMENT 'NUMERO DE TELEFONO',
+  `BUSH_STATE_HEADQUARTERS` tinyint(1) NOT NULL COMMENT 'ESTADO SEDE',
+  `BUSH_USER_INSERT` varchar(100) NOT NULL COMMENT 'QUIEN CREO LA SEDE',
+  `BUSH_USER_UPDATE` varchar(100) NOT NULL COMMENT 'QUIEN ACTUALIZO LA INFORMACION',
+  `BUSH_USER_DELETE` varchar(100) NOT NULL COMMENT 'QUIEN ELIMINO LA SEDE',
+  `BUSH_INSERT_DATE` datetime NOT NULL COMMENT 'FECHA CREACION',
+  `BUSH_UPDATE_DATE` datetime NOT NULL COMMENT 'FECHA ACTUALIZACION',
+  `BUSH_DELETE_DATE` datetime NOT NULL COMMENT 'FECHA DE ELIMINACION',
+  `BUIF_CODE` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `busineess_headquarters`:
+--   `BUIF_CODE`
+--       `business_information` -> `BUIF_CODE`
+--
+
+--
+-- Volcado de datos para la tabla `busineess_headquarters`
+--
+
+INSERT INTO `busineess_headquarters` (`BUSH_CODE`, `BUSH_ADDRES`, `BUSH_CITY`, `BUSH_COUNTRY`, `BUSH_PHONE`, `BUSH_STATE_HEADQUARTERS`, `BUSH_USER_INSERT`, `BUSH_USER_UPDATE`, `BUSH_USER_DELETE`, `BUSH_INSERT_DATE`, `BUSH_UPDATE_DATE`, `BUSH_DELETE_DATE`, `BUIF_CODE`) VALUES
+(1, 'ASD', 'ASD', 'ASD', '222222', 2, 'ASD', '', '', '2024-09-11 21:48:34', '2024-09-11 21:48:34', '2024-09-11 21:48:34', 4);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `business_information`
 --
 
@@ -86,7 +94,6 @@ CREATE TABLE `business_information` (
   `BUIF_VISION` text DEFAULT NULL,
   `BUIF_IMAGE` varchar(50) DEFAULT NULL,
   `BUIF_STATE` tinyint(1) DEFAULT NULL,
-  `BUIF_ADDRESS` varchar(100) DEFAULT NULL,
   `BUIF_CONTACT` varchar(25) DEFAULT NULL,
   `BUIF_USER_INSERT` varchar(100) DEFAULT NULL,
   `BUIF_USER_DELETE` varchar(100) DEFAULT NULL,
@@ -104,8 +111,8 @@ CREATE TABLE `business_information` (
 -- Volcado de datos para la tabla `business_information`
 --
 
-INSERT INTO `business_information` (`BUIF_CODE`, `BUIF_NAME`, `BUIF_LOGO`, `BUIF_MISSION`, `BUIF_VISION`, `BUIF_IMAGE`, `BUIF_STATE`, `BUIF_ADDRESS`, `BUIF_CONTACT`, `BUIF_USER_INSERT`, `BUIF_USER_DELETE`, `BUIF_USER_UPDATE`, `BUIF_INSERT_DATE`, `BUIF_UPDATE_DATE`, `BUIF_DELETE_DATE`) VALUES
-(1, 'Universidad Regional Autónoma de los Andes', '', 'Somos una Universidad particular, que tiene como propósito formar profesionales de tercer y cuarto nivel, de investigación, responsables, competitivos, con conciencia ética y solidaria capaces de contribuir al desarrollo nacional e internacional, mediante una educación humanista, cultural y científica dirigida a bachilleres y profesionales nacionales y extranjeros.', 'Hasta el 2024, ser una institución reconocida a nivel nacional e internacional por su calidad, manteniendo entre sus fortalezas un cuerpo docente de alto nivel académico, ético; y un proceso de formación profesional centrado en el estudiante, acorde con los avances científicos, tecnológicos, de investigación en vínculo permanente con la identificación y solución de problemas de los sectores sociales y productivos.', '', 1, 'Vía a Baños km 5 1/2. Ambato, Ecuador', '097 983 4941 / 099 372 01', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `business_information` (`BUIF_CODE`, `BUIF_NAME`, `BUIF_LOGO`, `BUIF_MISSION`, `BUIF_VISION`, `BUIF_IMAGE`, `BUIF_STATE`, `BUIF_CONTACT`, `BUIF_USER_INSERT`, `BUIF_USER_DELETE`, `BUIF_USER_UPDATE`, `BUIF_INSERT_DATE`, `BUIF_UPDATE_DATE`, `BUIF_DELETE_DATE`) VALUES
+(4, 'PRUEBA', 'ºSDAD', 'ASDSA', 'ASD', 'ASD', 1, 'ASD', 'AD', 'SD', 'ASD', '2024-09-05 15:46:15', '2024-09-05 15:46:15', '2024-09-05 15:46:15');
 
 -- --------------------------------------------------------
 
@@ -187,14 +194,21 @@ CREATE TABLE `info_client` (
   `ICLI_HEIGHT` decimal(5,2) NOT NULL COMMENT 'ALTURA',
   `ICLI_INSTITUTIONAL_EMAIL` varchar(50) NOT NULL COMMENT 'CORREO-INSTITUCIONAL',
   `ICLI_DATE_OF_BIRTH` date NOT NULL COMMENT 'FECHA-CUMPLEAÑOS',
-  `USAD_CODE` int(11) NOT NULL
+  `BUSH_CODE` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- RELACIONES PARA LA TABLA `info_client`:
---   `USAD_CODE`
---       `user_admin` -> `USAD_CODE`
+--   `BUSH_CODE`
+--       `busineess_headquarters` -> `BUSH_CODE`
 --
+
+--
+-- Volcado de datos para la tabla `info_client`
+--
+
+INSERT INTO `info_client` (`ICLI_CODE`, `ICLI_FIRST_NAME`, `ICLI_LAST_NAME`, `ICLI_CARD`, `ICLI_PHONE_NUMBER`, `ICLI_ADDRESS`, `ICLI_CITY`, `ICLI_PROVINCE`, `ICLI_CAREER`, `ICLI_SEMESTER`, `ICLI_AGE`, `ICLI_GENDER`, `ICLI_WEIGHT`, `ICLI_HEIGHT`, `ICLI_INSTITUTIONAL_EMAIL`, `ICLI_DATE_OF_BIRTH`, `BUSH_CODE`) VALUES
+(4, 'João', 'Souza Silva', '1234567899', '22222222222', 'Rua Inexistente, 2000', 'Belo Horizonte', 'MG', 'ASD', 2, 2, 'male', 2.00, 2.00, 'ASD', '2021-05-25', 1);
 
 -- --------------------------------------------------------
 
@@ -233,13 +247,13 @@ CREATE TABLE `rules` (
   `RU_CODE` int(11) NOT NULL,
   `RU_DESCRIPTION_RULES` text NOT NULL COMMENT 'VAMOS A GUARDAR EL PDF DE LAS REGLAS',
   `RU_DATE` date NOT NULL COMMENT 'FECHA DEL ENVIO DE LAS REGLAS',
-  `ADM_CODE` int(11) NOT NULL
+  `USAD_CODE` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- RELACIONES PARA LA TABLA `rules`:
---   `ADM_CODE`
---       `administrator` -> `ADM_CODE`
+--   `USAD_CODE`
+--       `user_admin` -> `USAD_CODE`
 --
 
 -- --------------------------------------------------------
@@ -305,25 +319,25 @@ CREATE TABLE `user_admin` (
   `USAD_CODE` int(11) NOT NULL,
   `USAD_USERNAME` varchar(25) NOT NULL,
   `USAD_EMAIL` varchar(50) NOT NULL,
-  `USAD_PASSWORD` varchar(50) NOT NULL,
+  `USAD_PASSWORD` varchar(250) NOT NULL,
   `USAD_EMAIL_RECOVERY` varchar(50) NOT NULL,
   `USAD_ROLE` varchar(50) NOT NULL,
   `USAD_DATE_CREATED` date NOT NULL,
-  `BUIF_CODE` int(11) NOT NULL
+  `ICLI_CODE` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- RELACIONES PARA LA TABLA `user_admin`:
---   `BUIF_CODE`
---       `business_information` -> `BUIF_CODE`
+--   `ICLI_CODE`
+--       `info_client` -> `ICLI_CODE`
 --
 
 --
 -- Volcado de datos para la tabla `user_admin`
 --
 
-INSERT INTO `user_admin` (`USAD_CODE`, `USAD_USERNAME`, `USAD_EMAIL`, `USAD_PASSWORD`, `USAD_EMAIL_RECOVERY`, `USAD_ROLE`, `USAD_DATE_CREATED`, `BUIF_CODE`) VALUES
-(1, 'Jhonny ', 'miranda3791167@gmail.com', '123456', 'zzz', 'Administrador', '2024-09-02', 1);
+INSERT INTO `user_admin` (`USAD_CODE`, `USAD_USERNAME`, `USAD_EMAIL`, `USAD_PASSWORD`, `USAD_EMAIL_RECOVERY`, `USAD_ROLE`, `USAD_DATE_CREATED`, `ICLI_CODE`) VALUES
+(3, 'SAD', 'k@g.com', '$2y$10$s0kskSYW86OrdWqn80TRPuqOVr.rdP1DNVMOHtQGRJ2Dgftsi2Kz.', 'asd', 'estudiante', '2024-09-11', 4);
 
 -- --------------------------------------------------------
 
@@ -381,18 +395,18 @@ CREATE TABLE `vocalia_sheet` (
 --
 
 --
--- Indices de la tabla `administrator`
---
-ALTER TABLE `administrator`
-  ADD PRIMARY KEY (`ADM_CODE`),
-  ADD KEY `fk_usad_codes` (`USAD_CODE`);
-
---
 -- Indices de la tabla `available_dates`
 --
 ALTER TABLE `available_dates`
   ADD PRIMARY KEY (`AVD_CODE`),
   ADD KEY `SPG_CODE` (`SPG_CODE`);
+
+--
+-- Indices de la tabla `busineess_headquarters`
+--
+ALTER TABLE `busineess_headquarters`
+  ADD PRIMARY KEY (`BUSH_CODE`),
+  ADD KEY `BUIF_CODE` (`BUIF_CODE`);
 
 --
 -- Indices de la tabla `business_information`
@@ -425,7 +439,7 @@ ALTER TABLE `groupstage`
 --
 ALTER TABLE `info_client`
   ADD PRIMARY KEY (`ICLI_CODE`),
-  ADD KEY `fk_usad_code` (`USAD_CODE`);
+  ADD KEY `BUSH_CODE` (`BUSH_CODE`);
 
 --
 -- Indices de la tabla `matches`
@@ -441,7 +455,7 @@ ALTER TABLE `matches`
 --
 ALTER TABLE `rules`
   ADD PRIMARY KEY (`RU_CODE`),
-  ADD KEY `ADM_CODE` (`ADM_CODE`);
+  ADD KEY `USAD_CODE` (`USAD_CODE`);
 
 --
 -- Indices de la tabla `sports_groups`
@@ -465,7 +479,7 @@ ALTER TABLE `team_player`
 --
 ALTER TABLE `user_admin`
   ADD PRIMARY KEY (`USAD_CODE`),
-  ADD KEY `fk_buif_code` (`BUIF_CODE`);
+  ADD KEY `ICLI_CODE` (`ICLI_CODE`);
 
 --
 -- Indices de la tabla `vocalia_general`
@@ -488,22 +502,22 @@ ALTER TABLE `vocalia_sheet`
 --
 
 --
--- AUTO_INCREMENT de la tabla `administrator`
---
-ALTER TABLE `administrator`
-  MODIFY `ADM_CODE` int(11) NOT NULL AUTO_INCREMENT COMMENT 'CODIGO';
-
---
 -- AUTO_INCREMENT de la tabla `available_dates`
 --
 ALTER TABLE `available_dates`
   MODIFY `AVD_CODE` int(11) NOT NULL AUTO_INCREMENT COMMENT 'CODIGO';
 
 --
+-- AUTO_INCREMENT de la tabla `busineess_headquarters`
+--
+ALTER TABLE `busineess_headquarters`
+  MODIFY `BUSH_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de la tabla `business_information`
 --
 ALTER TABLE `business_information`
-  MODIFY `BUIF_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `BUIF_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `court`
@@ -527,7 +541,7 @@ ALTER TABLE `groupstage`
 -- AUTO_INCREMENT de la tabla `info_client`
 --
 ALTER TABLE `info_client`
-  MODIFY `ICLI_CODE` int(11) NOT NULL AUTO_INCREMENT COMMENT 'CODIGO';
+  MODIFY `ICLI_CODE` int(11) NOT NULL AUTO_INCREMENT COMMENT 'CODIGO', AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `matches`
@@ -557,7 +571,7 @@ ALTER TABLE `team_player`
 -- AUTO_INCREMENT de la tabla `user_admin`
 --
 ALTER TABLE `user_admin`
-  MODIFY `USAD_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `USAD_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `vocalia_general`
@@ -576,16 +590,16 @@ ALTER TABLE `vocalia_sheet`
 --
 
 --
--- Filtros para la tabla `administrator`
---
-ALTER TABLE `administrator`
-  ADD CONSTRAINT `administrator_ibfk_1` FOREIGN KEY (`USAD_CODE`) REFERENCES `user_admin` (`USAD_CODE`) ON UPDATE CASCADE;
-
---
 -- Filtros para la tabla `available_dates`
 --
 ALTER TABLE `available_dates`
   ADD CONSTRAINT `available_dates_ibfk_1` FOREIGN KEY (`SPG_CODE`) REFERENCES `sports_groups` (`SPG_CODE`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `busineess_headquarters`
+--
+ALTER TABLE `busineess_headquarters`
+  ADD CONSTRAINT `busineess_headquarters_ibfk_1` FOREIGN KEY (`BUIF_CODE`) REFERENCES `business_information` (`BUIF_CODE`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `groupstage`
@@ -598,7 +612,7 @@ ALTER TABLE `groupstage`
 -- Filtros para la tabla `info_client`
 --
 ALTER TABLE `info_client`
-  ADD CONSTRAINT `info_client_ibfk_1` FOREIGN KEY (`USAD_CODE`) REFERENCES `user_admin` (`USAD_CODE`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `info_client_ibfk_1` FOREIGN KEY (`BUSH_CODE`) REFERENCES `busineess_headquarters` (`BUSH_CODE`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `matches`
@@ -612,7 +626,7 @@ ALTER TABLE `matches`
 -- Filtros para la tabla `rules`
 --
 ALTER TABLE `rules`
-  ADD CONSTRAINT `rules_ibfk_1` FOREIGN KEY (`ADM_CODE`) REFERENCES `administrator` (`ADM_CODE`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `rules_ibfk_1` FOREIGN KEY (`USAD_CODE`) REFERENCES `user_admin` (`USAD_CODE`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `sports_groups`
@@ -633,7 +647,7 @@ ALTER TABLE `team_player`
 -- Filtros para la tabla `user_admin`
 --
 ALTER TABLE `user_admin`
-  ADD CONSTRAINT `user_admin_ibfk_1` FOREIGN KEY (`BUIF_CODE`) REFERENCES `business_information` (`BUIF_CODE`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `user_admin_ibfk_1` FOREIGN KEY (`ICLI_CODE`) REFERENCES `info_client` (`ICLI_CODE`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `vocalia_general`

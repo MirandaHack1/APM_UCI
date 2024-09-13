@@ -186,6 +186,7 @@ if ($post['accion'] == "updatePassword") {
 
     echo $respuesta;
 }
+
 //loadbusinessinfo
 if ($post['accion'] == "loadbusinessinfo") {
     // Realizamos el INNER JOIN para obtener BUSH_CODE y BUIF_NAME
@@ -208,89 +209,3 @@ if ($post['accion'] == "loadbusinessinfo") {
     echo $respuesta;
 }
 
-if ($post['accion'] == "consultausuarioDATOS") {
-    $codigo = $post['codigousu']; // Asegúrate de que el parámetro se llama `codigousu`
-    $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = $codigo", ); // Usa sprintf para formatear la consulta
-    $result = mysqli_query($mysqli, $sentencia);
-
-    if (mysqli_num_rows($result) > 0) {
-        $datos = [];
-        while ($row = mysqli_fetch_array($result)) {
-            $datos[] = array(
-                'nombre' => $row['USAD_USERNAME'],
-                'rol' => $row['USAD_ROLE'],
-            );
-        }
-        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
-    } else {
-        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
-    }
-
-    echo $respuesta;
-}
-
-
-//consultar usuarios
-if ($post['accion'] == "consultausuario") {
-    $cedula = isset($post['cedula']) ? $post['cedula'] : '';
-    if ($cedula != '') {
-        $sentencia = sprintf(
-            "SELECT * FROM user_admin ua INNER JOIN info_client ic ON ua.ICLI_CODE= ic.ICLI_CODE WHERE ic.ICLI_CARD = '%s'",
-            mysqli_real_escape_string($mysqli, $cedula)
-        );
-    } else {
-        $sentencia = "SELECT * FROM user_admin";
-    }
-
-    $result = mysqli_query($mysqli, $sentencia);
-
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_array($result)) {
-            $datos[] = array(
-                'codigo' => $row['USAD_CODE'],
-                'nombre' => $row['USAD_USERNAME'],
-                'email' => $row['USAD_EMAIL'],
-                'emailr' => $row['USAD_EMAIL_RECOVERY'],
-                'rol' => $row['USAD_ROLE'],
-            );
-        }
-        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
-    } else {
-        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
-    }
-
-    echo $respuesta;
-}
-
-    // Verifica la acción a realizar
-    if ($post['accion'] == 'editarusuario') {
-        $codigo = $post['codigo'];
-        $nombre = $post['nombre'];
-        $rol = $post['rol'];
-
-        // Prepara la consulta SQL para actualizar el usuario
-        $sentencia = "UPDATE user_admin SET USAD_USERNAME = ?, USAD_ROLE = ? WHERE USAD_CODE = ?";
-
-        // Prepara la sentencia SQL
-        $stmt = mysqli_prepare($mysqli, $sentencia);
-
-        // Verifica si la sentencia se preparó correctamente
-        if ($stmt === false) {
-            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al preparar la consulta: ' . mysqli_error($mysqli)));
-            echo $respuesta;
-            exit();
-        }
-
-        // Asocia los parámetros y ejecuta la sentencia
-        mysqli_stmt_bind_param($stmt, 'ssi', $nombre, $rol, $codigo);
-
-        if (mysqli_stmt_execute($stmt)) {
-            $respuesta = json_encode(array('estado' => true));
-        } else {
-            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar el usuario: ' . mysqli_stmt_error($stmt)));
-        }
-
-        // Cierra la sentencia
-        mysqli_stmt_close($stmt);
-        echo $respuesta;
-    }

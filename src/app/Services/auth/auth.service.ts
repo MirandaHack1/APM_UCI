@@ -31,7 +31,7 @@ export class AuthService {
   async createSession(id: string, valor: string) {
     await Preferences.set({
       key: id,
-      value: valor,
+      value: valor
     });
   }
   
