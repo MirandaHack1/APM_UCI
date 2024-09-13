@@ -61,4 +61,9 @@ export class UserRolPage implements OnInit {
     this.router.navigate(['/edit-user-rol',{codigousu}]);
  
   }
+
+
+  cancelar(){
+    this.router.navigate(['/home']);
+  }
 }

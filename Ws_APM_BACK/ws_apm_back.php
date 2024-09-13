@@ -186,7 +186,6 @@ if ($post['accion'] == "updatePassword") {
 
     echo $respuesta;
 }
-
 //loadbusinessinfo
 if ($post['accion'] == "loadbusinessinfo") {
     // Realizamos el INNER JOIN para obtener BUSH_CODE y BUIF_NAME
@@ -204,6 +203,224 @@ if ($post['accion'] == "loadbusinessinfo") {
         $respuesta = json_encode(array('estado' => true, "datos" => $datos));
     } else {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR"));
+    }
+
+    echo $respuesta;
+}
+
+
+if ($post['accion'] == "consultausuarioDATOS") {
+    $codigo = $post['codigousu']; // Asegúrate de que el parámetro se llama `codigousu`
+    $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = $codigo", ); // Usa sprintf para formatear la consulta
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = [];
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'nombre' => $row['USAD_USERNAME'],
+                'rol' => $row['USAD_ROLE'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+
+    echo $respuesta;
+}
+
+
+//consultar usuarios
+if ($post['accion'] == "consultausuario") {
+    $cedula = isset($post['cedula']) ? $post['cedula'] : '';
+    if ($cedula != '') {
+        $sentencia = sprintf(
+            "SELECT * FROM user_admin ua INNER JOIN info_client ic ON ua.ICLI_CODE= ic.ICLI_CODE WHERE ic.ICLI_CARD = '%s'",
+            mysqli_real_escape_string($mysqli, $cedula)
+        );
+    } else {
+        $sentencia = "SELECT * FROM user_admin";
+    }
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['USAD_CODE'],
+                'nombre' => $row['USAD_USERNAME'],
+                'email' => $row['USAD_EMAIL'],
+                'emailr' => $row['USAD_EMAIL_RECOVERY'],
+                'rol' => $row['USAD_ROLE'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}
+
+
+//cargar informacion personal del usuario
+if ($post['accion'] == "loadCredentials") {
+    $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = '%s'", $post['codigo']);
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'username' => $row['USAD_USERNAME'],
+                'email' => $row['USAD_EMAIL'],
+                'emailr' => $row['USAD_EMAIL_RECOVERY'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'person' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+
+    }
+
+    echo $respuesta;
+}
+
+    // Verifica la acción a realizar
+    if ($post['accion'] == 'editarusuario') {
+        $codigo = $post['codigo'];
+        $nombre = $post['nombre'];
+        $rol = $post['rol'];
+
+        // Prepara la consulta SQL para actualizar el usuario
+        $sentencia = "UPDATE user_admin SET USAD_USERNAME = ?, USAD_ROLE = ? WHERE USAD_CODE = ?";
+
+        // Prepara la sentencia SQL
+        $stmt = mysqli_prepare($mysqli, $sentencia);
+
+        // Verifica si la sentencia se preparó correctamente
+        if ($stmt === false) {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al preparar la consulta: ' . mysqli_error($mysqli)));
+            echo $respuesta;
+            exit();
+        }
+
+        // Asocia los parámetros y ejecuta la sentencia
+        mysqli_stmt_bind_param($stmt, 'ssi', $nombre, $rol, $codigo);
+
+        if (mysqli_stmt_execute($stmt)) {
+            $respuesta = json_encode(array('estado' => true));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar el usuario: ' . mysqli_stmt_error($stmt)));
+        }
+
+        // Cierra la sentencia
+        mysqli_stmt_close($stmt);
+        echo $respuesta;
+    }
+
+//insertcredentials
+if ($post['accion'] == "insertcredentials") {
+    $password_hashed = password_hash($post['password'], PASSWORD_BCRYPT);
+    
+
+    $update_query = sprintf(
+        "UPDATE user_admin SET USAD_USERNAME='%s', USAD_EMAIL='%s',USAD_PASSWORD='%s', USAD_EMAIL_RECOVERY='%s' WHERE USAD_CODE='%s'",
+        $post['username'],
+         $post['email'],
+         $password_hashed,
+         $post['emailr'],
+        $post['cod']
+    );
+
+    if (mysqli_query($mysqli, $update_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar los datos"));
+    }
+
+    echo $respuesta;
+}
+//loadinfo
+if ($post['accion'] == "loadinfo") {
+    $sentencia = sprintf("SELECT * FROM info_client WHERE ICLI_CODE = '%s'", $post['codigo']);
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'firstName' => $row['ICLI_FIRST_NAME'],
+                'lastName' => $row['ICLI_LAST_NAME'],
+                'cardNumber' => $row['ICLI_CARD'],
+                'phoneNumber' => $row['ICLI_PHONE_NUMBER'],
+                'address' => $row['ICLI_ADDRESS'],
+                'city' => $row['ICLI_CITY'],
+                'province' => $row['ICLI_PROVINCE'],
+                'career' => $row['ICLI_CAREER'],
+                'semester' => $row['ICLI_SEMESTER'],
+                'age' => $row['ICLI_AGE'],
+                'gender' => $row['ICLI_GENDER'],
+                'weight' => $row['ICLI_WEIGHT'],
+                'height' => $row['ICLI_HEIGHT'],
+                'institutionalEmail' => $row['ICLI_INSTITUTIONAL_EMAIL'],
+                'dateOfBirth' => $row['ICLI_DATE_OF_BIRTH'],
+                'sede' => $row['BUSH_CODE']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'person' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+//UPDATE DE LA INFORMACION PERSONAL DEL USUARIO
+if ($post['accion'] == "updateinfo") {
+
+    // Preparar la consulta SQL para actualizar la información del cliente
+    $update_client_query = sprintf(
+        "UPDATE info_client SET 
+            ICLI_FIRST_NAME = '%s',
+            ICLI_LAST_NAME = '%s',
+            ICLI_CARD = '%s',
+            ICLI_PHONE_NUMBER = '%s',
+            ICLI_ADDRESS = '%s',
+            ICLI_CITY = '%s',
+            ICLI_PROVINCE = '%s',
+            ICLI_CAREER = '%s',
+            ICLI_SEMESTER = '%s',
+            ICLI_AGE = '%d',
+            ICLI_GENDER = '%s',
+            ICLI_WEIGHT = '%d',
+            ICLI_HEIGHT = '%d',
+            ICLI_INSTITUTIONAL_EMAIL = '%s',
+            ICLI_DATE_OF_BIRTH = '%s',
+            BUSH_CODE = '%s'
+        WHERE ICLI_CODE = '%s'",
+        $post['firstName'],
+        $post['lastName'],
+        $post['cardNumber'],
+        $post['phoneNumber'],
+        $post['address'],
+        $post['city'],
+        $post['province'],
+        $post['career'],
+        $post['semester'],
+        $post['age'],
+        $post['gender'],
+        $post['weight'],
+        $post['height'],
+        $post['institutionalEmail'],
+        $post['dateOfBirth'],
+        $post['sede'],
+        $post['codigo']
+    );
+
+    if (mysqli_query($mysqli, $update_client_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Información actualizada exitosamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la información del cliente: " . mysqli_error($mysqli)));
     }
 
     echo $respuesta;
