@@ -144,10 +144,13 @@ export class UserRegisterPage implements OnInit {
     this.servicio.postData(datos).subscribe((res: any) => {
       if (res.estado == true) {
         this.businessInfo = res.datos;  // Guarda los datos de las sedes
-        this.servicio.showToast(res.mensaje);
+        //this.servicio.showToast(res.mensaje);
       } else {
         this.servicio.showToast(res.mensaje);
       }
     });
+  }
+  back(){
+    this.navCtrl.back();
   }
 }
