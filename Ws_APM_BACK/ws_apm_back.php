@@ -437,3 +437,36 @@ if ($post['accion'] == "updateinfo") {
     echo $respuesta;
 }
 
+
+// Verifica la acción y ejecuta la consulta correspondiente
+if ($post['accion'] == "Conreglas") {
+    $buscar = isset($post['buscar']) ? $post['buscar'] : '';
+    
+    // Si se proporciona un nombre para buscar, se filtran las reglas, de lo contrario, se obtienen todas
+    if ($buscar != '') {
+        $sentencia = sprintf(
+            "SELECT * FROM rules WHERE RU_RULES_FOR_SPORTS LIKE '%%%s%%'",
+            mysqli_real_escape_string($mysqli, $buscar)
+        );
+    } else {
+        $sentencia = "SELECT * FROM rules";
+    }
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigorules' => $row['RU_CODE'],
+                'regla' => $row['RU_RULES_FOR_SPORTS'],
+                'descripcion' => $row['RU_DESCRIPTION_RULES'],
+                'fecha' => $row['RU_DATE'],
+                'usuario_id' => $row['USAD_CODE'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}
