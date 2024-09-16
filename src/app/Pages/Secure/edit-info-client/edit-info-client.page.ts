@@ -49,7 +49,7 @@ export class EditInfoClientPage implements OnInit {
   }
   
   back(){
-    this.navCtrl.back();
+    this.navCtrl.navigateBack('/info-client');
   }
   edit(){
     this.navCtrl.navigateForward('/edit-info-client');
@@ -124,7 +124,8 @@ export class EditInfoClientPage implements OnInit {
     this.servicio.postData(datos).subscribe((res: any) => {
       if (res.estado == true) {
         this.servicio.showToast(res.mensaje);
-        this.navCtrl.navigateRoot('/home');
+        
+        this.navCtrl.navigateBack(['/info-client']); 
       } else {
         this.servicio.showToast(res.mensaje);
       }

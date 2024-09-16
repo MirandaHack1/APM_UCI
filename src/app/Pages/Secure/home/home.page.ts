@@ -65,8 +65,19 @@ export class HomePage implements OnInit {
   userRol() {
     this.navCtrl.navigateForward('user-rol');
   }
-
+  
   rules() {
     this.navCtrl.navigateForward('rules');
   }
+
+  groupStage(){
+    this.navCtrl.navigateForward('group-stage');
+
+  }
+  matches(){
+    this.navCtrl.navigateForward('matches');
+
+  }
+
+
 }
