@@ -56,5 +56,27 @@
         <ion-toggle [(ngModel)]="paletteToggle" (ionChange)="toggleChange($event)">Dark Mode</ion-toggle>
       </ion-item>
     </ion-list>
+    <ion-tabs>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button tab="home">
+          <ion-icon name="home"></ion-icon>
+          <ion-label>Fases de grupo</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button tab="business-information">
+          <ion-icon name="business"></ion-icon>
+          <ion-label>Business</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button tab="user-rol">
+          <ion-icon name="people"></ion-icon>
+          <ion-label>User Role</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
   </ion-content>
+  
+  
+
 </div>
+

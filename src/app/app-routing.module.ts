@@ -77,7 +77,8 @@ const routes: Routes = [
   {
     path: 'edit-business-information',
     loadChildren: () => import('./Pages/Secure/edit-business-information/edit-business-information.module').then( m => m.EditBusinessInformationPageModule)
-  },  {
+  },
+  {
     path: 'edit-user-rol',
     loadChildren: () => import('./Pages/Secure/edit-user-rol/edit-user-rol.module').then( m => m.EditUserRolPageModule)
   },
