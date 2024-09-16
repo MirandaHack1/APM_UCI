@@ -94,7 +94,7 @@ export class EditCredentialsInfoPage implements OnInit {
         if(res.estado==true){
          
           this.servicio.showToast(res.mensaje);
-          this.navCtrl.navigateRoot('/home')
+          this.navCtrl.navigateBack(['/credentials-info']); 
          
         }
         else{

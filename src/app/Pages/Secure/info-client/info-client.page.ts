@@ -50,6 +50,10 @@ export class InfoClientPage implements OnInit {
   ngOnInit() {
 
   }
+  ionViewWillEnter() {
+    this.loadinfo()
+  }
+
   back(){
     this.navCtrl.back();
   }
