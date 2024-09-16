@@ -15,8 +15,8 @@ export class UserRolPage implements OnInit {
   cedula: string = '';
 
   constructor(
-    private authService: AuthService,
-    private router: Router,
+    public authService: AuthService,
+    public navCtrl: NavController
   ) { }
 
   ngOnInit() {
@@ -57,13 +57,15 @@ export class UserRolPage implements OnInit {
     });
   }
 
-  irEditar(codigousu: string) {
-    this.router.navigate(['/edit-user-rol',{codigousu}]);
+  irEditar(codigo: string) {
+    //this.router.navigate(['/edit-user-rol',{codigousu}]);
+    this.authService.createSession('codigo',codigo);
+    this.navCtrl.navigateRoot(['edit-user-rol']);
  
   }
 
 
   cancelar(){
-    this.router.navigate(['/home']);
+    this.navCtrl.back();
   }
 }

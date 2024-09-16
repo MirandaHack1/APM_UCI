@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/Services/auth/auth.service';
-import { Router } from '@angular/router'; // Importa el Router
+import { NavController } from '@ionic/angular';
 @Component({
   selector: 'app-edit-user-rol',
   templateUrl: './edit-user-rol.page.html',
@@ -10,34 +9,35 @@ import { Router } from '@angular/router'; // Importa el Router
 export class EditUserRolPage implements OnInit {
   nombre: string="";
   rol:string="";
-  codigousu: string = "";
+  codigo: string = "";
   usuario: any = {};
- 
+  
   constructor(
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private router: Router
-  ) { }
+    public authService: AuthService,
+    public navCtrl: NavController
+  ) {
+    this.authService.getSession('codigo').then((res:any)=>{
+      this.codigo=res;
+      //this.txt=this.codigousu;
+      if(this.codigo){
+        this.cargarDatosUsuario();
+      }
+    });
+   }
 
  
   ngOnInit() {
-    this.route.params.subscribe((params) => {
-      const codigousu = params['codigousu'];
-      this.codigousu = codigousu; // Guarda el código de usuario en la propiedad de la clase
-      this.cargarDatosUsuario(codigousu);
-      console.log('Código del usuario recibido:', codigousu);
-    });
+  
   }
 
-  cargarDatosUsuario(codigousu: string) {
+  cargarDatosUsuario() {
     let datos = {
       accion: 'consultausuarioDATOS',
-      codigousu: codigousu,
+      codigo: this.codigo
     };
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
         this.usuario = res.datos[0];
-        this.nombre = this.usuario.nombre; 
         this.rol = this.usuario.rol;       
       } else {
         this.authService.showToast(res.mensaje);
@@ -49,9 +49,8 @@ export class EditUserRolPage implements OnInit {
  guardarCambios() {
     let datos = {
       accion: 'editarusuario',
-      codigo: this.codigousu, // Usa el código almacenado en la clase
-      nombre: this.nombre, // Datos del formulario
-      rol: this.rol // Datos del formulario
+      codigo: this.codigo, 
+      rol: this.rol 
     };
 
     console.log(datos); // Verifica que los datos sean correctos
@@ -60,13 +59,13 @@ export class EditUserRolPage implements OnInit {
       console.log(res);
       if (res.estado === true) {
         this.authService.showToast('Usuario actualizado correctamente');
-        this.router.navigate(['/user-rol']);
+        this.navCtrl.back();
       } else {
         this.authService.showToast(res.mensaje);
       }
     });
   }
   cancelar(){
-    this.router.navigate(['/user-rol']);
+    this.navCtrl.back();
   }
 }
