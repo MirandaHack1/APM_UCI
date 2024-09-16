@@ -49,7 +49,7 @@ export class EditInfoClientPage implements OnInit {
   }
   
   back(){
-    this.navCtrl.back();
+    this.navCtrl.navigateBack('/info-client');
   }
   edit(){
     this.navCtrl.navigateForward('/edit-info-client');

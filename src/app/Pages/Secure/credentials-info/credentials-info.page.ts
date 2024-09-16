@@ -63,7 +63,7 @@ export class CredentialsInfoPage implements OnInit {
       
   }
   back(){
-    this.navCtrl.back();
+    this.navCtrl.navigateBack('/home');
   }
 
 }
