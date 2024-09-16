@@ -209,6 +209,8 @@ if ($post['accion'] == "loadbusinessinfo") {
 }
 
 
+/*********************************************************************************************************************************************************************************************************************/
+// Traer los datos a mis campos en la pagina edit-user-rol
 if ($post['accion'] == "consultausuarioDATOS") {
     $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama `codigousu`
     $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = $codigo", ); // Usa sprintf para formatear la consulta
@@ -219,6 +221,8 @@ if ($post['accion'] == "consultausuarioDATOS") {
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 'nombre' => $row['USAD_USERNAME'],
+                'email' => $row['USAD_EMAIL'],
+                'emailrecuperacion' => $row['USAD_EMAIL_RECOVERY'],
                 'rol' => $row['USAD_ROLE'],
             );
         }
@@ -229,23 +233,38 @@ if ($post['accion'] == "consultausuarioDATOS") {
 
     echo $respuesta;
 }
+/*********************************************************************************************************************************************************************************************************************/
 
+/*********************************************************************************************************************************************************************************************************************/
+// busqueda de datos por cedula, email, nombre y apellidos en mi pagina user-rol
 
-//consultar usuarios
 if ($post['accion'] == "consultausuario") {
-    $cedula = isset($post['cedula']) ? $post['cedula'] : '';
+    $cedula = isset($post['cedula']) ? mysqli_real_escape_string($mysqli, $post['cedula']) : '';
+    $condiciones = [];
+
     if ($cedula != '') {
-        $sentencia = sprintf(
-            "SELECT * FROM user_admin ua INNER JOIN info_client ic ON ua.ICLI_CODE= ic.ICLI_CODE WHERE ic.ICLI_CARD = '%s'",
-            mysqli_real_escape_string($mysqli, $cedula)
-        );
-    } else {
-        $sentencia = "SELECT * FROM user_admin";
+        // Filtro por cédula
+        $condiciones[] = "ic.ICLI_CARD = '$cedula'";
+
+        // Filtro por correo
+        $condiciones[] = "ua.USAD_EMAIL = '$cedula'";
+
+        // Filtro por nombre completo (combinando nombre y apellido)
+        $condiciones[] = "CONCAT(ic.ICLI_FIRST_NAME, ' ', ic.ICLI_LAST_NAME) LIKE '%$cedula%'";
+    }
+
+    // Construir la sentencia SQL
+    $sentencia = "SELECT * FROM user_admin ua INNER JOIN info_client ic ON ua.ICLI_CODE = ic.ICLI_CODE";
+    
+    // Añadir las condiciones con OR si hay algo para buscar
+    if (count($condiciones) > 0) {
+        $sentencia .= " WHERE " . implode(" OR ", $condiciones);
     }
 
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
+        $datos = [];
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 'codigo' => $row['USAD_CODE'],
@@ -259,8 +278,11 @@ if ($post['accion'] == "consultausuario") {
     } else {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
     }
+
     echo $respuesta;
 }
+/*********************************************************************************************************************************************************************************************************************/
+
 
 
 //cargar informacion personal del usuario
@@ -286,15 +308,17 @@ if ($post['accion'] == "loadCredentials") {
     echo $respuesta;
 }
 
-  // Verifica la acción a realizar
+/*********************************************************************************************************************************************************************************************************************/
+// Editado de emails y rol de cada usuario en mi pagina edit-user-rol
+
 if ($post['accion'] == 'editarusuario') {
     $rol = $post['rol'];
+    $email=$post['email'];
+    $emailrecuperacion=$post['emailrecuperacion'];
     $codigo = $post['codigo'];
     
-    // Prepara la consulta SQL para actualizar el usuario
-    $update_client_query = "UPDATE user_admin SET USAD_ROLE = '$rol' WHERE USAD_CODE = '$codigo'";
+    $update_client_query = "UPDATE user_admin SET USAD_EMAIl= '$email', USAD_EMAIL_RECOVERY='$emailrecuperacion',USAD_ROLE = '$rol' WHERE USAD_CODE = '$codigo'";
     
-    // Ejecuta la consulta SQL
     if (mysqli_query($mysqli, $update_client_query)) {
         $respuesta = json_encode(array('estado' => true, "mensaje" => "Información actualizada exitosamente"));
     } else {
@@ -303,6 +327,7 @@ if ($post['accion'] == 'editarusuario') {
 
     echo $respuesta;
 }
+/*********************************************************************************************************************************************************************************************************************/
 
 
 //insertcredentials

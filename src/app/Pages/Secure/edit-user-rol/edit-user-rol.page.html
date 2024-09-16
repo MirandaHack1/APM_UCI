@@ -8,6 +8,19 @@
 <ion-content [fullscreen]="true">
 
   <form (ngSubmit)="guardarCambios()">
+
+    <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input type="text" [(ngModel)]="nombre" name="nombre" readonly></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input type="text" [(ngModel)]="email" name="email" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Email de Recuperacion</ion-label>
+      <ion-input type="text" [(ngModel)]="emailrecuperacion" name="emailrecuperacion" required></ion-input>
+    </ion-item>
     <ion-item>
       <ion-label position="floating">Rol</ion-label>
       <ion-select [(ngModel)]="rol" name="rol" required>

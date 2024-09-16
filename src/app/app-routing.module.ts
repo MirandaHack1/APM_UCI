@@ -153,6 +153,14 @@ const routes: Routes = [
     path: 'edit-vocalia-sheet',
     loadChildren: () => import('./Pages/Secure/edit-vocalia-sheet/edit-vocalia-sheet.module').then( m => m.EditVocaliaSheetPageModule)
   },
+  {
+    path: 'rules',
+    loadChildren: () => import('./pages/secure/rules/rules.module').then( m => m.RulesPageModule)
+  },
+  {
+    path: 'edit-rules',
+    loadChildren: () => import('./pages/secure/edit-rules/edit-rules.module').then( m => m.EditRulesPageModule)
+  },
 
 
 

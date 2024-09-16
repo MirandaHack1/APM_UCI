@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/Services/auth/auth.service';
 import { NavController } from '@ionic/angular';
+import { EmailValidator } from '@angular/forms';
 @Component({
   selector: 'app-edit-user-rol',
   templateUrl: './edit-user-rol.page.html',
@@ -11,7 +12,8 @@ export class EditUserRolPage implements OnInit {
   rol:string="";
   codigo: string = "";
   usuario: any = {};
-  
+  email: string = "";
+  emailrecuperacion: string = "";
   constructor(
     public authService: AuthService,
     public navCtrl: NavController
@@ -38,6 +40,9 @@ export class EditUserRolPage implements OnInit {
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
         this.usuario = res.datos[0];
+        this.nombre=this.usuario.nombre;
+        this.email=this.usuario.email;
+        this.emailrecuperacion=this.usuario.emailrecuperacion;
         this.rol = this.usuario.rol;       
       } else {
         this.authService.showToast(res.mensaje);
@@ -50,6 +55,8 @@ export class EditUserRolPage implements OnInit {
     let datos = {
       accion: 'editarusuario',
       codigo: this.codigo, 
+      email: this.email,
+      emailrecuperacion: this.emailrecuperacion,
       rol: this.rol 
     };
 
