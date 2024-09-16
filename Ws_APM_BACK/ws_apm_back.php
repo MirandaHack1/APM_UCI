@@ -210,7 +210,7 @@ if ($post['accion'] == "loadbusinessinfo") {
 
 
 if ($post['accion'] == "consultausuarioDATOS") {
-    $codigo = $post['codigousu']; // Asegúrate de que el parámetro se llama `codigousu`
+    $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama `codigousu`
     $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = $codigo", ); // Usa sprintf para formatear la consulta
     $result = mysqli_query($mysqli, $sentencia);
 
@@ -286,38 +286,24 @@ if ($post['accion'] == "loadCredentials") {
     echo $respuesta;
 }
 
-    // Verifica la acción a realizar
-    if ($post['accion'] == 'editarusuario') {
-        $codigo = $post['codigo'];
-        $nombre = $post['nombre'];
-        $rol = $post['rol'];
-
-        // Prepara la consulta SQL para actualizar el usuario
-        $sentencia = "UPDATE user_admin SET USAD_USERNAME = ?, USAD_ROLE = ? WHERE USAD_CODE = ?";
-
-        // Prepara la sentencia SQL
-        $stmt = mysqli_prepare($mysqli, $sentencia);
-
-        // Verifica si la sentencia se preparó correctamente
-        if ($stmt === false) {
-            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al preparar la consulta: ' . mysqli_error($mysqli)));
-            echo $respuesta;
-            exit();
-        }
-
-        // Asocia los parámetros y ejecuta la sentencia
-        mysqli_stmt_bind_param($stmt, 'ssi', $nombre, $rol, $codigo);
-
-        if (mysqli_stmt_execute($stmt)) {
-            $respuesta = json_encode(array('estado' => true));
-        } else {
-            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar el usuario: ' . mysqli_stmt_error($stmt)));
-        }
-
-        // Cierra la sentencia
-        mysqli_stmt_close($stmt);
-        echo $respuesta;
+  // Verifica la acción a realizar
+if ($post['accion'] == 'editarusuario') {
+    $rol = $post['rol'];
+    $codigo = $post['codigo'];
+    
+    // Prepara la consulta SQL para actualizar el usuario
+    $update_client_query = "UPDATE user_admin SET USAD_ROLE = '$rol' WHERE USAD_CODE = '$codigo'";
+    
+    // Ejecuta la consulta SQL
+    if (mysqli_query($mysqli, $update_client_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Información actualizada exitosamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la información del usuario: " . mysqli_error($mysqli)));
     }
+
+    echo $respuesta;
+}
+
 
 //insertcredentials
 if ($post['accion'] == "insertcredentials") {
