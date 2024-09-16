@@ -11,6 +11,7 @@ require 'vendor/PHPMailer-master/src/Exception.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
 $post = json_decode(file_get_contents("php://input"), true);
 $respuesta = "";
 
@@ -56,17 +57,18 @@ if ($post['accion'] == "loggin") {
 // verificar que el email de recuperacion exista
 if ($post['accion'] == "checkEmail") {
     $token = bin2hex(random_bytes(16));
-    $sentencia = sprintf("SELECT `USAD_CODE`, `USAD_EMAIL_RECOVERY` FROM `user_admin`  where USAD_EMAIL_RECOVERY='%s'", 
-    $post['email']
-   
+    $sentencia = sprintf(
+        "SELECT `USAD_CODE`, `USAD_EMAIL_RECOVERY` FROM `user_admin`  where USAD_EMAIL_RECOVERY='%s'",
+        $post['email']
+
     );
     $result = mysqli_query($mysqli, $sentencia);
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 'USAD_CODE' => $row['USAD_CODE'],
-                'USAD_EMAIL_RECOVERY' => $row['USAD_EMAIL_RECOVERY'],  
-                'token'=> $token
+                'USAD_EMAIL_RECOVERY' => $row['USAD_EMAIL_RECOVERY'],
+                'token' => $token
             );
         }
         $respuesta = json_encode(array('estado' => true, "datos" => $datos, "mensaje" => "EXISTE"));
@@ -114,7 +116,7 @@ if ($post['accion'] == "sendTokenEmail") {
     echo $respuesta;
 }
 
- //REGISTRAR EL USUARIO 
+//REGISTRAR EL USUARIO 
 if ($post['accion'] == "userRegister") {
 
     $insert_client_query = sprintf(
@@ -142,7 +144,7 @@ if ($post['accion'] == "userRegister") {
 
         // Encriptar la contraseña antes de insertarla
         $password_hashed = password_hash($post['password_user'], PASSWORD_BCRYPT);
-        
+
         $insert_user_query = sprintf(
             "INSERT INTO user_admin (USAD_USERNAME, USAD_EMAIL, USAD_PASSWORD, USAD_EMAIL_RECOVERY, USAD_ROLE, USAD_DATE_CREATED, ICLI_CODE) VALUES ('%s', '%s', '%s', '%s', 'estudiante', NOW(), '%s')",
             $post['user_name'],
@@ -211,7 +213,7 @@ if ($post['accion'] == "loadbusinessinfo") {
 
 if ($post['accion'] == "consultausuarioDATOS") {
     $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama `codigousu`
-    $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = $codigo", ); // Usa sprintf para formatear la consulta
+    $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = $codigo",); // Usa sprintf para formatear la consulta
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
@@ -280,20 +282,19 @@ if ($post['accion'] == "loadCredentials") {
         $respuesta = json_encode(array('estado' => true, 'person' => $datos));
     } else {
         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
-
     }
 
     echo $respuesta;
 }
 
-  // Verifica la acción a realizar
+// Verifica la acción a realizar
 if ($post['accion'] == 'editarusuario') {
     $rol = $post['rol'];
     $codigo = $post['codigo'];
-    
+
     // Prepara la consulta SQL para actualizar el usuario
     $update_client_query = "UPDATE user_admin SET USAD_ROLE = '$rol' WHERE USAD_CODE = '$codigo'";
-    
+
     // Ejecuta la consulta SQL
     if (mysqli_query($mysqli, $update_client_query)) {
         $respuesta = json_encode(array('estado' => true, "mensaje" => "Información actualizada exitosamente"));
@@ -308,14 +309,14 @@ if ($post['accion'] == 'editarusuario') {
 //insertcredentials
 if ($post['accion'] == "insertcredentials") {
     $password_hashed = password_hash($post['password'], PASSWORD_BCRYPT);
-    
+
 
     $update_query = sprintf(
         "UPDATE user_admin SET USAD_USERNAME='%s', USAD_EMAIL='%s',USAD_PASSWORD='%s', USAD_EMAIL_RECOVERY='%s' WHERE USAD_CODE='%s'",
         $post['username'],
-         $post['email'],
-         $password_hashed,
-         $post['emailr'],
+        $post['email'],
+        $password_hashed,
+        $post['emailr'],
         $post['cod']
     );
 
@@ -412,3 +413,62 @@ if ($post['accion'] == "updateinfo") {
     echo $respuesta;
 }
 
+
+/************************************************************************************************************ */
+// CODIGO DE FORMULARIO DE INFORMAICON DE EMPRESA
+/************************************************************************************************************ */
+// TRAE TODO LOS CAMPOS DE LA TABLA DE EMPRESA 
+if ($post['accion'] == "consultarEmpresa") {
+    $nombreEmpresa = isset($post['nombreEmpresa']) ? $post['nombreEmpresa'] : '';
+    if ($nombreEmpresa != '') {
+        $sentencia = sprintf(
+            "SELECT * FROM business_information WHERE BUIF_NAME = '%s'",
+            mysqli_real_escape_string($mysqli, $nombreEmpresa)
+        );
+    } else {
+        $sentencia = "SELECT * FROM business_information";
+    }
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['BUIF_CODE'],
+                'nombre' => $row['BUIF_NAME'],
+                'logo' => $row['BUIF_LOGO'],
+                'mision' => $row['BUIF_MISSION'],
+                'vision' => $row['BUIF_VISION'],
+                'imagen' => $row['BUIF_IMAGE'],
+                'estado' => $row['BUIF_STATE'],
+                'contacto' => $row['BUIF_CONTACT'],
+                'usuario_insert' => $row['BUIF_USER_INSERT'],
+                'usuario_update' => $row['BUIF_USER_UPDATE'],
+                'fecha_insert' => $row['BUIF_INSERT_DATE'],
+                'fecha_update' => $row['BUIF_UPDATE_DATE'],
+                'fecha_delete' => $row['BUIF_DELETE_DATE'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}
+
+//FUNCION PARA ELIMINAR EMPRESA 
+if ($post['accion'] == "eliminarEmpresa") {
+    $Empresaid = $post['codigo'];
+    $sentencia = sprintf(
+        "DELETE FROM business_information WHERE BUIF_CODE = '%s'",
+        $Empresaid
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos eliminados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar datos"));
+    }
+    echo $respuesta;
+}
+
+
+/************************************************************************************************************ */
