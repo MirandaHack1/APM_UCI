@@ -470,3 +470,124 @@ if ($post['accion'] == "Conreglas") {
     }
     echo $respuesta;
 }
+
+if ($post['accion'] == "reglasdatos") {
+    $codigo = $post['id_regla']; // Asegúrate de que el parámetro se llama `codigousu`
+    $sentencia = sprintf("SELECT * FROM rules WHERE RU_CODE = $codigo", ); // Usa sprintf para formatear la consulta
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = [];
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'nombrer' => $row['RU_RULES_FOR_SPORTS'],
+                'pdf' => $row['RU_DESCRIPTION_RULES'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+
+    echo $respuesta;
+}
+
+
+// if ($post['accion'] == 'AgregarRegla') {
+//     $nombreRegla = $post['nombre_regla'];
+//     $archivoPath = $post['archivo_path']; // La ruta del archivo o nombre del archivo que se ha guardado localmente
+//     $codigo = $post['codigo'];
+//     $fecha = date('Y-m-d'); // Fecha actual en formato YYYY-MM-DD
+
+//     // Consulta para insertar la nueva regla
+//     $insertarRegla = sprintf(
+//         "INSERT INTO reglas (RU_RULES_FOR_SPORTS, RU_DESCRIPTION_RULES, RU_CODE, RU_DATE) 
+//         VALUES ('%s', '%s', '%s', '%s')",
+//         mysqli_real_escape_string($mysqli, $nombreRegla),
+//         mysqli_real_escape_string($mysqli, $archivoPath),
+//         mysqli_real_escape_string($mysqli, $codigo),
+//         mysqli_real_escape_string($mysqli, $fecha)
+//     );
+
+//     if (mysqli_query($mysqli, $insertarRegla)) {
+//         $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Regla agregada correctamente.'));
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al agregar regla: ' . mysqli_error($mysqli)));
+//     }
+
+//     echo $respuesta;
+// }
+
+
+if ($post['accion'] == 'AgregarRegla') {
+    $nombreRegla = $post['nombre_regla'];
+    $codigo = $post['usuario_codigo'];
+    $fecha = date('Y-m-d'); // Fecha actual
+
+    // Manejar el archivo PDF
+    if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
+        // Ruta donde se guardará el archivo
+        $directorioDestino = 'uploads/reglas/';
+        $archivoNombre = basename($_FILES['archivo']['name']);
+        $rutaArchivo = $directorioDestino . $archivoNombre;
+
+        // Crear el directorio si no existe
+        if (!file_exists($directorioDestino)) {
+            mkdir($directorioDestino, 0777, true);
+        }
+
+        // Mover el archivo subido al directorio
+        if (move_uploaded_file($_FILES['archivo']['tmp_name'], $rutaArchivo)) {
+            // Insertar en la base de datos
+            $insertarRegla = sprintf(
+                "INSERT INTO rules (RU_RULES_FOR_SPORTS, RU_DESCRIPTION_RULES, RU_CODE, RU_DATE, USAD_CODE) 
+                VALUES ('%s', '%s', '%s', '%s', '%s')",
+                mysqli_real_escape_string($mysqli, $nombreRegla),
+                mysqli_real_escape_string($mysqli, $rutaArchivo), // Guardar la ruta del archivo
+                mysqli_real_escape_string($mysqli, $codigo),
+                mysqli_real_escape_string($mysqli, $fecha),
+                mysqli_real_escape_string($mysqli, $post['usuario_codigo']) // Código de usuario
+            );
+
+            if (mysqli_query($mysqli, $insertarRegla)) {
+                $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Regla agregada correctamente.'));
+            } else {
+                $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al agregar regla: ' . mysqli_error($mysqli)));
+            }
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al subir el archivo.'));
+        }
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se recibió un archivo válido.'));
+    }
+
+    echo $respuesta;
+}
+
+
+if ($post['accion'] == 'ActualizarRegla') {
+    $nombreRegla = $post['nombre_regla'];
+    $archivoPath = $post['archivo_path']; // La ruta del archivo o nombre del archivo que se ha guardado localmente
+    $codigo = $post['codigo'];
+    $idRegla = $post['id_regla'];
+    $fecha = date('Y-m-d'); // Fecha actual en formato YYYY-MM-DD
+
+    // Consulta para actualizar la regla existente
+    $actualizarRegla = sprintf(
+        "UPDATE reglas SET RU_RULES_FOR_SPORTS = '%s', RU_DESCRIPTION_RULES = '%s', RU_CODE = '%s', RU_DATE = '%s' 
+        WHERE RU_CODE = '%s'",
+        mysqli_real_escape_string($mysqli, $nombreRegla),
+        mysqli_real_escape_string($mysqli, $archivoPath),
+        mysqli_real_escape_string($mysqli, $codigo),
+        mysqli_real_escape_string($mysqli, $fecha),
+        mysqli_real_escape_string($mysqli, $idRegla)
+    );
+
+    if (mysqli_query($mysqli, $actualizarRegla)) {
+        $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Regla actualizada correctamente.'));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar regla: ' . mysqli_error($mysqli)));
+    }
+
+    echo $respuesta;
+}
