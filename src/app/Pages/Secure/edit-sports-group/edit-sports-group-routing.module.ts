@@ -7,7 +7,11 @@ const routes: Routes = [
   {
     path: '',
     component: EditSportsGroupPage
+  },  {
+    path: 'search-players',
+    loadChildren: () => import('./search-players/search-players.module').then( m => m.SearchPlayersPageModule)
   }
+
 ];
 
 @NgModule({

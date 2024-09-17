@@ -154,6 +154,11 @@ const routes: Routes = [
     path: 'edit-vocalia-sheet',
     loadChildren: () => import('./Pages/Secure/edit-vocalia-sheet/edit-vocalia-sheet.module').then( m => m.EditVocaliaSheetPageModule)
   },
+  {
+    path: 'search-players',
+    loadChildren: () => import('./Pages/Secure/edit-sports-group/search-players/search-players.module').then(m => m.SearchPlayersPageModule)
+  },
+
 
 
 

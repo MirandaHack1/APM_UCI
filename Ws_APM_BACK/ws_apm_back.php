@@ -442,3 +442,24 @@ if ($post['accion'] == "loadSportgroup") {
 
     echo $respuesta;
 }
+
+//cargar las rules, en donde esta el nombre del deporte
+if ($post['accion'] == "loadSport") {
+    $sentencia = "SELECT RU_CODE, RU_RULES_FOR_SPORTS FROM rules";
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'RU_CODE' => $row['RU_CODE'],
+                'RU_RULES_FOR_SPORTS' => $row['RU_RULES_FOR_SPORTS']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'info' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No hay reglas disponibles.'));
+    }
+
+    echo $respuesta;
+}
