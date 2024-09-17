@@ -31,8 +31,14 @@ export class CredentialsInfoPage implements OnInit {
   });
 }
 
+
+
   ngOnInit() {
   }
+  ionViewWillEnter() {
+    this.loadCredentials();
+  }
+  
   loadCredentials(){
     let datos={
       "accion": "loadCredentials",
@@ -53,11 +59,11 @@ export class CredentialsInfoPage implements OnInit {
 
   }
   edit(){
-    this.navCtrl.navigateForward('/edit-credentials-info');
+    this.navCtrl.navigateForward(['/edit-credentials-info']);
       
   }
   back(){
-    this.navCtrl.back();
+    this.navCtrl.navigateBack('/home');
   }
 
 }

@@ -66,8 +66,24 @@ export class HomePage implements OnInit {
   userRol() {
     this.navCtrl.navigateForward('user-rol');
   }
+<<<<<<< HEAD
   //FUNCION PARA IR AL INFORMACION DE EMPRESA
   busineesIformation() {
     this.navCtrl.navigateForward('business-information');
   }
+=======
+  groupStage(){
+    this.navCtrl.navigateForward('group-stage');
+
+  }
+  matches(){
+    this.navCtrl.navigateForward('matches');
+
+  }
+  sportGroup(){
+    this.navCtrl.navigateForward('sports-group');
+  }
+
+
+>>>>>>> 3abd9f479caf9d7dfd617caa113ff24e18ccbcb4
 }
