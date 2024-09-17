@@ -414,8 +414,6 @@ if ($post['accion'] == "updateinfo") {
 //traer la info del grupo de deporte del lider
 
 if ($post['accion'] == "loadSportgroup") {
-
-  
     $sentencia = sprintf(
         "SELECT *
          FROM sports_groups sg

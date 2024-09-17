@@ -38,6 +38,7 @@ export class SportsGroupPage implements OnInit {
     this.navCtrl.navigateBack('/home');
   }
   new(){
+    this.servicio.createSession('SPG_CODE', '');
     this.navCtrl.navigateForward('/edit-sports-group');
 
   }
@@ -59,9 +60,6 @@ export class SportsGroupPage implements OnInit {
   irEditar(codigo: string) {
     this.servicio.createSession('SPG_CODE', codigo);
     this.navCtrl.navigateForward('/edit-sports-group');
-
-   
- 
   }
 
 

@@ -59,11 +59,11 @@ export class CredentialsInfoPage implements OnInit {
 
   }
   edit(){
-    this.navCtrl.navigateForward(['/edit-credentials-info']);
+    this.navCtrl.navigateRoot(['edit-credentials-info']);
       
   }
   back(){
-    this.navCtrl.navigateBack('/home');
+    this.navCtrl.back();
   }
 
 }

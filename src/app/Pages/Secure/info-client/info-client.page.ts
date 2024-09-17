@@ -58,7 +58,7 @@ export class InfoClientPage implements OnInit {
     this.navCtrl.navigateBack('/home');
   }
   edit(){
-    this.navCtrl.navigateForward('/edit-info-client');
+    this.navCtrl.navigateRoot(['/edit-info-client']);
       
   }
 

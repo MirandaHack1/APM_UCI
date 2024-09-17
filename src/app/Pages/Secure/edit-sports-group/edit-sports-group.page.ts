@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-edit-sports-group',
@@ -7,9 +8,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EditSportsGroupPage implements OnInit {
 
-  constructor() { }
+  constructor(
 
-  ngOnInit() {
+    public navCtrl: NavController
+
+  ) { }
+
+  ngOnInit(
+    
+  ) {
+  }
+  back(){
+    this.navCtrl.navigateBack('/sports-group');
   }
 
 }

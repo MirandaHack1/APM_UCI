@@ -49,12 +49,9 @@ export class EditInfoClientPage implements OnInit {
   }
   
   back(){
-    this.navCtrl.navigateBack('/info-client');
+    this.navCtrl.back();
   }
-  edit(){
-    this.navCtrl.navigateForward('/edit-info-client');
-      
-  }
+  
 
   loadinfo() {
     let datos = {
