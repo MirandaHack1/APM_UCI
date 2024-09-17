@@ -1,13 +1,32 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>sports-group</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button text="Menu" (click)="back()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Grupo de deporte</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">sports-group</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button (click)="new()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-list>
+    <ion-item *ngFor="let groups of group">
+      <ion-label>
+        <h2>{{ groups.teamName }}</h2>
+        <p>{{ groups.rule_name}}</p>
+        <p>{{ groups.gender}}</p>
+        
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button (click)="irEditar(groups.sport_code)">
+          <ion-icon name="create" ></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+  
 </ion-content>

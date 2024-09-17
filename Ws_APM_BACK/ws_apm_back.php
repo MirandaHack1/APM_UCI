@@ -411,4 +411,36 @@ if ($post['accion'] == "updateinfo") {
 
     echo $respuesta;
 }
+//traer la info del grupo de deporte del lider
 
+if ($post['accion'] == "loadSportgroup") {
+
+  
+    $sentencia = sprintf(
+        "SELECT *
+         FROM sports_groups sg
+         INNER JOIN rules r ON sg.RU_CODE = r.RU_CODE
+         WHERE sg.ICLI_TEAM_LEADER_ID = '%s'", 
+        $post['codigo']
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'sport_code' => $row['SPG_CODE'],
+                'teamName' => $row['SPG_TEAM_NAME'],
+                'gender' => $row['SPG_GENDER_TEAM'],
+                'rule_code' => $row['RU_CODE'],
+                'rule_name' => $row['RU_RULES_FOR_SPORTS']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
