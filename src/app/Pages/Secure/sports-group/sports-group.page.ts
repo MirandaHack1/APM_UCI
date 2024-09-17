@@ -62,5 +62,11 @@ export class SportsGroupPage implements OnInit {
     this.navCtrl.navigateRoot(['edit-sports-group']);
   }
 
+  addPlayer(codigo: string) {
+    this.servicio.createSession('SPG_CODE', codigo);
+   
+  }
+  
+
 
 }

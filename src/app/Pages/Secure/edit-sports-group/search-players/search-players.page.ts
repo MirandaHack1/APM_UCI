@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { AuthService } from 'src/app/Services/auth/auth.service';
+
 
 @Component({
   selector: 'app-search-players',
@@ -7,9 +10,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SearchPlayersPage implements OnInit {
 
-  constructor() { }
+  constructor(
+    public modalCtrl: ModalController,
+    public servicio: AuthService,
+
+
+  ) { }
 
   ngOnInit() {
+  }
+  cancel(){
+    this.modalCtrl.dismiss();
   }
 
 }

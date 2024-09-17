@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { AuthService } from 'src/app/Services/auth/auth.service';
-
-
+//importo la pagina para que se muestre
+import { SearchPlayersPage } from './search-players/search-players.page';
 
 
 @Component({
@@ -27,6 +27,8 @@ export class EditSportsGroupPage implements OnInit {
 
     public navCtrl: NavController
     ,public servicio: AuthService
+    ,public modalCtrl: ModalController
+
 
   ) { 
     this.servicio.getSession('ICLI_CODE').then((res:any) => {
@@ -68,9 +70,15 @@ export class EditSportsGroupPage implements OnInit {
     return localDate.toISOString().split('T')[0];
   }
 
-  searchPlayer(player: string) {
+ 
+
+  async searchPlayer(player: string)  {
     this.servicio.createSession('player_type', player);
-    this.navCtrl.navigateRoot(['search-players']);
+    const modal = await this.modalCtrl.create({
+      component: SearchPlayersPage
+    });
+    return await modal.present();
   }
+  
 
 }
