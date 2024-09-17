@@ -53,7 +53,9 @@ export class BusinessInformationPage implements OnInit {
 
   //CREAR NUEVA EMPRESA
   nuevo() {
-    this.authService.closeSession('codigo');
+    // this.authService.closeSession('codigo');
+    // this.navCtrl.navigateRoot(['edit-business-information']);
+    this.authService.createSession('codigo','');
     this.navCtrl.navigateRoot(['edit-business-information']);
   }
 

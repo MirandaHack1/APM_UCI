@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AuthService } from 'src/app/Services/auth/auth.service';
+
 @Component({
   selector: 'app-edit-business-information',
   templateUrl: './edit-business-information.page.html',
@@ -10,7 +11,7 @@ export class EditBusinessInformationPage implements OnInit {
   codigo: string = '';
   txt: string = '';
 
-  //DECLARANDO VARIABLES DE EMPRESA
+  // DECLARANDO VARIABLES DE EMPRESA
   nombre: string = '';
   logo: string = '';
   mision: string = '';
@@ -19,7 +20,7 @@ export class EditBusinessInformationPage implements OnInit {
   estado: string = '';
   contacto: string = '';
 
-  //VARIABLES DE AUDITORIAS
+  // VARIABLES DE AUDITORÍAS
   usuarioInsertar: string = '';
   usarioActualizar: string = '';
   usuarioEliminar: string = '';
@@ -27,11 +28,19 @@ export class EditBusinessInformationPage implements OnInit {
   fechaActualizar: string = '';
   fechaEliminar: string = '';
 
-  constructor(public navCtrl: NavController, public servicio: AuthService) {}
+  constructor(public navCtrl: NavController, public servicio: AuthService) {
+    // OBTENER EL CÓDIGO DE LA SESIÓN
+    this.servicio.getSession('codigo').then((res: any) => {
+      this.codigo = res;
+      if (this.codigo) {
+        // this.obtenerRegla();
+      }
+    });
+  }
 
   ngOnInit() {}
 
-  //REGRESAR AL FORMULARIO EMPRESA
+  // REGRESAR AL FORMULARIO EMPRESA
   back() {
     this.navCtrl.back();
   }
