@@ -13,20 +13,12 @@ export class EditBusinessInformationPage implements OnInit {
 
   // DECLARANDO VARIABLES DE EMPRESA
   nombre: string = '';
-  logo: string = '';
+  logo: File | null = null; // Almacenar el archivo del logo
   mision: string = '';
   vision: string = '';
-  image: string = '';
+  image: File | null = null; // Almacenar el archivo de la imagen
   estado: string = '';
   contacto: string = '';
-
-  // VARIABLES DE AUDITORÍAS
-  usuarioInsertar: string = '';
-  usarioActualizar: string = '';
-  usuarioEliminar: string = '';
-  fechaInsertar: string = '';
-  fechaActualizar: string = '';
-  fechaEliminar: string = '';
 
   constructor(public navCtrl: NavController, public servicio: AuthService) {
     // OBTENER EL CÓDIGO DE LA SESIÓN
@@ -45,6 +37,18 @@ export class EditBusinessInformationPage implements OnInit {
     this.navCtrl.back();
   }
 
+  // Manejar el archivo seleccionado
+  onFileSelected(event: any, type: string) {
+    const file: File = event.target.files[0];
+    if (file) {
+      if (type === 'logo') {
+        this.logo = file; // Asignar el archivo al logo
+      } else if (type === 'image') {
+        this.image = file; // Asignar el archivo a la imagen
+      }
+    }
+  }
+
   guardar() {
     if (
       this.nombre &&
@@ -52,23 +56,24 @@ export class EditBusinessInformationPage implements OnInit {
       this.mision &&
       this.vision &&
       this.estado &&
-      this.contacto
+      this.contacto &&
+      this.image
     ) {
       const accion = this.codigo ? 'actualizarEmpresa' : 'insertarEmpresa';
-      let datos = {
-        accion: accion,
-        codigo: this.codigo,
-        nombre: this.nombre,
-        logo: this.logo,
-        mision: this.mision,
-        vision: this.vision,
-        image: this.image,
-        estado: this.estado,
-        contacto: this.contacto,
-      };
-      console.log(datos);
+      const formData = new FormData();
+      formData.append('accion', accion);
+      formData.append('codigo', this.codigo);
+      formData.append('nombre', this.nombre);
+      formData.append('logo', this.logo!); // El archivo del logo
+      formData.append('mision', this.mision);
+      formData.append('vision', this.vision);
+      formData.append('image', this.image!); // El archivo de la imagen
+      formData.append('estado', this.estado);
+      formData.append('contacto', this.contacto);
+
+      console.log(formData);
       // Enviar datos al servicio
-      this.servicio.postData(datos).subscribe((res: any) => {
+      this.servicio.postData(formData).subscribe((res: any) => {
         if (res.estado === true) {
           this.servicio.showToast(res.mensaje);
           this.navCtrl.back();
