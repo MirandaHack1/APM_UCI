@@ -1,9 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-title>Grupos de deporte</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button text="Menu" (click)="back()"></ion-back-button>
+      <ion-button (click)="back()">
+        Menu
+      </ion-button>
     </ion-buttons>
-    <ion-title>Grupo de deporte</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -12,18 +14,28 @@
     <ion-fab-button (click)="new()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
+    
   </ion-fab>
+  
   <ion-list>
     <ion-item *ngFor="let groups of group">
       <ion-label>
         <h2>{{ groups.teamName }}</h2>
-        <p>{{ groups.rule_name}}</p>
-        <p>{{ groups.gender}}</p>
-        
+        <p>{{ groups.rule_name }}</p>
+        <p>{{ groups.gender }}</p>
       </ion-label>
       <ion-buttons slot="end">
-        <ion-button (click)="irEditar(groups.sport_code)">
-          <ion-icon name="create" ></ion-icon>
+        <ion-button (click)="irEditar(groups.sport_code)"> 
+          <ion-icon name="create"></ion-icon>
+          Editar
+        </ion-button>
+        <ion-button (click)="addPlayer(groups.sport_code)"> 
+          <ion-icon name="person-add"></ion-icon>
+          Agregar 
+        </ion-button>
+        <ion-button (click)="agregarFecha(groups.sport_code)"> 
+          <ion-icon name="calendar"></ion-icon>
+          Fechas
         </ion-button>
       </ion-buttons>
     </ion-item>

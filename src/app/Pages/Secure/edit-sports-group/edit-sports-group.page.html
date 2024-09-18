@@ -1,9 +1,95 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Poner si es nuevo o editar</ion-title>
+    <ion-title>Grupo de deporte</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">
+       < Atras
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Fecha de inscripción:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_date" readonly></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Nombre del grupo:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_nameGroup"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Deporte:</ion-label>
+    <ion-select [(ngModel)]="txt_sportName">
+      <ion-select-option *ngFor="let item of sports" [value]="item.RU_CODE">
+        {{ item.RU_RULES_FOR_SPORTS }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-buttons slot="end">
+      <ion-button (click)="searchPlayer('leader')">
+        Seleccionar
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-label position="stacked" class="bold-label">Responsable:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_leader" readonly></ion-input>
+  </ion-item>
+  
+  <ion-item>
+    <ion-buttons slot="end">
+      <ion-button (click)="searchPlayer('grandmother')">
+        Seleccionar
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-label position="stacked" class="bold-label">Madrina:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_grandmother" readonly></ion-input>
+  </ion-item>
+  
+  <ion-item>
+    <ion-buttons slot="end">
+      <ion-button (click)="searchPlayer('pet')">
+        Seleccionar
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-label position="stacked" class="bold-label">Mascota:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_pet" readonly></ion-input>
+  </ion-item>
+
+  
+
+  <ion-item>
+    <ion-label position="stacked">Género:</ion-label>
+    <ion-select [(ngModel)]=" txt_sport_gender">
+      <ion-select-option value="Masculino">Masculino</ion-select-option>
+      <ion-select-option value="Femenino">Femenino</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Firma:</ion-label>
+    <input type="file"  accept="image/*" />
+    <ion-img ></ion-img>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Observaciones:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_observations"></ion-input>
+  </ion-item>
+
+  
+  
+  <ion-item>
+    <ion-button (click)="validate()" expand="block"  shape="round">
+      Guardar
+    </ion-button>
+    <ion-button (click)="back()" expand="block" color="danger" shape="round">
+      Cancelar
+    </ion-button>
+  </ion-item>
   
 </ion-content>

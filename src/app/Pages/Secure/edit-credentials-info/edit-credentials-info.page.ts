@@ -62,8 +62,9 @@ export class EditCredentialsInfoPage implements OnInit {
 
   }
   back(){
-    this.navCtrl.navigateBack('/credentials-info');
+    this.navCtrl.back();
   }
+  
   updateUser(){
     if(this.mensaje!=""){
       this.servicio.showToast("Las claves no coinciden");

@@ -7,19 +7,18 @@
   </ion-header>
   <ion-content class="ion-padding">
     <!-- Mostrar todos los botones si el rol es administrador -->
+    <ion-button *ngIf="rol === 'administrador'" expand="full">Editar</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="userRol()">Editar Roles</ion-button>
+
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="rules()">Reglas</ion-button>
+    <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="busineesIformation()">Informacion Empresa</ion-button>
+
     <ion-button *ngIf="rol === 'administrador'" expand="full">Reportes</ion-button>
-    
+
     <!-- Mostrar el botón "Partidos" si el rol es administrador, jugador o estudiante -->
     <ion-button *ngIf="rol === 'administrador' || rol === 'jugador' || rol === 'estudiante'" expand="full">Partidos</ion-button>
-
-    
-
     <!-- Mostrar el botón "Mis Partidos" solo si el rol es jugador -->
     <ion-button *ngIf="rol === 'jugador'" expand="full">Mis Partidos</ion-button>
-
-
   </ion-content>
 </ion-menu>
 
@@ -31,7 +30,6 @@
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
       <ion-title>Menú</ion-title>
-
       <ion-buttons slot="end">
         <!-- Botón para mostrar el menú flotante -->
         <ion-button color="dark" (click)="toggleMenu()">
@@ -40,18 +38,18 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
-<!-- Menú flotante -->
-<div *ngIf="menuVisible" class="menu-content">
-  <ion-list>
-    <ion-item button (click)="irPerfil()">Perfil</ion-item>
-    <ion-item button (click)="irInfoPersonal()">Informacion Personal</ion-item>
-    <ion-item button (click)="selectOption('Amigos')">Acceso</ion-item>
-  </ion-list>
-</div>
 
+  <!-- Menú flotante -->
+  <div *ngIf="menuVisible" class="menu-content">
+    <ion-list>
+      <ion-item button (click)="irPerfil()">Perfil</ion-item>
+      <ion-item button (click)="irInfoPersonal()">Informacion Personal</ion-item>
+      <ion-item button (click)="selectOption('Amigos')">Acceso</ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Contenido de la página -->
   <ion-content>
-    
-    <!-- Contenido de la página -->
     <ion-item>
       <ion-label>Bienvenido {{rol}}</ion-label>
     </ion-item>
@@ -61,32 +59,32 @@
         <ion-toggle [(ngModel)]="paletteToggle" (ionChange)="toggleChange($event)">Dark Mode</ion-toggle>
       </ion-item>
     </ion-list>
-    <ion-tabs>
-      <ion-tab-bar slot="bottom">
-        <!-- Pestaña Fases de grupo -->
-        <ion-tab-button  (click)="groupStage()">
-          <ion-icon name="grid"></ion-icon>
-          <ion-label>Fases de grupo</ion-label>
-        </ion-tab-button>
-    
-        <!-- Pestaña Partidos -->
-        <ion-tab-button  (click)="matches()">
-          <ion-icon name="football"></ion-icon>
-          <ion-label>Partidos</ion-label>
-        </ion-tab-button>
-        
-        <!-- Pestaña Partidos -->
-        <ion-tab-button *ngIf="rol === 'lider'" expand="full" (click)="sportGroup()">
-          <ion-icon name="people-outline"></ion-icon>
-          <ion-label>Mis equipos</ion-label>
-        </ion-tab-button>
-       
-       
-      </ion-tab-bar>
-    </ion-tabs>
   </ion-content>
-  
-  
 
+  <!-- Footer siempre al final de la página -->
+  <ion-footer>
+    <ion-toolbar>
+      <ion-tabs>
+        <ion-tab-bar slot="bottom">
+          <!-- Pestaña Fases de grupo -->
+          <ion-tab-button (click)="groupStage()">
+            <ion-icon name="grid"></ion-icon>
+            <ion-label>Fases de grupo</ion-label>
+          </ion-tab-button>
+
+          <!-- Pestaña Partidos -->
+          <ion-tab-button (click)="matches()">
+            <ion-icon name="football"></ion-icon>
+            <ion-label>Partidos</ion-label>
+          </ion-tab-button>
+
+          <!-- Pestaña Mis equipos, solo para lider -->
+          <ion-tab-button *ngIf="rol === 'lider'" expand="full" (click)="sportGroup()">
+            <ion-icon name="people-outline"></ion-icon>
+            <ion-label>Mis equipos</ion-label>
+          </ion-tab-button>
+        </ion-tab-bar>
+      </ion-tabs>
+    </ion-toolbar>
+  </ion-footer>
 </div>
-

@@ -65,6 +65,8 @@ export class AuthService {
     const { value } = await Preferences.get({ key: 'usad_code' });
     return value;
   }
+  
+
 
 
   }

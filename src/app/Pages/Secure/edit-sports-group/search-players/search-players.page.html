@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Buscar jugadores</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        Atras
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+ <br>
+  <ion-item>
+    <ion-input [(ngModel)]="txt_search" placeholder="Ingrese el nombre o cédula"></ion-input>
+    <ion-button expand="full" (click)="searchUsers()">Buscar</ion-button>
+  </ion-item>
+  <ion-item>
+  
+   </ion-item>
+  <ion-list>
+    <ion-item *ngFor="let person of persons">
+      <ion-label>
+       
+        <h2>{{ person.nombre }}</h2>
+        <p>{{ person.cedula}}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button (click)="addPerson(person.codigo, person.nombre)"> 
+          <ion-icon name="person-add"></ion-icon>
+          Agregar 
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+
+  <ion-item>
+  <ion-button (click)="cancel()" expand="block" color="danger" shape="round">
+    Cancelar
+  </ion-button>
+</ion-item>
+ 
+</ion-content>
