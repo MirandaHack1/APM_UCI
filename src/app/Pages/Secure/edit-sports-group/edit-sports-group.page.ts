@@ -16,9 +16,12 @@ export class EditSportsGroupPage implements OnInit {
   txt_grandmother: string = "";
   txt_observations: string = "";
   txt_date: string = "";
+  txt_grandmothercode : string = "";
   txt_pet: string = "";
-  sports: any[] = [];
+  txt_firma : string = "";
+  sports: any = [];
   cod: string = "";
+  cod_group: string = "";
   
   leaderCode: string = "";
   grandmotherCode: string = "";
@@ -29,13 +32,26 @@ export class EditSportsGroupPage implements OnInit {
     public servicio: AuthService,
     public modalCtrl: ModalController
   ) { 
+
     this.servicio.getSession('ICLI_CODE').then((res: any) => {
+
       this.cod = res;
       this.loadSport();
     });
+    this.servicio.getSession('SPG_CODE').then((res: any) => {
+      this.cod_group = res;
+      if(this.cod_group){
+        this.loadGroup();
+        
+      }
+    });
+  }
+  ionViewWillEnter() {
+    this.loadGroup();
   }
 
   ngOnInit() {
+   
     this.txt_date = this.getCurrentDateInEcuador();
   }
 
@@ -51,7 +67,7 @@ export class EditSportsGroupPage implements OnInit {
       if (res.estado === true) {
         this.sports = res.info;
       } else {
-        this.servicio.showToast('No hay reglas disponibles.');
+       // this.servicio.showToast('No hay reglas disponibles.');
       }
     });
   }
@@ -79,38 +95,106 @@ export class EditSportsGroupPage implements OnInit {
         } else if (player === 'grandmother') {
           this.txt_grandmother = name;
           this.grandmotherCode = code;
-        } else if (player === 'leader') {
-          this.txt_leader = name;
-          this.leaderCode = code;
-        }
+        } 
       }
     });
 
     return await modal.present();
   }
+  
 
   saveData() {
     let datos = {
-      "leaderCode": this.leaderCode,
-      "grandmotherCode": this.grandmotherCode,
-      "petCode": this.petCode,
-      "txt_nameGroup": this.txt_nameGroup,
-      "txt_sportName": this.txt_sportName,
-      "txt_sport_gender": this.txt_sport_gender,
-      "txt_observations": this.txt_observations,
-      "txt_date": this.txt_date,
+      "accion": "insertGroup",
+
+     
+      "group_name": this.txt_nameGroup,
+      "rule_code": this.txt_sportName,
+      "godmother_code": this.grandmotherCode,
+      "pet_code": this.petCode,
+      "leader_code": this.cod,
+      "signature": this.txt_firma,
+      "observations": this.txt_observations,
+      "creation_date": this.txt_date,
+      "gender_team": this.txt_sport_gender,
+      "state_match": "Equipo no clasificado"
+      
+      
+
     };
 
     this.servicio.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
-        this.servicio.showToast('Datos guardados correctamente.');
+        this.servicio.showToast(res.mensaje);
+        this.back();
       } else {
-        this.servicio.showToast('Error al guardar los datos.');
+        this.servicio.showToast(res.mensaje);
+      }
+    });
+   
+  }
+
+  verify(){
+    if(this.cod_group){
+      this.updateData();
+    }
+    else{
+      this.saveData();
+    }
+
+
+  }
+
+  loadGroup() {
+    let datos = {
+      "accion": "loadGroupData",
+      "SPG_CODE": this.cod_group
+    };
+  
+    this.servicio.postData(datos).subscribe((res: any) => {
+      if (res.estado === true) {
+        const info = res.info;
+        this.txt_nameGroup = info.group_name;
+        this.txt_date = info.creation_date;
+        this.txt_firma = info.signature;
+        this.txt_observations = info.observations;
+        this.txt_sport_gender = info.gender_team;
+        this.txt_sportName = info.rule_code;
+        this.txt_grandmother = info.godmother_name;
+        this.grandmotherCode = info.godmother_code;
+        this.txt_pet = info.pet_name;
+        this.petCode = info.pet_code;
+      } else {
+       // this.servicio.showToast(res.mensaje);
       }
     });
   }
+  updateData(){
+    let datos = {
+      "accion": "updateGroup",
+      "group_name": this.txt_nameGroup,
+      "rule_code": this.txt_sportName,
+      "godmother_code": this.grandmotherCode,
+      "pet_code": this.petCode,
+      "leader_code": this.cod,
+      "signature": this.txt_firma,
+      "observations": this.txt_observations,
+      "creation_date": this.txt_date,
+      "gender_team": this.txt_sport_gender,
+      "SPG_CODE": this.cod_group
+    };
 
-  validate(){
-    
+    this.servicio.postData(datos).subscribe((res: any) => {
+      if (res.estado === true) {
+        this.servicio.showToast(res.mensaje);
+        this.back();
+      } else {
+        this.servicio.showToast(res.mensaje);
+      }
+    });
+
   }
+  
+
+  
 }

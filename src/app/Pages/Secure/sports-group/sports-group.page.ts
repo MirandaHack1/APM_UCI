@@ -37,11 +37,7 @@ export class SportsGroupPage implements OnInit {
   back(){
     this.navCtrl.navigateBack('/home');
   }
-  new(){
-    this.servicio.createSession('SPG_CODE', '');
-    this.navCtrl.navigateRoot(['edit-sports-group']);
-
-  }
+ 
   loadSportgroup(){
     let datos = {
       "accion": "loadSportgroup", // Corregido a "loadinfo" para coincidir con el PHP
@@ -60,6 +56,11 @@ export class SportsGroupPage implements OnInit {
   irEditar(codigo: string) {
     this.servicio.createSession('SPG_CODE', codigo);
     this.navCtrl.navigateRoot(['edit-sports-group']);
+  }
+  newGroup(){
+    this.servicio.createSession('SPG_CODE', '');
+    this.navCtrl.navigateRoot(['edit-sports-group']);
+
   }
 
   addPlayer(codigo: string) {

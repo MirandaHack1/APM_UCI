@@ -699,5 +699,111 @@ if ($post['accion'] == "searchUsers") {
 
     echo $respuesta;
 }
+// loadGroup
+if ($post['accion'] == "loadGroupData") {
+    $spg_code = $post['SPG_CODE']; // Código del grupo deportivo
 
+    // Consulta para obtener los datos del grupo deportivo, incluyendo los datos de madrina, mascota, y el deporte
+    $sentencia = "
+        SELECT 
+            sg.SPG_TEAM_NAME, 
+            sg.SPG_CREATION_DATE,
+            sg.SPG_SIGNATURE,
+            sg.SPG_OBSERVATIONS,
+            sg.SPG_GENDER_TEAM,
+            r.RU_RULES_FOR_SPORTS AS sport_name,
+            r. RU_CODE AS rule_code,
+            godmother.ICLI_FIRST_NAME AS godmother_first_name,
+            godmother.ICLI_LAST_NAME AS godmother_last_name,
+            godmother.ICLI_CODE AS godmother_code,
+            pet.ICLI_FIRST_NAME AS pet_first_name,
+            pet.ICLI_LAST_NAME AS pet_last_name,
+            pet.ICLI_CODE AS pet_code
+        FROM 
+            sports_groups sg
+        INNER JOIN 
+            info_client godmother ON sg.ICLI_GODMOTHER = godmother.ICLI_CODE
+        INNER JOIN 
+            info_client pet ON sg.ICLI_TEAM_PED_ID = pet.ICLI_CODE
+        INNER JOIN 
+            rules r ON sg.RU_CODE = r.RU_CODE
+        WHERE 
+            sg.SPG_CODE = '$spg_code'
+    ";
 
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = mysqli_fetch_array($result);
+        $respuesta = json_encode(array(
+            'estado' => true, 
+            'info' => array(
+                'group_name' => $datos['SPG_TEAM_NAME'],
+                'creation_date' => $datos['SPG_CREATION_DATE'],
+                'rule_code' => $datos['rule_code'],
+                'signature' => $datos['SPG_SIGNATURE'],
+                'observations' => $datos['SPG_OBSERVATIONS'],
+                'gender_team' => $datos['SPG_GENDER_TEAM'],
+                'sport_name' => $datos['sport_name'],
+                'godmother_name' => $datos['godmother_first_name'] . ' ' . $datos['godmother_last_name'],
+                'godmother_code' => $datos['godmother_code'],
+                'pet_name' => $datos['pet_first_name'] . ' ' . $datos['pet_last_name'],
+                'pet_code' => $datos['pet_code']
+            )
+        ));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron datos para el grupo.'));
+    }
+
+    echo $respuesta;
+}
+if ($post['accion'] == "insertGroup") {
+    $insert_query = sprintf(
+        "INSERT INTO sports_groups (SPG_TEAM_NAME, RU_CODE, ICLI_GODMOTHER, ICLI_TEAM_PED_ID, ICLI_TEAM_LEADER_ID, SPG_SIGNATURE, SPG_OBSERVATIONS, SPG_CREATION_DATE, SPG_GENDER_TEAM, SPG_STATE_MATCH) 
+        VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+        $post['group_name'],
+        $post['rule_code'],
+        $post['godmother_code'],
+        $post['pet_code'],
+        $post['leader_code'],
+        $post['signature'],
+        $post['observations'],
+        $post['creation_date'],
+        $post['gender_team'],
+        "Equipo no clasificado"
+    );
+
+    if (mysqli_query($mysqli, $insert_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Grupo deportivo insertado correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar el grupo deportivo"));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "updateGroup") {
+    $update_query = sprintf(
+        "UPDATE sports_groups 
+        SET SPG_TEAM_NAME='%s', RU_CODE='%s', ICLI_GODMOTHER='%s', ICLI_TEAM_PED_ID='%s', ICLI_TEAM_LEADER_ID='%s', SPG_SIGNATURE='%s', SPG_OBSERVATIONS='%s', SPG_CREATION_DATE='%s', SPG_GENDER_TEAM='%s', SPG_STATE_MATCH='Equipo no clasificado'
+        WHERE SPG_CODE='%s'",
+        $post['group_name'],
+        $post['rule_code'],
+        $post['godmother_code'],
+        $post['pet_code'],
+        $post['leader_code'],
+        $post['signature'],
+        $post['observations'],
+        $post['creation_date'],
+        $post['gender_team'],
+        $post['SPG_CODE']
+    );
+
+    if (mysqli_query($mysqli, $update_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Grupo deportivo actualizado correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar el grupo deportivo"));
+    }
+
+    echo $respuesta;
+}
