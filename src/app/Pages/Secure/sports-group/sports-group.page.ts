@@ -66,6 +66,10 @@ export class SportsGroupPage implements OnInit {
     this.servicio.createSession('SPG_CODE', codigo);
    
   }
+  agregarFecha (codigo: string) {
+    this.servicio.createSession('SPG_CODE', codigo);
+    
+  }
   
 
 

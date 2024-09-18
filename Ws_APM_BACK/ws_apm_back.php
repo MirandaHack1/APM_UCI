@@ -463,3 +463,34 @@ if ($post['accion'] == "loadSport") {
 
     echo $respuesta;
 }
+//buscar personas 
+if ($post['accion'] == "searchUsers") {
+    //me trae el nombre, apellido o cedula
+    $searchTerm = $post['result'];
+    $sentencia = sprintf(
+        "SELECT * FROM info_client WHERE ICLI_FIRST_NAME LIKE '%%%s%%' OR ICLI_LAST_NAME LIKE '%%%s%%' OR ICLI_CARD LIKE '%%%s%%'",
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm)
+    );
+   
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['ICLI_CODE'],
+                'nombre' => $row['ICLI_FIRST_NAME'] . ' ' . $row['ICLI_LAST_NAME'],
+                'cedula' => $row['ICLI_CARD']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
+    }
+
+    echo $respuesta;
+}
+
