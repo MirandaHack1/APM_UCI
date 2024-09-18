@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Rules</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelar()">
+        Menu
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item>
+    <ion-input [(ngModel)]="buscar" placeholder="Buscar reglas"></ion-input>
+    <ion-button expand="full" (click)="buscarReglas()">Buscar</ion-button>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let regla of reglas">
+      <ion-label>
+        <h2>{{regla.regla}}</h2>
+        <p>{{regla.fecha}}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button (click)="irEditarRegla(regla.codigorules)">
+          <ion-icon name="create"></ion-icon>
+        </ion-button>
+        <ion-button (click)="eliminarRegla(regla.codigorules)">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="GuardarRegla()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

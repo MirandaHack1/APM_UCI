@@ -16,6 +16,8 @@ use PHPMailer\PHPMailer\Exception;
 $post = json_decode(file_get_contents("php://input"), true);
 $respuesta = "";
 
+
+
 /*********************************************************************************************************************************************************************************************************************/
 /******************************************************************************************FUNCION PARA INICIO DE SESESION-USER ADMIN*************************************************************************************************/
 if ($post['accion'] == "loggin") {
@@ -212,6 +214,8 @@ if ($post['accion'] == "loadbusinessinfo") {
 }
 
 
+/*********************************************************************************************************************************************************************************************************************/
+// Traer los datos a mis campos en la pagina edit-user-rol
 if ($post['accion'] == "consultausuarioDATOS") {
     $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama `codigousu`
     $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = $codigo",); // Usa sprintf para formatear la consulta
@@ -222,6 +226,8 @@ if ($post['accion'] == "consultausuarioDATOS") {
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 'nombre' => $row['USAD_USERNAME'],
+                'email' => $row['USAD_EMAIL'],
+                'emailrecuperacion' => $row['USAD_EMAIL_RECOVERY'],
                 'rol' => $row['USAD_ROLE'],
             );
         }
@@ -232,23 +238,38 @@ if ($post['accion'] == "consultausuarioDATOS") {
 
     echo $respuesta;
 }
+/*********************************************************************************************************************************************************************************************************************/
 
+/*********************************************************************************************************************************************************************************************************************/
+// busqueda de datos por cedula, email, nombre y apellidos en mi pagina user-rol
 
-//consultar usuarios
 if ($post['accion'] == "consultausuario") {
-    $cedula = isset($post['cedula']) ? $post['cedula'] : '';
+    $cedula = isset($post['cedula']) ? mysqli_real_escape_string($mysqli, $post['cedula']) : '';
+    $condiciones = [];
+
     if ($cedula != '') {
-        $sentencia = sprintf(
-            "SELECT * FROM user_admin ua INNER JOIN info_client ic ON ua.ICLI_CODE= ic.ICLI_CODE WHERE ic.ICLI_CARD = '%s'",
-            mysqli_real_escape_string($mysqli, $cedula)
-        );
-    } else {
-        $sentencia = "SELECT * FROM user_admin";
+        // Filtro por cédula
+        $condiciones[] = "ic.ICLI_CARD = '$cedula'";
+
+        // Filtro por correo
+        $condiciones[] = "ua.USAD_EMAIL = '$cedula'";
+
+        // Filtro por nombre completo (combinando nombre y apellido)
+        $condiciones[] = "CONCAT(ic.ICLI_FIRST_NAME, ' ', ic.ICLI_LAST_NAME) LIKE '%$cedula%'";
+    }
+
+    // Construir la sentencia SQL
+    $sentencia = "SELECT * FROM user_admin ua INNER JOIN info_client ic ON ua.ICLI_CODE = ic.ICLI_CODE";
+
+    // Añadir las condiciones con OR si hay algo para buscar
+    if (count($condiciones) > 0) {
+        $sentencia .= " WHERE " . implode(" OR ", $condiciones);
     }
 
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
+        $datos = [];
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 'codigo' => $row['USAD_CODE'],
@@ -262,8 +283,11 @@ if ($post['accion'] == "consultausuario") {
     } else {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
     }
+
     echo $respuesta;
 }
+/*********************************************************************************************************************************************************************************************************************/
+
 
 
 //cargar informacion personal del usuario
@@ -288,10 +312,20 @@ if ($post['accion'] == "loadCredentials") {
     echo $respuesta;
 }
 
+/*********************************************************************************************************************************************************************************************************************/
+// Editado de emails y rol de cada usuario en mi pagina edit-user-rol
+
 // Verifica la acción a realizar
 if ($post['accion'] == 'editarusuario') {
     $rol = $post['rol'];
+    $email = $post['email'];
+    $emailrecuperacion = $post['emailrecuperacion'];
     $codigo = $post['codigo'];
+
+
+    $update_client_query = "UPDATE user_admin SET USAD_EMAIl= '$email', USAD_EMAIL_RECOVERY='$emailrecuperacion',USAD_ROLE = '$rol' WHERE USAD_CODE = '$codigo'";
+
+
 
     // Prepara la consulta SQL para actualizar el usuario
     $update_client_query = "UPDATE user_admin SET USAD_ROLE = '$rol' WHERE USAD_CODE = '$codigo'";
@@ -305,6 +339,7 @@ if ($post['accion'] == 'editarusuario') {
 
     echo $respuesta;
 }
+/*********************************************************************************************************************************************************************************************************************/
 
 
 //insertcredentials
@@ -413,9 +448,6 @@ if ($post['accion'] == "updateinfo") {
 
     echo $respuesta;
 }
-//traer la info del grupo de deporte del lider
-
-
 
 /************************************************************************************************************ */
 // CODIGO DE FORMULARIO DE INFORMAICON DE EMPRESA
@@ -532,9 +564,7 @@ if ($post['accion'] == "insertarEmpresa") {
 
 
 /************************************************************************************************************ */
-
 if ($post['accion'] == "loadSportgroup") {
-
 
     $sentencia = sprintf(
         "SELECT *
@@ -560,6 +590,171 @@ if ($post['accion'] == "loadSportgroup") {
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
     } else {
         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+
+
+// Verifica la acción y ejecuta la consulta correspondiente
+if ($post['accion'] == "Conreglas") {
+    $buscar = isset($post['buscar']) ? $post['buscar'] : '';
+
+    // Si se proporciona un nombre para buscar, se filtran las reglas, de lo contrario, se obtienen todas
+    if ($buscar != '') {
+        $sentencia = sprintf(
+            "SELECT * FROM rules WHERE RU_RULES_FOR_SPORTS LIKE '%%%s%%'",
+            mysqli_real_escape_string($mysqli, $buscar)
+        );
+    } else {
+        $sentencia = "SELECT * FROM rules";
+    }
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigorules' => $row['RU_CODE'],
+                'regla' => $row['RU_RULES_FOR_SPORTS'],
+                'descripcion' => $row['RU_DESCRIPTION_RULES'],
+                'fecha' => $row['RU_DATE'],
+                'usuario_id' => $row['USAD_CODE'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}
+
+if ($post['accion'] == "reglasdatos") {
+    $codigo = $post['id_regla']; // Asegúrate de que el parámetro se llama `codigousu`
+    $sentencia = sprintf("SELECT * FROM rules WHERE RU_CODE = $codigo",); // Usa sprintf para formatear la consulta
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = [];
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'nombrer' => $row['RU_RULES_FOR_SPORTS'],
+                'pdf' => $row['RU_DESCRIPTION_RULES'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}
+
+//cargar las rules, en donde esta el nombre del deporte
+if ($post['accion'] == "loadSport") {
+    $sentencia = "SELECT RU_CODE, RU_RULES_FOR_SPORTS FROM rules";
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'RU_CODE' => $row['RU_CODE'],
+                'RU_RULES_FOR_SPORTS' => $row['RU_RULES_FOR_SPORTS']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'info' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No hay reglas disponibles.'));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "AgregarRegla" || $post['accion'] == "ActualizarRegla") {
+    $nombreRegla = $post['nombre_regla'];
+    $fecha = date('Y-m-d');
+    $usuarioCodigo = $post['usuario_codigo'];
+    $archivoUrl = isset($post['archivo_url']) ? $post['archivo_url'] : '';
+
+    // Preparar la consulta SQL
+    if ($post['accion'] == "AgregarRegla") {
+        $insertarRegla = sprintf(
+            "INSERT INTO rules (RU_RULES_FOR_SPORTS, RU_DESCRIPTION_RULES, RU_DATE, USAD_CODE) 
+            VALUES ('%s', '%s', '%s', '%s')",
+            mysqli_real_escape_string($mysqli, $nombreRegla),
+            mysqli_real_escape_string($mysqli, $archivoUrl),
+            mysqli_real_escape_string($mysqli, $fecha),
+            mysqli_real_escape_string($mysqli, $usuarioCodigo)
+        );
+
+        if (mysqli_query($mysqli, $insertarRegla)) {
+            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Regla agregada correctamente.'));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al agregar regla: ' . mysqli_error($mysqli)));
+        }
+    } elseif ($post['accion'] == "ActualizarRegla") {
+        $idRegla = $post['id_regla'];
+        $actualizarRegla = sprintf(
+            "UPDATE rules SET RU_RULES_FOR_SPORTS = '%s', RU_DESCRIPTION_RULES = '%s', RU_DATE = '%s', USAD_CODE = '%s' 
+            WHERE RU_CODE = '%s'",
+            mysqli_real_escape_string($mysqli, $nombreRegla),
+            mysqli_real_escape_string($mysqli, $archivoUrl),
+            mysqli_real_escape_string($mysqli, $fecha),
+            mysqli_real_escape_string($mysqli, $usuarioCodigo),
+            mysqli_real_escape_string($mysqli, $idRegla)
+        );
+
+        if (mysqli_query($mysqli, $actualizarRegla)) {
+            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Regla actualizada correctamente.'));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar regla: ' . mysqli_error($mysqli)));
+        }
+    }
+    echo $respuesta;
+}
+
+if ($post['accion'] == 'EliminarRegla') {
+    $id_rules = $post['codigorules'];
+
+    $sentencia = sprintf(
+        "DELETE FROM rules WHERE RU_CODE = '%s'",
+        mysqli_real_escape_string($mysqli, $id_rules)
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Regla eliminado correctamente'));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al eliminar Regla: ' . mysqli_error($mysqli)));
+    }
+
+    echo $respuesta;
+}
+
+//buscar personas 
+if ($post['accion'] == "searchUsers") {
+    //me trae el nombre, apellido o cedula
+    $searchTerm = $post['result'];
+    $sentencia = sprintf(
+        "SELECT * FROM info_client WHERE ICLI_FIRST_NAME LIKE '%%%s%%' OR ICLI_LAST_NAME LIKE '%%%s%%' OR ICLI_CARD LIKE '%%%s%%'",
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm)
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['ICLI_CODE'],
+                'nombre' => $row['ICLI_FIRST_NAME'] . ' ' . $row['ICLI_LAST_NAME'],
+                'cedula' => $row['ICLI_CARD']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
     }
 
     echo $respuesta;

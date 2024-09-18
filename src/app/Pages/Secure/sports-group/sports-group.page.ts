@@ -38,7 +38,8 @@ export class SportsGroupPage implements OnInit {
     this.navCtrl.navigateBack('/home');
   }
   new(){
-    this.navCtrl.navigateForward('/edit-sports-group');
+    this.servicio.createSession('SPG_CODE', '');
+    this.navCtrl.navigateRoot(['edit-sports-group']);
 
   }
   loadSportgroup(){
@@ -58,11 +59,18 @@ export class SportsGroupPage implements OnInit {
   }
   irEditar(codigo: string) {
     this.servicio.createSession('SPG_CODE', codigo);
-    this.navCtrl.navigateForward('/edit-sports-group');
-
-   
- 
+    this.navCtrl.navigateRoot(['edit-sports-group']);
   }
+
+  addPlayer(codigo: string) {
+    this.servicio.createSession('SPG_CODE', codigo);
+   
+  }
+  agregarFecha (codigo: string) {
+    this.servicio.createSession('SPG_CODE', codigo);
+    
+  }
+  
 
 
 }

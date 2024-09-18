@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="cancelar()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Editar Regla</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Nombre de la Regla:</ion-label>
+    <ion-input type="text" [(ngModel)]="nombreRegla"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Archivo PDF de Reglas:</ion-label>
+    <ion-text>
+      <a *ngIf="archivoUrl" [href]="archivoUrl" target="_blank">Ver archivo PDF</a>
+      <input type="file" (change)="seleccionarArchivo($event)" accept=".pdf"/>
+    </ion-text>
+  </ion-item>
+  <ion-item>
+    <ion-button (click)="guardarRegla()" expand="block" color="success" shape="round">
+      Guardar
+    </ion-button>
+    <ion-button (click)="cancelar()" expand="block" color="danger" shape="round">
+      Cancelar
+    </ion-button>
+  </ion-item>
+</ion-content>
