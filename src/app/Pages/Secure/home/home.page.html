@@ -14,8 +14,12 @@
     <!-- Mostrar el botón "Partidos" si el rol es administrador, jugador o estudiante -->
     <ion-button *ngIf="rol === 'administrador' || rol === 'jugador' || rol === 'estudiante'" expand="full">Partidos</ion-button>
 
+    
+
     <!-- Mostrar el botón "Mis Partidos" solo si el rol es jugador -->
     <ion-button *ngIf="rol === 'jugador'" expand="full">Mis Partidos</ion-button>
+
+
   </ion-content>
 </ion-menu>
 
@@ -60,17 +64,22 @@
     <ion-tabs>
       <ion-tab-bar slot="bottom">
         <!-- Pestaña Fases de grupo -->
-        <ion-tab-button tab="home" (click)="groupStage()">
+        <ion-tab-button  (click)="groupStage()">
           <ion-icon name="grid"></ion-icon>
           <ion-label>Fases de grupo</ion-label>
         </ion-tab-button>
     
         <!-- Pestaña Partidos -->
-        <ion-tab-button tab="business-information" (click)="matches()">
+        <ion-tab-button  (click)="matches()">
           <ion-icon name="football"></ion-icon>
           <ion-label>Partidos</ion-label>
         </ion-tab-button>
-    
+        
+        <!-- Pestaña Partidos -->
+        <ion-tab-button *ngIf="rol === 'lider'" expand="full" (click)="sportGroup()">
+          <ion-icon name="people-outline"></ion-icon>
+          <ion-label>Mis equipos</ion-label>
+        </ion-tab-button>
        
        
       </ion-tab-bar>

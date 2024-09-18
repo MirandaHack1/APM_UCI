@@ -76,7 +76,7 @@ export class RulesPage implements OnInit {
 
   GuardarRegla() {
    // this.authService.closeSession('codigorules');
-   this.authService.createSession('codigorules', '');
+    this.authService.createSession('codigorules', '');
     this.navCtrl.navigateRoot(['edit-rules']);
   }
 

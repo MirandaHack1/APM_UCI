@@ -78,6 +78,10 @@ export class HomePage implements OnInit {
     this.navCtrl.navigateForward('matches');
 
   }
+  sportGroup(){
+    this.navCtrl.navigateForward('sports-group');
+  }
+
 
 
 }

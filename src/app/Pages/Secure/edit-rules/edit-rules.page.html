@@ -15,14 +15,8 @@
 
   <ion-item>
     <ion-label position="stacked" class="bold-label">Seleccionar PDF de Reglas:</ion-label>
-    <input type="file"   accept=".pdf"/>
+    <input type="file" (change)="seleccionarArchivo($event)" accept=".pdf"/>
   </ion-item>
-
-  <!-- <ion-item>
-    <ion-label position="stacked" class="bold-label">Fecha de Envío:</ion-label>
-    <ion-datetime [(ngModel)]="fechaEnvio" name="fechaEnvio" display-format="MM/DD/YYYY" placeholder="Seleccione una fecha"></ion-datetime>
-  </ion-item> -->
-
 
   <ion-item>
     <ion-button (click)="guardarRegla()" expand="block" color="success" shape="round">
