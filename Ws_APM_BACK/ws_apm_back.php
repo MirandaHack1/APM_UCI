@@ -12,6 +12,7 @@ require 'vendor/PHPMailer-master/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+
 $post = json_decode(file_get_contents("php://input"), true);
 $respuesta = "";
 
@@ -473,19 +474,76 @@ if ($post['accion'] == "eliminarEmpresa") {
 }
 
 
+//FUNCION PARA GUARDAR EMPRESA
+// Verifica que la solicitud contiene datos en $_POST
+if ($post['accion'] == "insertarEmpresa") {
+    $nombre = $post['nombre'];
+    $mision = $post['mision'];
+    $vision = $post['vision'];
+    $estado = $post['estado'];
+    $contacto = $post['contacto'];
+    $usuarioInsertar = $post['usuarioInsertar'];
+    $fechaInsertar = date("Y-m-d H:i:s");
+
+    // Procesar y guardar el logo
+    if (isset($_FILES['logo'])) {
+        $logoFileName = basename($_FILES['logo']['name']);
+        $logoFilePath = 'uploads/logos/' . $logoFileName;
+        move_uploaded_file($_FILES['logo']['tmp_name'], $logoFilePath);
+    }
+
+    // Procesar y guardar la imagen
+    if (isset($_FILES['image'])) {
+        $imageFileName = basename($_FILES['image']['name']);
+        // $imageFilePath = 'uploads/images/' . $imageFileName;
+        $imageFilePath = './uploads/images/' . $imageFileName;
+        move_uploaded_file($_FILES['image']['tmp_name'], $imageFilePath);
+    }
+
+    // Insertar los datos de la empresa
+    $sentencia_insertar = sprintf(
+        "INSERT INTO `business_information` (`BUIF_NAME`, `BUIF_LOGO`, `BUIF_MISSION`, `BUIF_VISION`, `BUIF_IMAGE`, `BUIF_STATE`, `BUIF_CONTACT`, `BUIF_USER_INSERT`, `BUIF_INSERT_DATE`) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+        $nombre,
+        $logoFilePath, // Dirección del logo guardada en la base de datos
+        $mision,
+        $vision,
+        $imageFilePath, // Dirección de la imagen guardada en la base de datos
+        $estado,
+        $contacto,
+        $usuarioInsertar,
+        $fechaInsertar
+    );
+
+    $result_insertar = mysqli_query($mysqli, $sentencia_insertar);
+
+    if ($result_insertar) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Empresa insertada correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar empresa"));
+    }
+
+    echo $respuesta;
+}
+
+
+
+
+
+
+
 /************************************************************************************************************ */
 
 if ($post['accion'] == "loadSportgroup") {
 
-  
+
     $sentencia = sprintf(
         "SELECT *
          FROM sports_groups sg
          INNER JOIN rules r ON sg.RU_CODE = r.RU_CODE
-         WHERE sg.ICLI_TEAM_LEADER_ID = '%s'", 
+         WHERE sg.ICLI_TEAM_LEADER_ID = '%s'",
         $post['codigo']
     );
-    
+
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
@@ -506,4 +564,3 @@ if ($post['accion'] == "loadSportgroup") {
 
     echo $respuesta;
 }
-

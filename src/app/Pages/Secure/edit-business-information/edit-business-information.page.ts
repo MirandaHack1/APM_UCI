@@ -32,11 +32,6 @@ export class EditBusinessInformationPage implements OnInit {
 
   ngOnInit() {}
 
-  // REGRESAR AL FORMULARIO EMPRESA
-  back() {
-    this.navCtrl.back();
-  }
-
   // Manejar el archivo seleccionado
   onFileSelected(event: any, type: string) {
     const file: File = event.target.files[0];
@@ -49,6 +44,43 @@ export class EditBusinessInformationPage implements OnInit {
     }
   }
 
+  //SE DIRIGUE AL WS Y INSIERTA
+  // guardar() {
+  //   if (
+  //     this.nombre &&
+  //     this.logo &&
+  //     this.mision &&
+  //     this.vision &&
+  //     this.estado &&
+  //     this.contacto &&
+  //     this.image
+  //   ) {
+  //     const accion = this.codigo ? 'actualizarEmpresa' : 'insertarEmpresa';
+  //     const formData = new FormData();
+  //     formData.append('accion', accion);
+  //     formData.append('codigo', this.codigo);
+  //     formData.append('nombre', this.nombre);
+  //     formData.append('logo', this.logo!); // El archivo del logo
+  //     formData.append('mision', this.mision);
+  //     formData.append('vision', this.vision);
+  //     formData.append('image', this.image!); // El archivo de la imagen
+  //     formData.append('estado', this.estado);
+  //     formData.append('contacto', this.contacto);
+
+  //     console.log(formData);
+  //     // Enviar datos al servicio
+  //     this.servicio.postData(formData).subscribe((res: any) => {
+  //       if (res.estado === true) {
+  //         this.servicio.showToast(res.mensaje);
+  //         this.navCtrl.back();
+  //       } else {
+  //         this.servicio.showToast(res.mensaje);
+  //       }
+  //     });
+  //   } else {
+  //     this.servicio.showToast('Por favor complete todos los campos.');
+  //   }
+  // }
   guardar() {
     if (
       this.nombre &&
@@ -62,16 +94,15 @@ export class EditBusinessInformationPage implements OnInit {
       const accion = this.codigo ? 'actualizarEmpresa' : 'insertarEmpresa';
       const formData = new FormData();
       formData.append('accion', accion);
-      formData.append('codigo', this.codigo);
       formData.append('nombre', this.nombre);
-      formData.append('logo', this.logo!); // El archivo del logo
+      formData.append('logo', this.logo!); // Archivo de logo
       formData.append('mision', this.mision);
       formData.append('vision', this.vision);
-      formData.append('image', this.image!); // El archivo de la imagen
+      formData.append('image', this.image!); // Archivo de imagen
       formData.append('estado', this.estado);
       formData.append('contacto', this.contacto);
+      formData.append('usuarioInsertar', 'usuario_actual'); // Aquí va el usuario que inserta los datos
 
-      console.log(formData);
       // Enviar datos al servicio
       this.servicio.postData(formData).subscribe((res: any) => {
         if (res.estado === true) {
@@ -84,5 +115,10 @@ export class EditBusinessInformationPage implements OnInit {
     } else {
       this.servicio.showToast('Por favor complete todos los campos.');
     }
+  }
+
+  // REGRESAR AL FORMULARIO EMPRESA
+  back() {
+    this.navCtrl.back();
   }
 }
