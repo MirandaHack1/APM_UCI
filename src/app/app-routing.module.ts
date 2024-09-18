@@ -166,7 +166,15 @@ const routes: Routes = [
   {
     path: 'edit-rules',
     loadChildren: () => import('./Pages/Secure/edit-rules/edit-rules.module').then( m => m.EditRulesPageModule)
+  },  {
+    path: 'groups',
+    loadChildren: () => import('./Pages/Secure/groups/groups.module').then( m => m.GroupsPageModule)
   },
+  {
+    path: 'edit-groups',
+    loadChildren: () => import('./Pages/Secure/edit-groups/edit-groups.module').then( m => m.EditGroupsPageModule)
+  },
+
 ];
 
 @NgModule({

@@ -8,6 +8,8 @@
   <ion-content class="ion-padding">
     <!-- Mostrar todos los botones si el rol es administrador -->
     <ion-button *ngIf="rol === 'administrador'" expand="full">Editar</ion-button>
+    <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="groupstage()">Fase de Grupos</ion-button>
+    <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="groups()">Grupos</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="userRol()">Editar Roles</ion-button>
 
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="rules()">Reglas</ion-button>
