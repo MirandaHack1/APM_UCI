@@ -14,10 +14,12 @@
   </ion-item>
 
   <ion-item>
-    <ion-label position="stacked" class="bold-label">Seleccionar PDF de Reglas:</ion-label>
-    <input type="file" (change)="seleccionarArchivo($event)" accept=".pdf"/>
+    <ion-label position="stacked" class="bold-label">Archivo PDF de Reglas:</ion-label>
+    <ion-text>
+      <a *ngIf="archivoUrl" [href]="archivoUrl" target="_blank">Ver archivo PDF</a>
+      <input type="file" (change)="seleccionarArchivo($event)" accept=".pdf"/>
+    </ion-text>
   </ion-item>
-
   <ion-item>
     <ion-button (click)="guardarRegla()" expand="block" color="success" shape="round">
       Guardar

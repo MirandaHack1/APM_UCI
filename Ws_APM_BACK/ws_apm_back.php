@@ -574,3 +574,22 @@ if ($post['accion'] == "AgregarRegla" || $post['accion'] == "ActualizarRegla") {
     }
     echo $respuesta;
 }
+
+if ($post['accion'] == 'EliminarRegla') {
+    $id_rules = $post['codigorules'];
+
+    $sentencia = sprintf(
+        "DELETE FROM rules WHERE RU_CODE = '%s'", 
+        mysqli_real_escape_string($mysqli, $id_rules)
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Regla eliminado correctamente'));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al eliminar Regla: ' . mysqli_error($mysqli)));
+    }
+
+    echo $respuesta;
+}

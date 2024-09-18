@@ -11,8 +11,9 @@ export class EditRulesPage implements OnInit {
 
   nombreRegla: string = '';
   archivoReglas: File | null = null;
+  archivoUrl: string = '';
   cod: string = '';
-  codigoRegla: string = ''; // Para editar una regla existente
+  codigoRegla: string = '';
 
   constructor(
     public authService: AuthService,
@@ -24,7 +25,7 @@ export class EditRulesPage implements OnInit {
 
     this.authService.getSession('codigorules').then((res:any) => {
       this.codigoRegla = res;
-      if(this.codigoRegla) {
+      if (this.codigoRegla) {
         this.obtenerRegla();
       }
     });
@@ -41,6 +42,7 @@ export class EditRulesPage implements OnInit {
       if (res.estado === true) {
         let regla = res.datos[0]; 
         this.nombreRegla = regla.nombrer;
+        this.archivoUrl = regla.pdf; // Asignar la URL del archivo PDF
       } else {
         this.authService.showToast('No se encontró la regla');
       }
@@ -58,12 +60,12 @@ export class EditRulesPage implements OnInit {
 
   async subirArchivo(): Promise<string> {
     if (!this.archivoReglas) {
-      return ''; // No hay archivo seleccionado
+      return this.archivoUrl; // Usa la URL existente si no hay nuevo archivo
     }
-
+  
     const formData = new FormData();
     formData.append('archivo', this.archivoReglas);
-
+  
     try {
       const response = await fetch('http://localhost/APM_UCI/Ws_APM_BACK/upload.php', {
         method: 'POST',
@@ -71,21 +73,21 @@ export class EditRulesPage implements OnInit {
       });
       const result = await response.json();
       if (result.estado) {
-        return result.archivo_url; // La URL del archivo en el servidor
+        return result.archivo_url; // URL del archivo en el servidor
       } else {
         this.authService.showToast('Error al subir el archivo');
-        return '';
+        return this.archivoUrl; // Retorna la URL existente en caso de error
       }
     } catch (error) {
       console.error('Error al subir el archivo:', error);
       this.authService.showToast('Error al subir el archivo');
-      return '';
+      return this.archivoUrl; // Retorna la URL existente en caso de error
     }
   }
-
+  
   async guardarRegla() {
     const archivoUrl = await this.subirArchivo();
-
+  
     let datos = {
       accion: this.codigoRegla ? 'ActualizarRegla' : 'AgregarRegla',
       id_regla: this.codigoRegla || '',
@@ -93,7 +95,7 @@ export class EditRulesPage implements OnInit {
       usuario_codigo: this.cod,
       archivo_url: archivoUrl // Aquí colocas la URL del archivo
     };
-
+  
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
         this.authService.showToast(this.codigoRegla ? 'Regla actualizada correctamente' : 'Regla guardada correctamente');
@@ -105,6 +107,7 @@ export class EditRulesPage implements OnInit {
       console.error('Error en la solicitud:', error);
     });
   }
+  
 
   cancelar() {
     this.navCtrl.back();
