@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { personCircle, personCircleOutline, sunny, sunnyOutline } from 'ionicons/icons';
+import {
+  personCircle,
+  personCircleOutline,
+  sunny,
+  sunnyOutline,
+} from 'ionicons/icons';
 import { AuthService } from 'src/app/Services/auth/auth.service';
 import { UserRolPage } from '../user-rol/user-rol.page';
 
@@ -11,20 +16,14 @@ import { UserRolPage } from '../user-rol/user-rol.page';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  rol :string="";
+  rol: string = '';
   paletteToggle = false;
   menuVisible: boolean = false;
-  constructor(
-    public servicio:AuthService,
-    public navCtrl:NavController,
-  
-  ) 
-  {
-    this.servicio.getSession('USAD_ROLE').then((res:any)=>{
+  constructor(public servicio: AuthService, public navCtrl: NavController) {
+    this.servicio.getSession('USAD_ROLE').then((res: any) => {
       this.rol = res;
     });
-    addIcons({ personCircle, personCircleOutline, sunny, sunnyOutline }); 
-
+    addIcons({ personCircle, personCircleOutline, sunny, sunnyOutline });
   }
   // Función para alternar el estado de visibilidad del menú
   toggleMenu() {
@@ -36,17 +35,19 @@ export class HomePage implements OnInit {
     console.log('Seleccionaste:', option);
     this.menuVisible = false; // Cierra el menú después de seleccionar
   }
-  irPerfil(){
+  irPerfil() {
     this.navCtrl.navigateForward('credentials-info');
   }
-  irInfoPersonal(){
+  irInfoPersonal() {
     this.navCtrl.navigateForward('info-client');
   }
 
   ngOnInit() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     this.initializeDarkPalette(prefersDark.matches);
-    prefersDark.addEventListener('change', (mediaQuery) => this.initializeDarkPalette(mediaQuery.matches));
+    prefersDark.addEventListener('change', (mediaQuery) =>
+      this.initializeDarkPalette(mediaQuery.matches)
+    );
   }
 
   initializeDarkPalette(isDark: boolean) {
@@ -65,6 +66,12 @@ export class HomePage implements OnInit {
   userRol() {
     this.navCtrl.navigateForward('user-rol');
   }
+
+  //FUNCION PARA IR AL INFORMACION DE EMPRESA
+  busineesIformation() {
+    this.navCtrl.navigateForward('business-information');
+  }
+
   groupStage(){
     this.navCtrl.navigateForward('group-stage');
 
@@ -76,6 +83,7 @@ export class HomePage implements OnInit {
   sportGroup(){
     this.navCtrl.navigateForward('sports-group');
   }
+
 
 
 }

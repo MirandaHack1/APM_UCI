@@ -1,13 +1,62 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>edit-business-information</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="back()" defaultHref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ codigo ? 'Editar Empresa' : 'Nueva Empresa' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">edit-business-information</ion-title>
+      <ion-title size="large">{{ codigo ? 'Editar Empresa' : 'Nueva Empresa' }}</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <!-- Campos para ingresar los datos de la empresa -->
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Nombre Empresa:</ion-label>
+    <ion-input type="text" [(ngModel)]="nombre"></ion-input>
+  </ion-item>
+
+  <!-- Campo para subir el logo -->
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Logo:</ion-label>
+    <input type="file" (change)="onFileSelected($event, 'logo')" />
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Misión:</ion-label>
+    <ion-textarea [(ngModel)]="mision"></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Visión:</ion-label>
+    <ion-textarea [(ngModel)]="vision"></ion-textarea>
+  </ion-item>
+
+  <!-- Campo para subir la imagen -->
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Imagen:</ion-label>
+    <input type="file" (change)="onFileSelected($event, 'image')" />
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Estado:</ion-label>
+    <ion-select [(ngModel)]="estado">
+      <ion-select-option value="Activo">Activo</ion-select-option>
+      <ion-select-option value="Inactivo">Inactivo</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Contacto:</ion-label>
+    <ion-input type="number" [(ngModel)]="contacto"></ion-input>
+  </ion-item>
+
+  <!-- Botón para guardar o actualizar -->
+  <ion-button expand="full" (click)="guardar()">
+    {{ codigo ? 'Actualizar' : 'Guardar' }}
+  </ion-button>
 </ion-content>

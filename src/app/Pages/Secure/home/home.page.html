@@ -9,6 +9,8 @@
     <!-- Mostrar todos los botones si el rol es administrador -->
     <ion-button *ngIf="rol === 'administrador'" expand="full">Editar</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="userRol()">Editar Roles</ion-button>
+    <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="busineesIformation()">Informacion Empresa</ion-button>
+
     <ion-button *ngIf="rol === 'administrador'" expand="full">Reportes</ion-button>
 
     <!-- Mostrar el botón "Partidos" si el rol es administrador, jugador o estudiante -->
