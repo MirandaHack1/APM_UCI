@@ -166,7 +166,16 @@ const routes: Routes = [
   {
     path: 'edit-rules',
     loadChildren: () => import('./Pages/Secure/edit-rules/edit-rules.module').then( m => m.EditRulesPageModule)
+  },  {
+    path: 'sport-group-players',
+    loadChildren: () => import('./Pages/Secure/sport-group-players/sport-group-players.module').then( m => m.SportGroupPlayersPageModule)
   },
+  {
+    path: 'edit-sport-group-players',
+    loadChildren: () => import('./Pages/Secure/edit-sport-group-players/edit-sport-group-players.module').then( m => m.EditSportGroupPlayersPageModule)
+  }
+
+
 ];
 
 @NgModule({
