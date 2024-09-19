@@ -88,4 +88,10 @@ export class HomePage implements OnInit {
     this.navCtrl.navigateForward('sports-group');
   }
 
+  //FUNCION PARA IR A COURT
+  court(){
+    this.navCtrl.navigateForward('court');
+  }
+
+
 }

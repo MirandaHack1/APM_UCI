@@ -759,3 +759,34 @@ if ($post['accion'] == "searchUsers") {
 
     echo $respuesta;
 }
+
+/***************************************************************************************************** */
+//CANCHAS
+/****************************************************************************************************** */
+//BUSCA LAS CANCHAS
+if ($post['accion'] == "consultarCanchas") {
+    $nombreCanchas = isset($post['nombreCanchas']) ? $post['nombreCanchas'] : '';
+    if ($nombreCanchas != '') {
+        $sentencia = sprintf(
+            "SELECT * FROM court WHERE CANC_NAME = '%s'",
+            mysqli_real_escape_string($mysqli, $nombreCanchas)
+        );
+    } else {
+        $sentencia = "SELECT * FROM court";
+    }
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['CANC_CODE'],
+                'nombre' => $row['CANC_NAME'],
+                'ubicacion' => $row['CANC_LOCATE'],
+                'estado' => $row['CANC_STATE']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}
