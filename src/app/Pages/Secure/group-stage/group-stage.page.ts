@@ -124,6 +124,6 @@ export class GroupStagePage implements OnInit {
 
   // Método para agregar un nuevo equipo
   agregarEquipo() {
-    this.navCtrl.navigateRoot(['ce-equipos']);
+    this.navCtrl.navigateRoot(['edit']);
   }
 }
