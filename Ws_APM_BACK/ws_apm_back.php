@@ -926,7 +926,7 @@ if ($post['accion'] == "ConGroupstage") {
     // Construir la consulta SQL
     if ($grupo != '') {
         $sentencia = sprintf(
-            "SELECT g.GRUP_NAME, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
+            "SELECT g.GRUP_NAME,gs.GRS_CODE, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
                     icl_leader.ICLI_FIRST_NAME AS leader_name, 
                     icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
                     r.RU_RULES_FOR_SPORTS AS sport_name, 
@@ -941,7 +941,7 @@ if ($post['accion'] == "ConGroupstage") {
             mysqli_real_escape_string($mysqli, $grupo)
         );
     } else {
-        $sentencia = "SELECT g.GRUP_NAME, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
+        $sentencia = "SELECT g.GRUP_NAME,gs.GRS_CODE, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
                           icl_leader.ICLI_FIRST_NAME AS leader_name, 
                           icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
                           r.RU_RULES_FOR_SPORTS AS sport_name, 
@@ -961,6 +961,7 @@ if ($post['accion'] == "ConGroupstage") {
             $datos = array();
             while ($row = mysqli_fetch_assoc($result)) {
                 $datos[] = array(
+                    'GRS_CODE' => $row['GRS_CODE'],
                     'GRUP_NAME' => $row['GRUP_NAME'],
                     'GRS_TYPE_GANDER' => $row['GRS_TYPE_GANDER'],
                     'SPG_TEAM_NAME' => $row['SPG_TEAM_NAME'],
@@ -978,5 +979,100 @@ if ($post['accion'] == "ConGroupstage") {
     } else {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "Error en la consulta: " . mysqli_error($mysqli)));
     }
+    echo $respuesta;
+}
+
+
+if ($post['accion'] == "searchGroups") {
+    //me trae el nombre, apellido o cedula
+    $searchTerm = $post['result'];
+    $sentencia = sprintf(
+        "SELECT * FROM groups WHERE GRUP_NAME LIKE '%%%s%%'",
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm)
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['GRUP_CODE'],
+                'nombre' => $row['GRUP_NAME']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "searchTeams") {
+    //me trae el nombre, apellido o cedula
+    $searchTerm = $post['result'];
+    $sentencia = sprintf(
+        "SELECT * FROM sports_groups WHERE SPG_TEAM_NAME LIKE '%%%s%%'",
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm)
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['SPG_CODE'],
+                'nombre' => $row['SPG_TEAM_NAME']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
+    }
+
+    echo $respuesta;
+}
+
+
+if ($post['accion'] == "AgregarStGrupo") {
+    $sentencia = sprintf(
+        "INSERT INTO groupstage (GRUP_CODE, SPG_CODE , GRS_TYPE_GANDER) VALUES ('%s', '%s', '%s')",
+        $post['grupCode'],
+        $post['spgCode'],
+        $post['Genero']
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos Guardados Correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al guardar"));
+    }
+    echo $respuesta;
+}
+
+if ($post['accion'] == "ActualizarStGrupo") {
+    // Obtener los datos del POST
+    $stagecod = $post['id_grupoestado'];
+    $grupCode = $post['grupCode'];
+    $spgCode = $post['spgCode'];
+    //$genero = $post['Genero'];
+        // Actualizar los datos del grupo
+        $sentencia = sprintf(
+            "UPDATE groupstage SET GRUP_CODE='%s',SPG_CODE='%s' WHERE GRS_CODE='%s'",
+            mysqli_real_escape_string($mysqli, $grupCode),
+            mysqli_real_escape_string($mysqli, $spgCode),
+            mysqli_real_escape_string($mysqli, $stagecod)
+        );
+
+        $result = mysqli_query($mysqli, $sentencia);
+
+        if ($result) {
+            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Datos actualizados correctamente.'));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar.'));
+        }
+    
     echo $respuesta;
 }

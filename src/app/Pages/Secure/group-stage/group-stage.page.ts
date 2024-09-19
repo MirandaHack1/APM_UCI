@@ -51,6 +51,7 @@ export class GroupStagePage implements OnInit {
         acc.push(grupoExistente);
       }
       grupoExistente.equipos.push({
+        GRS_CODE:grupo.GRS_CODE,
         SPG_TEAM_NAME: grupo.SPG_TEAM_NAME,
         SPG_GENDER_TEAM: grupo.SPG_GENDER_TEAM,
         leader_name: grupo.leader_name,
@@ -112,9 +113,9 @@ export class GroupStagePage implements OnInit {
   }
 
   // Método para redirigir a la página de edición de equipos
-  irEditar(SPG_CODE: string) {
-    this.authService.createSession('SPG_CODE', SPG_CODE);
-    this.navCtrl.navigateRoot(['ce-equipos']);
+  irEditar(GRS_CODE : string) {
+    this.authService.createSession('GRS_CODE', GRS_CODE);
+    this.navCtrl.navigateRoot(['edit-group-stage']);
   }
 
   // Método para cancelar y volver atrás
@@ -124,6 +125,7 @@ export class GroupStagePage implements OnInit {
 
   // Método para agregar un nuevo equipo
   agregarEquipo() {
-    this.navCtrl.navigateRoot(['edit']);
+    this.authService.createSession('GRS_CODE','');
+    this.navCtrl.navigateRoot(['edit-group-stage']);
   }
 }

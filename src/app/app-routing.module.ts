@@ -174,6 +174,10 @@ const routes: Routes = [
     path: 'edit-groups',
     loadChildren: () => import('./Pages/Secure/edit-groups/edit-groups.module').then( m => m.EditGroupsPageModule)
   },
+  {
+    path: 'edit-group-stage',
+    loadChildren: () => import('./Pages/Secure/edit-group-stage/edit-group-stage.module').then( m => m.EditGroupStagePageModule)
+  },
 
 ];
 
