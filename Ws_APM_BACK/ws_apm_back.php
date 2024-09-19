@@ -12,6 +12,7 @@ require 'vendor/PHPMailer-master/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+
 $post = json_decode(file_get_contents("php://input"), true);
 $respuesta = "";
 
@@ -259,7 +260,7 @@ if ($post['accion'] == "consultausuario") {
 
     // Construir la sentencia SQL
     $sentencia = "SELECT * FROM user_admin ua INNER JOIN info_client ic ON ua.ICLI_CODE = ic.ICLI_CODE";
-    
+
     // Añadir las condiciones con OR si hay algo para buscar
     if (count($condiciones) > 0) {
         $sentencia .= " WHERE " . implode(" OR ", $condiciones);
@@ -317,13 +318,13 @@ if ($post['accion'] == "loadCredentials") {
 // Verifica la acción a realizar
 if ($post['accion'] == 'editarusuario') {
     $rol = $post['rol'];
-    $email=$post['email'];
-    $emailrecuperacion=$post['emailrecuperacion'];
+    $email = $post['email'];
+    $emailrecuperacion = $post['emailrecuperacion'];
     $codigo = $post['codigo'];
 
-    
+
     $update_client_query = "UPDATE user_admin SET USAD_EMAIl= '$email', USAD_EMAIL_RECOVERY='$emailrecuperacion',USAD_ROLE = '$rol' WHERE USAD_CODE = '$codigo'";
-    
+
 
 
     // Prepara la consulta SQL para actualizar el usuario
@@ -505,16 +506,74 @@ if ($post['accion'] == "eliminarEmpresa") {
 }
 
 
+//FUNCION PARA GUARDAR EMPRESA
+// Verifica que la solicitud contiene datos en $_POST
+if ($post['accion'] == "insertarEmpresa") {
+    $nombre = $post['nombre'];
+    $mision = $post['mision'];
+    $vision = $post['vision'];
+    $estado = $post['estado'];
+    $contacto = $post['contacto'];
+    $usuarioInsertar = $post['usuarioInsertar'];
+    $fechaInsertar = date("Y-m-d H:i:s");
+
+    // Procesar y guardar el logo
+    if (isset($_FILES['logo'])) {
+        $logoFileName = basename($_FILES['logo']['name']);
+        $logoFilePath = 'uploads/logos/' . $logoFileName;
+        move_uploaded_file($_FILES['logo']['tmp_name'], $logoFilePath);
+    }
+
+    // Procesar y guardar la imagen
+    if (isset($_FILES['image'])) {
+        $imageFileName = basename($_FILES['image']['name']);
+        // $imageFilePath = 'uploads/images/' . $imageFileName;
+        $imageFilePath = './uploads/images/' . $imageFileName;
+        move_uploaded_file($_FILES['image']['tmp_name'], $imageFilePath);
+    }
+
+    // Insertar los datos de la empresa
+    $sentencia_insertar = sprintf(
+        "INSERT INTO `business_information` (`BUIF_NAME`, `BUIF_LOGO`, `BUIF_MISSION`, `BUIF_VISION`, `BUIF_IMAGE`, `BUIF_STATE`, `BUIF_CONTACT`, `BUIF_USER_INSERT`, `BUIF_INSERT_DATE`) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+        $nombre,
+        $logoFilePath, // Dirección del logo guardada en la base de datos
+        $mision,
+        $vision,
+        $imageFilePath, // Dirección de la imagen guardada en la base de datos
+        $estado,
+        $contacto,
+        $usuarioInsertar,
+        $fechaInsertar
+    );
+
+    $result_insertar = mysqli_query($mysqli, $sentencia_insertar);
+
+    if ($result_insertar) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Empresa insertada correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar empresa"));
+    }
+
+    echo $respuesta;
+}
+
+
+
+
+
+
+
 /************************************************************************************************************ */
 if ($post['accion'] == "loadSportgroup") {
+
     $sentencia = sprintf(
         "SELECT *
          FROM sports_groups sg
          INNER JOIN rules r ON sg.RU_CODE = r.RU_CODE
-         WHERE sg.ICLI_TEAM_LEADER_ID = '%s'", 
+         WHERE sg.ICLI_TEAM_LEADER_ID = '%s'",
         $post['codigo']
     );
-    
+
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
@@ -536,10 +595,11 @@ if ($post['accion'] == "loadSportgroup") {
     echo $respuesta;
 }
 
+
 // Verifica la acción y ejecuta la consulta correspondiente
 if ($post['accion'] == "Conreglas") {
     $buscar = isset($post['buscar']) ? $post['buscar'] : '';
-    
+
     // Si se proporciona un nombre para buscar, se filtran las reglas, de lo contrario, se obtienen todas
     if ($buscar != '') {
         $sentencia = sprintf(
@@ -571,7 +631,7 @@ if ($post['accion'] == "Conreglas") {
 
 if ($post['accion'] == "reglasdatos") {
     $codigo = $post['id_regla']; // Asegúrate de que el parámetro se llama `codigousu`
-    $sentencia = sprintf("SELECT * FROM rules WHERE RU_CODE = $codigo", ); // Usa sprintf para formatear la consulta
+    $sentencia = sprintf("SELECT * FROM rules WHERE RU_CODE = $codigo",); // Usa sprintf para formatear la consulta
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
@@ -657,7 +717,7 @@ if ($post['accion'] == 'EliminarRegla') {
     $id_rules = $post['codigorules'];
 
     $sentencia = sprintf(
-        "DELETE FROM rules WHERE RU_CODE = '%s'", 
+        "DELETE FROM rules WHERE RU_CODE = '%s'",
         mysqli_real_escape_string($mysqli, $id_rules)
     );
 
@@ -701,7 +761,6 @@ if ($post['accion'] == "searchUsers") {
 }
 
 
-
 // Verifica la acción y ejecuta la consulta correspondiente
 if ($post['accion'] == "ConGrupos") {
     $buscar = isset($post['buscar']) ? $post['buscar'] : '';
@@ -730,8 +789,37 @@ if ($post['accion'] == "ConGrupos") {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
     }
     echo $respuesta;
+}             
+/***************************************************************************************************** */
+//CANCHAS
+/****************************************************************************************************** */
+//BUSCA LAS CANCHAS
+if ($post['accion'] == "consultarCanchas") {
+    $nombreCanchas = isset($post['nombreCanchas']) ? $post['nombreCanchas'] : '';
+    if ($nombreCanchas != '') {
+        $sentencia = sprintf(
+            "SELECT * FROM court WHERE CANC_NAME = '%s'",
+            mysqli_real_escape_string($mysqli, $nombreCanchas)
+        );
+    } else {
+        $sentencia = "SELECT * FROM court";
+    }
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['CANC_CODE'],
+                'nombre' => $row['CANC_NAME'],
+                'ubicacion' => $row['CANC_LOCATE'],
+                'estado' => $row['CANC_STATE']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
 }
-
 
 if ($post['accion'] == 'EliminarGrupo') {
     $id_groups = $post['GRUP_CODE'];
@@ -797,8 +885,8 @@ if ($post['accion'] == 'AgregarGrupo') {
         }
     }
     echo $respuesta;
-
 } 
+
     if ($post['accion'] == 'ActualizarGrupo') {
     $id_grupo = $post['id_grupo'];
     $nombreGrupo = $post['nombreGrupo'];
@@ -892,4 +980,3 @@ if ($post['accion'] == "ConGroupstage") {
     }
     echo $respuesta;
 }
-

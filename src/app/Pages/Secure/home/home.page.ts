@@ -93,4 +93,9 @@ export class HomePage implements OnInit {
   groupstage(){
     this.navCtrl.navigateForward('group-stage');
   }
+
+  //FUNCION PARA IR A COURT
+  court(){
+    this.navCtrl.navigateForward('court');
+  }
 }

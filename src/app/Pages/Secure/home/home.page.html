@@ -7,9 +7,12 @@
   </ion-header>
   <ion-content class="ion-padding">
     <!-- Mostrar todos los botones si el rol es administrador -->
+
     <ion-button *ngIf="rol === 'administrador'" expand="full">Editar</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="groupstage()">Fase de Grupos</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="groups()">Grupos</ion-button>
+    <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="userRol()">Editar Roles</ion-button>
+    <ion-button *ngIf="rol === 'administrador'" expand="full">Editar</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="userRol()">Editar Roles</ion-button>
 
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="rules()">Reglas</ion-button>
@@ -21,6 +24,7 @@
     <ion-button *ngIf="rol === 'administrador' || rol === 'jugador' || rol === 'estudiante'" expand="full">Partidos</ion-button>
     <!-- Mostrar el botón "Mis Partidos" solo si el rol es jugador -->
     <ion-button *ngIf="rol === 'jugador'" expand="full">Mis Partidos</ion-button>
+    <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="court()">Canchas</ion-button>
   </ion-content>
 </ion-menu>
 
@@ -35,7 +39,11 @@
       <ion-buttons slot="end">
         <!-- Botón para mostrar el menú flotante -->
         <ion-button color="dark" (click)="toggleMenu()">
-          <ion-icon slot="icon-only" ios="person-circle-outline" md="person-circle"></ion-icon>
+          <ion-icon
+            slot="icon-only"
+            ios="person-circle-outline"
+            md="person-circle"
+          ></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
@@ -45,7 +53,9 @@
   <div *ngIf="menuVisible" class="menu-content">
     <ion-list>
       <ion-item button (click)="irPerfil()">Perfil</ion-item>
-      <ion-item button (click)="irInfoPersonal()">Informacion Personal</ion-item>
+      <ion-item button (click)="irInfoPersonal()"
+        >Informacion Personal</ion-item
+      >
       <ion-item button (click)="selectOption('Amigos')">Acceso</ion-item>
     </ion-list>
   </div>
@@ -58,7 +68,11 @@
     <ion-list-header>Appearance</ion-list-header>
     <ion-list [inset]="true">
       <ion-item>
-        <ion-toggle [(ngModel)]="paletteToggle" (ionChange)="toggleChange($event)">Dark Mode</ion-toggle>
+        <ion-toggle
+          [(ngModel)]="paletteToggle"
+          (ionChange)="toggleChange($event)"
+          >Dark Mode</ion-toggle
+        >
       </ion-item>
     </ion-list>
   </ion-content>
@@ -81,7 +95,11 @@
           </ion-tab-button>
 
           <!-- Pestaña Mis equipos, solo para lider -->
-          <ion-tab-button *ngIf="rol === 'lider'" expand="full" (click)="sportGroup()">
+          <ion-tab-button
+            *ngIf="rol === 'lider'"
+            expand="full"
+            (click)="sportGroup()"
+          >
             <ion-icon name="people-outline"></ion-icon>
             <ion-label>Mis equipos</ion-label>
           </ion-tab-button>
