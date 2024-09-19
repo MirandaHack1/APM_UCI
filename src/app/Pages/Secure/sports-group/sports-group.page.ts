@@ -70,6 +70,7 @@ export class SportsGroupPage implements OnInit {
   }
   agregarFecha (codigo: string) {
     this.servicio.createSession('SPG_CODE', codigo);
+    this.navCtrl.navigateRoot(['avaliable-dates']);
     
   }
   

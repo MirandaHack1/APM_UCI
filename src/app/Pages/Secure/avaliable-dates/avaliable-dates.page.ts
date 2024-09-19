@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
+import { AuthService } from 'src/app/Services/auth/auth.service';
+
 
 @Component({
   selector: 'app-avaliable-dates',
@@ -7,9 +10,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AvaliableDatesPage implements OnInit {
 
-  constructor() { }
+  constructor(
+    public navCtrl: NavController,
+    public servicio: AuthService
+
+  ) { }
 
   ngOnInit() {
+  }
+  back() {
+    this.navCtrl.back();
   }
 
 }

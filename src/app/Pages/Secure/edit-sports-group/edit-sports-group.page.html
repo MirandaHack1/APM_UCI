@@ -20,6 +20,11 @@
   </ion-item>
 
   <ion-item>
+    <ion-label position="stacked" class="bold-label">Logo:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_logo" ></ion-input>
+  </ion-item>
+
+  <ion-item>
     <ion-label position="stacked" class="bold-label">Deporte:</ion-label>
     <ion-select [(ngModel)]="txt_sportName">
       <ion-select-option *ngFor="let item of sports" [value]="item.RU_CODE">

@@ -711,6 +711,7 @@ if ($post['accion'] == "loadGroupData") {
             sg.SPG_SIGNATURE,
             sg.SPG_OBSERVATIONS,
             sg.SPG_GENDER_TEAM,
+            sg.SPG_LOGO,
             r.RU_RULES_FOR_SPORTS AS sport_name,
             r. RU_CODE AS rule_code,
             godmother.ICLI_FIRST_NAME AS godmother_first_name,
@@ -742,6 +743,7 @@ if ($post['accion'] == "loadGroupData") {
                 'creation_date' => $datos['SPG_CREATION_DATE'],
                 'rule_code' => $datos['rule_code'],
                 'signature' => $datos['SPG_SIGNATURE'],
+                'logo' => $datos['SPG_LOGO'],
                 'observations' => $datos['SPG_OBSERVATIONS'],
                 'gender_team' => $datos['SPG_GENDER_TEAM'],
                 'sport_name' => $datos['sport_name'],
@@ -759,10 +761,11 @@ if ($post['accion'] == "loadGroupData") {
 }
 if ($post['accion'] == "insertGroup") {
     $insert_query = sprintf(
-        "INSERT INTO sports_groups (SPG_TEAM_NAME, RU_CODE, ICLI_GODMOTHER, ICLI_TEAM_PED_ID, ICLI_TEAM_LEADER_ID, SPG_SIGNATURE, SPG_OBSERVATIONS, SPG_CREATION_DATE, SPG_GENDER_TEAM, SPG_STATE_MATCH) 
-        VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+        "INSERT INTO sports_groups (SPG_TEAM_NAME, RU_CODE, SPG_LOGO, ICLI_GODMOTHER, ICLI_TEAM_PED_ID, ICLI_TEAM_LEADER_ID, SPG_SIGNATURE, SPG_OBSERVATIONS, SPG_CREATION_DATE, SPG_GENDER_TEAM, SPG_STATE_MATCH) 
+        VALUES ('%s', '%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
         $post['group_name'],
         $post['rule_code'],
+        $post['logo'],
         $post['godmother_code'],
         $post['pet_code'],
         $post['leader_code'],
@@ -785,10 +788,11 @@ if ($post['accion'] == "insertGroup") {
 if ($post['accion'] == "updateGroup") {
     $update_query = sprintf(
         "UPDATE sports_groups 
-        SET SPG_TEAM_NAME='%s', RU_CODE='%s', ICLI_GODMOTHER='%s', ICLI_TEAM_PED_ID='%s', ICLI_TEAM_LEADER_ID='%s', SPG_SIGNATURE='%s', SPG_OBSERVATIONS='%s', SPG_CREATION_DATE='%s', SPG_GENDER_TEAM='%s', SPG_STATE_MATCH='Equipo no clasificado'
+        SET SPG_TEAM_NAME='%s', RU_CODE='%s', SPG_LOGO='%s', ICLI_GODMOTHER='%s', ICLI_TEAM_PED_ID='%s', ICLI_TEAM_LEADER_ID='%s', SPG_SIGNATURE='%s', SPG_OBSERVATIONS='%s', SPG_CREATION_DATE='%s', SPG_GENDER_TEAM='%s', SPG_STATE_MATCH='Equipo no clasificado'
         WHERE SPG_CODE='%s'",
         $post['group_name'],
         $post['rule_code'],
+        $post['logo'],
         $post['godmother_code'],
         $post['pet_code'],
         $post['leader_code'],

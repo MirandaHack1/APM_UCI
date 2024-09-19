@@ -19,6 +19,7 @@ export class EditSportsGroupPage implements OnInit {
   txt_grandmothercode : string = "";
   txt_pet: string = "";
   txt_firma : string = "";
+  txt_logo : string = "";
   sports: any = [];
   cod: string = "";
   cod_group: string = "";
@@ -113,11 +114,15 @@ export class EditSportsGroupPage implements OnInit {
       "godmother_code": this.grandmotherCode,
       "pet_code": this.petCode,
       "leader_code": this.cod,
+
       "signature": this.txt_firma,
+      "logo": this.txt_logo,
       "observations": this.txt_observations,
       "creation_date": this.txt_date,
       "gender_team": this.txt_sport_gender,
+
       "state_match": "Equipo no clasificado"
+
       
       
 
@@ -157,6 +162,7 @@ export class EditSportsGroupPage implements OnInit {
         this.txt_nameGroup = info.group_name;
         this.txt_date = info.creation_date;
         this.txt_firma = info.signature;
+        this.txt_logo = info.logo;
         this.txt_observations = info.observations;
         this.txt_sport_gender = info.gender_team;
         this.txt_sportName = info.rule_code;
@@ -178,6 +184,7 @@ export class EditSportsGroupPage implements OnInit {
       "pet_code": this.petCode,
       "leader_code": this.cod,
       "signature": this.txt_firma,
+      "logo": this.txt_logo,
       "observations": this.txt_observations,
       "creation_date": this.txt_date,
       "gender_team": this.txt_sport_gender,
