@@ -790,3 +790,53 @@ if ($post['accion'] == "consultarCanchas") {
     }
     echo $respuesta;
 }
+
+
+/***************************************************************************************************** */
+//SEDEES EMPRESA
+/****************************************************************************************************** */
+//BUSCA LAS SEDES
+// BUSCA LAS SEDES Y RELACIONA CON business_information
+
+if ($post['accion'] == "consultarSede") {
+    $direcccionSede = isset($post['direcccionSede']) ? $post['direcccionSede'] : '';
+    if ($direcccionSede != '') {
+        $sentencia = sprintf(
+            "SELECT bh.*, bi.BUIF_NAME 
+            FROM busineess_headquarters bh 
+            JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE 
+            WHERE bh.BUSH_ADDRES = '%s'",
+            mysqli_real_escape_string($mysqli, $direcccionSede)
+        );
+    } else {
+        $sentencia = "SELECT bh.*, bi.BUIF_NAME 
+                      FROM busineess_headquarters bh 
+                      JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE";
+    }
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['BUSH_CODE'],
+                'direccion' => $row['BUSH_ADDRES'],
+                'ciudad' => $row['BUSH_CITY'],
+                'pais' => $row['BUSH_COUNTRY'],
+                'telefono' => $row['BUSH_PHONE'],
+                'estado' => $row['BUSH_STATE_HEADQUARTERS'],
+                'usuario_insert' => $row['BUSH_USER_INSERT'],
+                'usuario_update' => $row['BUSH_USER_UPDATE'],
+                'usuario_delete' => $row['BUSH_USER_DELETE'],
+                'fecha_insert' => $row['BUSH_INSERT_DATE'],
+                'fecha_update' => $row['BUSH_UPDATE_DATE'],
+                'fecha_delete' => $row['BUSH_DELETE_DATE'],
+                'nombre' => $row['BUIF_NAME'] // Trae el nombre de la empresa
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}

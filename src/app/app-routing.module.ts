@@ -166,7 +166,16 @@ const routes: Routes = [
   {
     path: 'edit-rules',
     loadChildren: () => import('./Pages/Secure/edit-rules/edit-rules.module').then( m => m.EditRulesPageModule)
+  },  {
+    path: 'busineess-headquarters',
+    loadChildren: () => import('./Pages/Secure/busineess-headquarters/busineess-headquarters.module').then( m => m.BusineessHeadquartersPageModule)
   },
+  {
+    path: 'edit-headquarters',
+    loadChildren: () => import('./Pages/Secure/edit-headquarters/edit-headquarters.module').then( m => m.EditHeadquartersPageModule)
+  },
+
+
 ];
 
 @NgModule({

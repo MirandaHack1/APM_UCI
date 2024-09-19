@@ -66,7 +66,7 @@ export class HomePage implements OnInit {
   userRol() {
     this.navCtrl.navigateForward('user-rol');
   }
-  
+
   rules() {
     this.navCtrl.navigateForward('rules');
   }
@@ -76,22 +76,23 @@ export class HomePage implements OnInit {
     this.navCtrl.navigateForward('business-information');
   }
 
-  groupStage(){
+  groupStage() {
     this.navCtrl.navigateForward('group-stage');
-
   }
-  matches(){
+  matches() {
     this.navCtrl.navigateForward('matches');
-
   }
-  sportGroup(){
+  sportGroup() {
     this.navCtrl.navigateForward('sports-group');
   }
 
   //FUNCION PARA IR A COURT
-  court(){
+  court() {
     this.navCtrl.navigateForward('court');
   }
 
-
+  //FUNCION PARA IR A COURT
+  headquarters() {
+    this.navCtrl.navigateForward('busineess-headquarters');
+  }
 }
