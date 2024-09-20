@@ -840,3 +840,169 @@ if ($post['accion'] == "consultarSede") {
     }
     echo $respuesta;
 }
+
+// ESTE TRAE EMPRESA
+//loadbusinessinfo
+if ($post['accion'] == "loadbusinessinfo2") {
+    // Realizamos el INNER JOIN para obtener BUSH_CODE y BUIF_NAME
+    $sentencia = sprintf("SELECT bh.BUIF_CODE , bi.BUIF_NAME FROM busineess_headquarters bh INNER JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE");
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'BUIF_CODE' => $row['BUIF_CODE'],
+                'BUIF_NAME' => $row['BUIF_NAME']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR"));
+    }
+
+    echo $respuesta;
+}
+
+
+if ($post['accion'] == "insertar_sede") {
+    // Insertar los datos directamente en la tabla 'busineess_headquarters'
+    $sentencia = sprintf(
+        "INSERT INTO `busineess_headquarters`(
+            `BUSH_ADDRES`, 
+            `BUSH_CITY`, 
+            `BUSH_COUNTRY`, 
+            `BUSH_PHONE`, 
+            `BUSH_STATE_HEADQUARTERS`, 
+            `BUIF_CODE`
+        ) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
+        $post['direccion'],
+        $post['ciudad'],
+        $post['pais'],
+        $post['telefono'],
+        $post['estado'],
+        $post['empresa']
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos insertados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar datos"));
+    }
+    echo $respuesta;
+}
+
+
+//FUNCION PARA ELIMINAR EMPRESA 
+if ($post['accion'] == "eliminarSede") {
+    $Sedeid = $post['codigo'];
+    $sentencia = sprintf(
+        "DELETE FROM busineess_headquarters WHERE BUSH_CODE = '%s'",
+        $Sedeid
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos eliminados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar datos"));
+    }
+    echo $respuesta;
+}
+
+// if ($post['accion'] == "dsedes") {
+//     // Consulta actualizada con los campos de la tabla `business_headquarters`
+//     $sentencia = sprintf(
+//         "
+//         SELECT bh.BUSH_CODE, bh.BUSH_ADDRES, bh.BUSH_CITY, bh.BUSH_COUNTRY, bh.BUSH_PHONE, 
+//                bh.BUSH_STATE_HEADQUARTERS
+//         FROM busineess_headquarters bh
+//         WHERE bh.BUSH_CODE = '%s'",
+//         $post['codigo']
+//     );
+
+//     $result = mysqli_query($mysqli, $sentencia);
+
+//     if (mysqli_num_rows($result) > 0) {
+//         while ($row = mysqli_fetch_array($result)) {
+//             $datos[] = array(
+//                 'codigo' => $row['BUSH_CODE'],
+//                 'direccion' => $row['BUSH_ADDRES'],
+//                 'ciudad' => $row['BUSH_CITY'],
+//                 'pais' => $row['BUSH_COUNTRY'],
+//                 'telefono' => $row['BUSH_PHONE'],
+//                 'estado' => $row['BUSH_STATE_HEADQUARTERS']
+
+//             );
+//         }
+//         $respuesta = json_encode(array('estado' => true, "info" => $datos));
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, "mensaje" => "No hay datos"));
+//     }
+//     echo $respuesta;
+// }
+
+
+if ($post['accion'] == "dsedes") {
+    // Consulta actualizada con JOIN para obtener el BUIF_CODE de la tabla `business_information`
+    $sentencia = sprintf(
+        "
+        SELECT bh.BUSH_CODE, bh.BUSH_ADDRES, bh.BUSH_CITY, bh.BUSH_COUNTRY, bh.BUSH_PHONE, 
+               bh.BUSH_STATE_HEADQUARTERS, bi.BUIF_CODE
+        FROM busineess_headquarters bh
+        INNER JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE
+        WHERE bh.BUSH_CODE = '%s'",
+        $post['codigo']
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['BUSH_CODE'],
+                'direccion' => $row['BUSH_ADDRES'],
+                'ciudad' => $row['BUSH_CITY'],
+                'pais' => $row['BUSH_COUNTRY'],
+                'telefono' => $row['BUSH_PHONE'],
+                'estado' => $row['BUSH_STATE_HEADQUARTERS'],
+                'empresa' => $row['BUIF_CODE'] // Código de la información de negocios
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "info" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No hay datos"));
+    }
+    echo $respuesta;
+}
+
+
+
+if ($post['accion'] == "actualizar_sede") {
+    // Paso 1: Preparar la sentencia de actualización
+    $sentencia = sprintf(
+        "UPDATE `busineess_headquarters` 
+         SET `BUSH_ADDRES` = '%s', 
+             `BUSH_CITY` = '%s', 
+             `BUSH_COUNTRY` = '%s', 
+             `BUSH_PHONE` = '%s', 
+             `BUSH_STATE_HEADQUARTERS` = '%s', 
+             `BUIF_CODE` = '%s' 
+         WHERE `BUSH_CODE` = '%s'",
+        $post['direccion'],
+        $post['ciudad'],
+        $post['pais'],
+        $post['telefono'],
+        $post['estado'],
+        $post['empresa'],
+        $post['codigo'] // Este es el campo que se usa para hacer la actualización
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar datos"));
+    }
+    echo $respuesta;
+}
