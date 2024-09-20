@@ -95,7 +95,7 @@ if ($post['accion'] == "sendTokenEmail") {
         $mail->Host = 'smtp.gmail.com'; // Cambia esto a tu servidor SMTP
         $mail->SMTPAuth = true;
         $mail->Username = 'keevsanchez37@gmail.com'; // Cambia esto a tu usuario de correo SMTP
-        $mail->Password = 'cymp oiyo tzyh gyid'; // Cambia esto a tu contraseña
+        $mail->Password = 'qzda ekmn ztwd hyf'; // Cambia esto a tu contraseña
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // Protocolo de seguridad (TLS/SSL)
         $mail->Port = 587; // Puerto del servidor SMTP (587 para TLS, 465 para SSL)
 
