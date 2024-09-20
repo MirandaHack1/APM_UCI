@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Buscar Equipos</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        Atrás
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <br>
+  <ion-item>
+    <ion-input [(ngModel)]="txt_search" placeholder="Ingrese el nombre del equipo"></ion-input>
+    <ion-button expand="full" (click)="searchTeams()">Buscar</ion-button>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let team of teams">
+      <ion-label>
+        <h2>Nombre: {{ team.nombre }}</h2>
+        <p>Fecha disponible: {{ team.fecha }}</p>
+        <p>Desde: {{ team.horaDesde }} Hasta: {{ team.horaHasta }}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button (click)="addTeam(team.codigo, team.nombre)">
+          <ion-icon name="add-circle"></ion-icon>
+          Seleccionar
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  <ion-item>
+    <ion-button (click)="cancel()" expand="block" color="danger" shape="round">
+      Cancelar
+    </ion-button>
+  </ion-item>
+</ion-content>

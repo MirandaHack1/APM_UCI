@@ -166,7 +166,20 @@ const routes: Routes = [
   {
     path: 'edit-rules',
     loadChildren: () => import('./Pages/Secure/edit-rules/edit-rules.module').then( m => m.EditRulesPageModule)
-  },  {
+  },
+  {
+    path: 'groups',
+    loadChildren: () => import('./Pages/Secure/groups/groups.module').then( m => m.GroupsPageModule)
+  },
+  {
+    path: 'edit-groups',
+    loadChildren: () => import('./Pages/Secure/edit-groups/edit-groups.module').then( m => m.EditGroupsPageModule)
+  },
+  {
+    path: 'edit-group-stage',
+    loadChildren: () => import('./Pages/Secure/edit-group-stage/edit-group-stage.module').then( m => m.EditGroupStagePageModule)
+  },
+  {
     path: 'busineess-headquarters',
     loadChildren: () => import('./Pages/Secure/busineess-headquarters/busineess-headquarters.module').then( m => m.BusineessHeadquartersPageModule)
   },
@@ -174,7 +187,6 @@ const routes: Routes = [
     path: 'edit-headquarters',
     loadChildren: () => import('./Pages/Secure/edit-headquarters/edit-headquarters.module').then( m => m.EditHeadquartersPageModule)
   },
-
 
 ];
 

@@ -85,6 +85,12 @@ export class HomePage implements OnInit {
   sportGroup() {
     this.navCtrl.navigateForward('sports-group');
   }
+  groups(){
+    this.navCtrl.navigateForward('groups');
+  }
+  groupstage(){
+    this.navCtrl.navigateForward('group-stage');
+  }
 
   //FUNCION PARA IR A COURT
   court() {

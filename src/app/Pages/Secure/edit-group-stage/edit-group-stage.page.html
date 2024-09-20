@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <!-- <ion-title>{{isEditing ? 'Editar' : 'Insertar'}} Group Stage</ion-title> -->
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">
+         Atras
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+   <!-- Botón para abrir modal y seleccionar Grupo -->
+   <ion-item>
+    <ion-buttons slot="end">
+      <ion-button (click)="selectGroup()">
+        Seleccionar Grupos
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-label position="stacked" class="bold-label">Grupo seleccionado:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_group" readonly></ion-input>
+  </ion-item>
+
+  <!-- Botón para abrir modal y seleccionar equipo -->
+  <ion-item>
+    <ion-buttons slot="end">
+      <ion-button (click)="selectTeam()">
+        Seleccionar Equipo
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-label position="stacked" class="bold-label">Equipo seleccionado:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_team"readonly></ion-input>
+  </ion-item>
+
+  <!-- Selección del género -->
+  <ion-item>
+    <ion-label position="floating">Género del grupo</ion-label>
+    <ion-select [(ngModel)]="Genero" name="Genero" required>
+      <ion-select-option value="Masculino">Masculino</ion-select-option>
+      <ion-select-option value="Femenino">Femenino</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <!-- Botones Guardar y Cancelar -->
+  <ion-item>
+    <ion-button (click)="saveData()" expand="block" shape="round">
+      Guardar
+    </ion-button>
+    <ion-button (click)="back()" expand="block" color="danger" shape="round">
+      Cancelar
+    </ion-button>
+  </ion-item>
+</ion-content>
