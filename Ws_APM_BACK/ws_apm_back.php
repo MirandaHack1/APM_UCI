@@ -1640,5 +1640,54 @@ if ($post['accion'] == "deleteDate") {
     echo $respuesta;
 }
 
+//////////////////////////////////////////////////////////////////////
+//cargar informacion groupstage del usuario
+if ($post['accion'] == "cargagroupstage") {
+    // Obtenemos el código de grupo
+    $sentencia = sprintf(
+        "SELECT gs.GRS_CODE, sg.SPG_CODE, sg.SPG_TEAM_NAME, gg.GRUP_CODE, gg.GRUP_NAME 
+                FROM groupstage gs
+                LEFT JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
+                LEFT JOIN groups gg ON gs.GRUP_CODE = gg.GRUP_CODE
+                WHERE gs.GRS_CODE = '%s'",
+        mysqli_real_escape_string($mysqli, $post['cod'])
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                //'GRUP_CODE' => $row['GRP_CODE'], 
+                'grup_code' => $row['GRUP_CODE'],     
+                'nombregrupo' => $row['GRUP_NAME'] , 
+                'spg_cod' => $row['SPG_CODE'],     
+                'nombreequipo' => $row['SPG_TEAM_NAME']   
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+
+//FUNCION PARA ELIMINAR EMPRESA 
+if ($post['accion'] == "Eliminargroupstage") {
+    $Empresaid = $post['GRS_CODE'];
+    $sentencia = sprintf(
+        "DELETE FROM groupstage WHERE GRS_CODE = '%s'",
+        $Empresaid
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos eliminados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar datos"));
+    }
+    echo $respuesta;
+}
 
 
