@@ -174,7 +174,7 @@ const routes: Routes = [
   {
     path: 'edit-sport-group-players',
     loadChildren: () => import('./Pages/Secure/edit-sport-group-players/edit-sport-group-players.module').then( m => m.EditSportGroupPlayersPageModule)
-  }
+  },
   {
     path: 'groups',
     loadChildren: () => import('./Pages/Secure/groups/groups.module').then( m => m.GroupsPageModule)

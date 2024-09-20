@@ -7,17 +7,11 @@
   </ion-header>
   <ion-content class="ion-padding">
     <!-- Mostrar todos los botones si el rol es administrador -->
-
-    <ion-button *ngIf="rol === 'administrador'" expand="full">Editar</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="groupstage()">Fase de Grupos</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="groups()">Grupos</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="userRol()">Editar Roles</ion-button>
-    <ion-button *ngIf="rol === 'administrador'" expand="full">Editar</ion-button>
-    <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="userRol()">Editar Roles</ion-button>
-
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="rules()">Reglas</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="busineesIformation()">Informacion Empresa</ion-button>
-
     <ion-button *ngIf="rol === 'administrador'" expand="full">Reportes</ion-button>
 
     <!-- Mostrar el botón "Partidos" si el rol es administrador, jugador o estudiante -->
@@ -25,15 +19,8 @@
     <!-- Mostrar el botón "Mis Partidos" solo si el rol es jugador -->
     <ion-button *ngIf="rol === 'jugador'" expand="full">Mis Partidos</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="court()">Canchas</ion-button>
-    <ion-button *ngIf="rol === 'jugador'" expand="full"
-    >Mis Partidos</ion-button
-  >
-  <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="court()"
-    >Canchas</ion-button
-  >
-  <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="headquarters()"
-    >Sedes</ion-button
-  >
+    <ion-button *ngIf="rol === 'jugador'" expand="full">Mis Partidos</ion-button>
+    <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="headquarters()">Sedes</ion-button>
   </ion-content>
 </ion-menu>
 
