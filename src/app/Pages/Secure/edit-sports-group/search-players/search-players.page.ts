@@ -11,6 +11,12 @@ export class SearchPlayersPage implements OnInit {
   txt_search: string = "";
   persons: any[] = [];
   type: string = "";
+  petCode: string = "";
+  petName: string = "";
+  grandmotherCode: string = "";
+  grandmotherName: string = "";
+  leaderCode: string = "";
+  leaderName: string = "";
 
   constructor(
     public modalCtrl: ModalController,
@@ -49,14 +55,14 @@ export class SearchPlayersPage implements OnInit {
     };
 
     if (this.type === 'pet') {
-      this.servicio.createSession('PET_CODE', codigo);
-      this.servicio.createSession('PET_NAME', nombre);
+      this.petCode = codigo;
+      this.petName = nombre;
     } else if (this.type === 'grandmother') {
-      this.servicio.createSession('GRANDMOTHER_CODE', codigo);
-      this.servicio.createSession('GRANDMOTHER_NAME', nombre);
+      this.grandmotherCode = codigo;
+      this.grandmotherName = nombre;
     } else if (this.type === 'leader') {
-      this.servicio.createSession('LEADER_CODE', codigo);
-      this.servicio.createSession('LEADER_NAME', nombre);
+      this.leaderCode = codigo;
+      this.leaderName = nombre;
     }
 
     this.modalCtrl.dismiss(result);

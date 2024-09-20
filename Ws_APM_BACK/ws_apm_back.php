@@ -18,8 +18,8 @@ $respuesta = "";
 
 
 
-/*********************************************************************************************************************************************************************************************************************/
-/******************************************************************************************FUNCION PARA INICIO DE SESESION-USER ADMIN*************************************************************************************************/
+/***********************************************************************/
+/*******************************FUNCION PARA INICIO DE SESESION-USER ADMIN********************************/
 if ($post['accion'] == "loggin") {
     // Consulta el usuario por correo electrónico
     $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_EMAIL='%s'", $post['USAD_EMAIL']);
@@ -56,12 +56,12 @@ if ($post['accion'] == "loggin") {
     echo $respuesta;
 }
 
-/*********************************************************************************************************************************************************************************************************************/
+/***********************************************************************/
 // verificar que el email de recuperacion exista
 if ($post['accion'] == "checkEmail") {
     $token = bin2hex(random_bytes(16));
     $sentencia = sprintf(
-        "SELECT `USAD_CODE`, `USAD_EMAIL_RECOVERY` FROM `user_admin`  where USAD_EMAIL_RECOVERY='%s'",
+        "SELECT USAD_CODE, USAD_EMAIL_RECOVERY FROM user_admin  where USAD_EMAIL_RECOVERY='%s'",
         $post['email']
 
     );
@@ -80,7 +80,7 @@ if ($post['accion'] == "checkEmail") {
     }
     echo $respuesta;
 }
-/*********************************************************************************************************************************************************************************************************************/
+/***********************************************************************/
 // MANDAR AL CORREO DE RECUPERACION EL TOKEN
 if ($post['accion'] == "sendTokenEmail") {
     $email = $post['email'];
@@ -95,7 +95,7 @@ if ($post['accion'] == "sendTokenEmail") {
         $mail->Host = 'smtp.gmail.com'; // Cambia esto a tu servidor SMTP
         $mail->SMTPAuth = true;
         $mail->Username = 'keevsanchez37@gmail.com'; // Cambia esto a tu usuario de correo SMTP
-        $mail->Password = 'cymp oiyo tzyh gyid'; // Cambia esto a tu contraseña
+        $mail->Password = 'qzda ekmn ztwd hyf'; // Cambia esto a tu contraseña
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // Protocolo de seguridad (TLS/SSL)
         $mail->Port = 587; // Puerto del servidor SMTP (587 para TLS, 465 para SSL)
 
@@ -214,10 +214,10 @@ if ($post['accion'] == "loadbusinessinfo") {
 }
 
 
-/*********************************************************************************************************************************************************************************************************************/
+/***********************************************************************/
 // Traer los datos a mis campos en la pagina edit-user-rol
 if ($post['accion'] == "consultausuarioDATOS") {
-    $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama `codigousu`
+    $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama codigousu
     $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_CODE = $codigo",); // Usa sprintf para formatear la consulta
     $result = mysqli_query($mysqli, $sentencia);
 
@@ -238,9 +238,9 @@ if ($post['accion'] == "consultausuarioDATOS") {
 
     echo $respuesta;
 }
-/*********************************************************************************************************************************************************************************************************************/
+/***********************************************************************/
 
-/*********************************************************************************************************************************************************************************************************************/
+/***********************************************************************/
 // busqueda de datos por cedula, email, nombre y apellidos en mi pagina user-rol
 
 if ($post['accion'] == "consultausuario") {
@@ -286,7 +286,7 @@ if ($post['accion'] == "consultausuario") {
 
     echo $respuesta;
 }
-/*********************************************************************************************************************************************************************************************************************/
+/***********************************************************************/
 
 
 
@@ -312,7 +312,7 @@ if ($post['accion'] == "loadCredentials") {
     echo $respuesta;
 }
 
-/*********************************************************************************************************************************************************************************************************************/
+/***********************************************************************/
 // Editado de emails y rol de cada usuario en mi pagina edit-user-rol
 
 // Verifica la acción a realizar
@@ -339,7 +339,7 @@ if ($post['accion'] == 'editarusuario') {
 
     echo $respuesta;
 }
-/*********************************************************************************************************************************************************************************************************************/
+/***********************************************************************/
 
 
 //insertcredentials
@@ -449,9 +449,9 @@ if ($post['accion'] == "updateinfo") {
     echo $respuesta;
 }
 
-/************************************************************************************************************ */
+/************************************ */
 // CODIGO DE FORMULARIO DE INFORMAICON DE EMPRESA
-/************************************************************************************************************ */
+/************************************ */
 // TRAE TODO LOS CAMPOS DE LA TABLA DE EMPRESA 
 if ($post['accion'] == "consultarEmpresa") {
     $nombreEmpresa = isset($post['nombreEmpresa']) ? $post['nombreEmpresa'] : '';
@@ -563,7 +563,64 @@ if ($post['accion'] == "insertarEmpresa") {
 
 
 
-/************************************************************************************************************ */
+//FUNCION PARA GUARDAR EMPRESA
+// Verifica que la solicitud contiene datos en $_POST
+if ($post['accion'] == "insertarEmpresa") {
+    $nombre = $post['nombre'];
+    $mision = $post['mision'];
+    $vision = $post['vision'];
+    $estado = $post['estado'];
+    $contacto = $post['contacto'];
+    $usuarioInsertar = $post['usuarioInsertar'];
+    $fechaInsertar = date("Y-m-d H:i:s");
+
+    // Procesar y guardar el logo
+    if (isset($_FILES['logo'])) {
+        $logoFileName = basename($_FILES['logo']['name']);
+        $logoFilePath = 'uploads/logos/' . $logoFileName;
+        move_uploaded_file($_FILES['logo']['tmp_name'], $logoFilePath);
+    }
+
+    // Procesar y guardar la imagen
+    if (isset($_FILES['image'])) {
+        $imageFileName = basename($_FILES['image']['name']);
+        // $imageFilePath = 'uploads/images/' . $imageFileName;
+        $imageFilePath = './uploads/images/' . $imageFileName;
+        move_uploaded_file($_FILES['image']['tmp_name'], $imageFilePath);
+    }
+
+    // Insertar los datos de la empresa
+    $sentencia_insertar = sprintf(
+        "INSERT INTO business_information (BUIF_NAME, BUIF_LOGO, BUIF_MISSION, BUIF_VISION, BUIF_IMAGE, BUIF_STATE, BUIF_CONTACT, BUIF_USER_INSERT, BUIF_INSERT_DATE) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+        $nombre,
+        $logoFilePath, // Dirección del logo guardada en la base de datos
+        $mision,
+        $vision,
+        $imageFilePath, // Dirección de la imagen guardada en la base de datos
+        $estado,
+        $contacto,
+        $usuarioInsertar,
+        $fechaInsertar
+    );
+
+    $result_insertar = mysqli_query($mysqli, $sentencia_insertar);
+
+    if ($result_insertar) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Empresa insertada correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar empresa"));
+    }
+
+    echo $respuesta;
+}
+
+
+
+
+
+
+
+/************************************ */
 if ($post['accion'] == "loadSportgroup") {
 
     $sentencia = sprintf(
@@ -630,7 +687,7 @@ if ($post['accion'] == "Conreglas") {
 }
 
 if ($post['accion'] == "reglasdatos") {
-    $codigo = $post['id_regla']; // Asegúrate de que el parámetro se llama `codigousu`
+    $codigo = $post['id_regla']; // Asegúrate de que el parámetro se llama codigousu
     $sentencia = sprintf("SELECT * FROM rules WHERE RU_CODE = $codigo",); // Usa sprintf para formatear la consulta
     $result = mysqli_query($mysqli, $sentencia);
 
@@ -790,9 +847,9 @@ if ($post['accion'] == "ConGrupos") {
     }
     echo $respuesta;
 }             
-/***************************************************************************************************** */
+/*********************************** */
 //CANCHAS
-/****************************************************************************************************** */
+/********************************** */
 //BUSCA LAS CANCHAS
 if ($post['accion'] == "consultarCanchas") {
     $nombreCanchas = isset($post['nombreCanchas']) ? $post['nombreCanchas'] : '';
@@ -835,7 +892,7 @@ if ($post['accion'] == 'EliminarGrupo') {
         $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Grupo eliminado correctamente'));
     } else {
         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al eliminar Grupo: ' . mysqli_error($mysqli)));
-    
+    }
 
     echo $respuesta;
 }
@@ -1090,4 +1147,414 @@ if ($post['accion'] == "ActualizarStGrupo") {
     
     echo $respuesta;
 }
+
+
+/*********************************** */
+//SEDEES EMPRESA
+/********************************** */
+//BUSCA LAS SEDES
+// BUSCA LAS SEDES Y RELACIONA CON business_information
+
+if ($post['accion'] == "consultarSede") {
+    $direcccionSede = isset($post['direcccionSede']) ? $post['direcccionSede'] : '';
+    if ($direcccionSede != '') {
+        $sentencia = sprintf(
+            "SELECT bh.*, bi.BUIF_NAME 
+            FROM busineess_headquarters bh 
+            JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE 
+            WHERE bh.BUSH_ADDRES = '%s'",
+            mysqli_real_escape_string($mysqli, $direcccionSede)
+        );
+    } else {
+        $sentencia = "SELECT bh.*, bi.BUIF_NAME 
+                      FROM busineess_headquarters bh 
+                      JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE";
+    }
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['BUSH_CODE'],
+                'direccion' => $row['BUSH_ADDRES'],
+                'ciudad' => $row['BUSH_CITY'],
+                'pais' => $row['BUSH_COUNTRY'],
+                'telefono' => $row['BUSH_PHONE'],
+                'estado' => $row['BUSH_STATE_HEADQUARTERS'],
+                'usuario_insert' => $row['BUSH_USER_INSERT'],
+                'usuario_update' => $row['BUSH_USER_UPDATE'],
+                'usuario_delete' => $row['BUSH_USER_DELETE'],
+                'fecha_insert' => $row['BUSH_INSERT_DATE'],
+                'fecha_update' => $row['BUSH_UPDATE_DATE'],
+                'fecha_delete' => $row['BUSH_DELETE_DATE'],
+                'nombre' => $row['BUIF_NAME'] // Trae el nombre de la empresa
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}
+
+// ESTE TRAE EMPRESA
+//loadbusinessinfo
+if ($post['accion'] == "loadbusinessinfo2") {
+    // Realizamos el INNER JOIN para obtener BUSH_CODE y BUIF_NAME
+    $sentencia = sprintf("SELECT * from business_information");
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'BUIF_CODE' => $row['BUIF_CODE'],
+                'BUIF_NAME' => $row['BUIF_NAME']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "ERROR"));
+    }
+
+    echo $respuesta;
+}
+
+
+if ($post['accion'] == "insertar_sede") {
+    // Insertar los datos directamente en la tabla 'busineess_headquarters'
+    $sentencia = sprintf(
+        "INSERT INTO busineess_headquarters(
+            BUSH_ADDRES, 
+            BUSH_CITY, 
+            BUSH_COUNTRY, 
+            BUSH_PHONE, 
+            BUSH_STATE_HEADQUARTERS, 
+            BUIF_CODE
+        ) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
+        $post['direccion'],
+        $post['ciudad'],
+        $post['pais'],
+        $post['telefono'],
+        $post['estado'],
+        $post['empresa']
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos insertados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar datos"));
+    }
+    echo $respuesta;
+}
+
+
+//FUNCION PARA ELIMINAR EMPRESA 
+if ($post['accion'] == "eliminarSede") {
+    $Sedeid = $post['codigo'];
+    $sentencia = sprintf(
+        "DELETE FROM busineess_headquarters WHERE BUSH_CODE = '%s'",
+        $Sedeid
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos eliminados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar datos"));
+    }
+    echo $respuesta;
+}
+
+// if ($post['accion'] == "dsedes") {
+//     // Consulta actualizada con los campos de la tabla business_headquarters
+//     $sentencia = sprintf(
+//         "
+//         SELECT bh.BUSH_CODE, bh.BUSH_ADDRES, bh.BUSH_CITY, bh.BUSH_COUNTRY, bh.BUSH_PHONE, 
+//                bh.BUSH_STATE_HEADQUARTERS
+//         FROM busineess_headquarters bh
+//         WHERE bh.BUSH_CODE = '%s'",
+//         $post['codigo']
+//     );
+
+//     $result = mysqli_query($mysqli, $sentencia);
+
+//     if (mysqli_num_rows($result) > 0) {
+//         while ($row = mysqli_fetch_array($result)) {
+//             $datos[] = array(
+//                 'codigo' => $row['BUSH_CODE'],
+//                 'direccion' => $row['BUSH_ADDRES'],
+//                 'ciudad' => $row['BUSH_CITY'],
+//                 'pais' => $row['BUSH_COUNTRY'],
+//                 'telefono' => $row['BUSH_PHONE'],
+//                 'estado' => $row['BUSH_STATE_HEADQUARTERS']
+
+//             );
+//         }
+//         $respuesta = json_encode(array('estado' => true, "info" => $datos));
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, "mensaje" => "No hay datos"));
+//     }
+//     echo $respuesta;
+// }
+
+
+if ($post['accion'] == "dsedes") {
+    // Consulta actualizada con JOIN para obtener el BUIF_CODE de la tabla business_information
+    $sentencia = sprintf(
+        "
+        SELECT bh.BUSH_CODE, bh.BUSH_ADDRES, bh.BUSH_CITY, bh.BUSH_COUNTRY, bh.BUSH_PHONE, 
+               bh.BUSH_STATE_HEADQUARTERS, bi.BUIF_CODE
+        FROM busineess_headquarters bh
+        INNER JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE
+        WHERE bh.BUSH_CODE = '%s'",
+        $post['codigo']
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['BUSH_CODE'],
+                'direccion' => $row['BUSH_ADDRES'],
+                'ciudad' => $row['BUSH_CITY'],
+                'pais' => $row['BUSH_COUNTRY'],
+                'telefono' => $row['BUSH_PHONE'],
+                'estado' => $row['BUSH_STATE_HEADQUARTERS'],
+                'empresa' => $row['BUIF_CODE'] // Código de la información de negocios
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "info" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No hay datos"));
+    }
+    echo $respuesta;
+}
+
+
+
+if ($post['accion'] == "actualizar_sede") {
+    // Paso 1: Preparar la sentencia de actualización
+    $sentencia = sprintf(
+        "UPDATE busineess_headquarters 
+         SET BUSH_ADDRES = '%s', 
+             BUSH_CITY = '%s', 
+             BUSH_COUNTRY = '%s', 
+             BUSH_PHONE = '%s', 
+             BUSH_STATE_HEADQUARTERS = '%s', 
+             BUIF_CODE = '%s' 
+         WHERE BUSH_CODE = '%s'",
+        $post['direccion'],
+        $post['ciudad'],
+        $post['pais'],
+        $post['telefono'],
+        $post['estado'],
+        $post['empresa'],
+        $post['codigo'] // Este es el campo que se usa para hacer la actualización
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar datos"));
+    }
+    echo $respuesta;
+}
+//buscar personas 
+if ($post['accion'] == "searchUsers") {
+    //me trae el nombre, apellido o cedula
+    $searchTerm = $post['result'];
+    $sentencia = sprintf(
+        "SELECT * FROM info_client WHERE ICLI_FIRST_NAME LIKE '%%%s%%' OR ICLI_LAST_NAME LIKE '%%%s%%' OR ICLI_CARD LIKE '%%%s%%'",
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $searchTerm)
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['ICLI_CODE'],
+                'nombre' => $row['ICLI_FIRST_NAME'] . ' ' . $row['ICLI_LAST_NAME'],
+                'cedula' => $row['ICLI_CARD']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
+    }
+
+    echo $respuesta;
+}
+// loadGroup
+if ($post['accion'] == "loadGroupData") {
+    $spg_code = $post['SPG_CODE']; // Código del grupo deportivo
+
+    // Consulta para obtener los datos del grupo deportivo, incluyendo los datos de madrina, mascota, y el deporte
+    $sentencia = "
+        SELECT 
+            sg.SPG_TEAM_NAME, 
+            sg.SPG_CREATION_DATE,
+            sg.SPG_SIGNATURE,
+            sg.SPG_OBSERVATIONS,
+            sg.SPG_GENDER_TEAM,
+            sg.SPG_LOGO,
+            r.RU_RULES_FOR_SPORTS AS sport_name,
+            r. RU_CODE AS rule_code,
+            godmother.ICLI_FIRST_NAME AS godmother_first_name,
+            godmother.ICLI_LAST_NAME AS godmother_last_name,
+            godmother.ICLI_CODE AS godmother_code,
+            pet.ICLI_FIRST_NAME AS pet_first_name,
+            pet.ICLI_LAST_NAME AS pet_last_name,
+            pet.ICLI_CODE AS pet_code
+        FROM 
+            sports_groups sg
+        INNER JOIN 
+            info_client godmother ON sg.ICLI_GODMOTHER = godmother.ICLI_CODE
+        INNER JOIN 
+            info_client pet ON sg.ICLI_TEAM_PED_ID = pet.ICLI_CODE
+        INNER JOIN 
+            rules r ON sg.RU_CODE = r.RU_CODE
+        WHERE 
+            sg.SPG_CODE = '$spg_code'
+    ";
+
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = mysqli_fetch_array($result);
+        $respuesta = json_encode(array(
+            'estado' => true, 
+            'info' => array(
+                'group_name' => $datos['SPG_TEAM_NAME'],
+                'creation_date' => $datos['SPG_CREATION_DATE'],
+                'rule_code' => $datos['rule_code'],
+                'signature' => $datos['SPG_SIGNATURE'],
+                'logo' => $datos['SPG_LOGO'],
+                'observations' => $datos['SPG_OBSERVATIONS'],
+                'gender_team' => $datos['SPG_GENDER_TEAM'],
+                'sport_name' => $datos['sport_name'],
+                'godmother_name' => $datos['godmother_first_name'] . ' ' . $datos['godmother_last_name'],
+                'godmother_code' => $datos['godmother_code'],
+                'pet_name' => $datos['pet_first_name'] . ' ' . $datos['pet_last_name'],
+                'pet_code' => $datos['pet_code']
+            )
+        ));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron datos para el grupo.'));
+    }
+
+    echo $respuesta;
+}
+if ($post['accion'] == "insertGroup") {
+    $insert_query = sprintf(
+        "INSERT INTO sports_groups (SPG_TEAM_NAME, RU_CODE, SPG_LOGO, ICLI_GODMOTHER, ICLI_TEAM_PED_ID, ICLI_TEAM_LEADER_ID, SPG_SIGNATURE, SPG_OBSERVATIONS, SPG_CREATION_DATE, SPG_GENDER_TEAM, SPG_STATE_MATCH) 
+        VALUES ('%s', '%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+        $post['group_name'],
+        $post['rule_code'],
+        $post['logo'],
+        $post['godmother_code'],
+        $post['pet_code'],
+        $post['leader_code'],
+        $post['signature'],
+        $post['observations'],
+        $post['creation_date'],
+        $post['gender_team'],
+        "Equipo no clasificado"
+    );
+
+    if (mysqli_query($mysqli, $insert_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Grupo deportivo insertado correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar el grupo deportivo"));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "updateGroup") {
+    $update_query = sprintf(
+        "UPDATE sports_groups 
+        SET SPG_TEAM_NAME='%s', RU_CODE='%s', SPG_LOGO='%s', ICLI_GODMOTHER='%s', ICLI_TEAM_PED_ID='%s', ICLI_TEAM_LEADER_ID='%s', SPG_SIGNATURE='%s', SPG_OBSERVATIONS='%s', SPG_CREATION_DATE='%s', SPG_GENDER_TEAM='%s', SPG_STATE_MATCH='Equipo no clasificado'
+        WHERE SPG_CODE='%s'",
+        $post['group_name'],
+        $post['rule_code'],
+        $post['logo'],
+        $post['godmother_code'],
+        $post['pet_code'],
+        $post['leader_code'],
+        $post['signature'],
+        $post['observations'],
+        $post['creation_date'],
+        $post['gender_team'],
+        $post['SPG_CODE']
+    );
+
+    if (mysqli_query($mysqli, $update_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Grupo deportivo actualizado correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar el grupo deportivo"));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "loadDates") {
+    $sentencia = sprintf(
+        "SELECT *
+        FROM available_dates av
+        INNER JOIN sports_groups sp ON av.SPG_CODE = sp.SPG_CODE
+        WHERE sp.ICLI_TEAM_LEADER_ID = '%s'", 
+        $post['codigo']
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'sport_code' => $row['SPG_CODE'],
+                'date_code' => $row['AVD_CODE'],
+                'date_type' => $row['AVD_TYPE'],
+                'date_avaliable' => $row['AVD_AVAILABLE_DATE'],
+                'date_hour_since' => $row['AVD_AVAILABLE_HOUR_SINCE'],
+                'date_hour_until' => $row['AVD_AVAILABLE_HOUR_UNITL']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "loadSportGroupName") {
+    $sentencia = sprintf(
+        "SELECT SPG_CODE, SPG_TEAM_NAME
+         FROM sports_groups 
+         WHERE ICLI_TEAM_LEADER_ID = '%s'", 
+        $post['codigo']
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'sport_code' => $row['SPG_CODE'],
+                'teamName' => $row['SPG_TEAM_NAME'],
+                
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
 }
