@@ -41,4 +41,14 @@
     <ion-label position="stacked" class="bold-label">Hora Hasta:</ion-label>
     <ion-input type="time" [(ngModel)]="txt_timeTo"></ion-input>
   </ion-item>
+
+  
+   <ion-button  (click)="verify()" shape="round">
+    Guardar
+   </ion-button>
+
+    <ion-button (click)="back()" color="danger"  shape="round">
+     Cancelar
+    </ion-button>
+   
 </ion-content>
