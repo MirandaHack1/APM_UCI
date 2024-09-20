@@ -1010,21 +1010,28 @@ if ($post['accion'] == "searchGroups") {
 }
 
 if ($post['accion'] == "searchTeams") {
-    //me trae el nombre, apellido o cedula
+    // Trae el nombre del equipo
     $searchTerm = $post['result'];
     $sentencia = sprintf(
-        "SELECT * FROM sports_groups WHERE SPG_TEAM_NAME LIKE '%%%s%%'",
-        mysqli_real_escape_string($mysqli, $searchTerm),
-        mysqli_real_escape_string($mysqli, $searchTerm),
+        "SELECT sg.SPG_CODE, sg.SPG_TEAM_NAME, avd.AVD_AVAILABLE_DATE, avd.AVD_AVAILABLE_HOUR_SINCE, avd.AVD_AVAILABLE_HOUR_UNITL
+         FROM sports_groups sg
+         LEFT JOIN available_dates avd ON sg.SPG_CODE = avd.SPG_CODE
+         WHERE sg.SPG_TEAM_NAME LIKE '%%%s%%'
+         AND sg.SPG_CODE NOT IN (SELECT SPG_CODE FROM groupstage)
+         ORDER BY avd.AVD_AVAILABLE_DATE ASC, avd.AVD_AVAILABLE_HOUR_SINCE ASC",
         mysqli_real_escape_string($mysqli, $searchTerm)
     );
+
     $result = mysqli_query($mysqli, $sentencia);
     if (mysqli_num_rows($result) > 0) {
         $datos = array();
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 'codigo' => $row['SPG_CODE'],
-                'nombre' => $row['SPG_TEAM_NAME']
+                'nombre' => $row['SPG_TEAM_NAME'],
+                'fecha' => $row['AVD_AVAILABLE_DATE'],
+                'horaDesde' => $row['AVD_AVAILABLE_HOUR_SINCE'],
+                'horaHasta' => $row['AVD_AVAILABLE_HOUR_UNITL']
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
@@ -1034,6 +1041,8 @@ if ($post['accion'] == "searchTeams") {
 
     echo $respuesta;
 }
+
+
 
 
 if ($post['accion'] == "AgregarStGrupo") {

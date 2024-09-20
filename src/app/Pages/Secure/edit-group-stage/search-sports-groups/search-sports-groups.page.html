@@ -19,7 +19,9 @@
   <ion-list>
     <ion-item *ngFor="let team of teams">
       <ion-label>
-        <h2>Nombre:{{ team.nombre }}</h2>
+        <h2>Nombre: {{ team.nombre }}</h2>
+        <p>Fecha disponible: {{ team.fecha }}</p>
+        <p>Desde: {{ team.horaDesde }} Hasta: {{ team.horaHasta }}</p>
       </ion-label>
       <ion-buttons slot="end">
         <ion-button (click)="addTeam(team.codigo, team.nombre)">
