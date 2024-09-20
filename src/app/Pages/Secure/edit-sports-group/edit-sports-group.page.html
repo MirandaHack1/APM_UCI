@@ -16,7 +16,12 @@
   </ion-item>
   <ion-item>
     <ion-label position="stacked" class="bold-label">Nombre del grupo:</ion-label>
-    <ion-input type="text" [(ngModel)]="txt_nameGroup"></ion-input>
+    <ion-input type="text" [(ngModel)]="txt_nameGroup" ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Logo:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_logo" ></ion-input>
   </ion-item>
 
   <ion-item>
@@ -27,6 +32,8 @@
       </ion-select-option>
     </ion-select>
   </ion-item>
+
+  <!-- 
   <ion-item>
     <ion-buttons slot="end">
       <ion-button (click)="searchPlayer('leader')">
@@ -37,6 +44,9 @@
     <ion-label position="stacked" class="bold-label">Responsable:</ion-label>
     <ion-input type="text" [(ngModel)]="txt_leader" readonly></ion-input>
   </ion-item>
+  -->
+ 
+  
   
   <ion-item>
     <ion-buttons slot="end">
@@ -45,8 +55,9 @@
         <ion-icon name="create"></ion-icon>
       </ion-button>
     </ion-buttons>
+    
     <ion-label position="stacked" class="bold-label">Madrina:</ion-label>
-    <ion-input type="text" [(ngModel)]="txt_grandmother" readonly></ion-input>
+    <ion-input type="text" [(ngModel)]="txt_grandmother" [value]="grandmotherCode" readonly></ion-input>
   </ion-item>
   
   <ion-item>
@@ -57,7 +68,7 @@
       </ion-button>
     </ion-buttons>
     <ion-label position="stacked" class="bold-label">Mascota:</ion-label>
-    <ion-input type="text" [(ngModel)]="txt_pet" readonly></ion-input>
+    <ion-input type="text" [(ngModel)]="txt_pet" [value]="petCode" readonly></ion-input>
   </ion-item>
 
   
@@ -71,9 +82,8 @@
   </ion-item>
 
   <ion-item>
-    <ion-label position="stacked" class="bold-label">Firma:</ion-label>
-    <input type="file"  accept="image/*" />
-    <ion-img ></ion-img>
+    <ion-label position="stacked" class="bold-label">firma:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_firma"></ion-input>
   </ion-item>
 
   <ion-item>
@@ -84,7 +94,7 @@
   
   
   <ion-item>
-    <ion-button (click)="validate()" expand="block"  shape="round">
+    <ion-button (click)="verify()" expand="block"  shape="round">
       Guardar
     </ion-button>
     <ion-button (click)="back()" expand="block" color="danger" shape="round">
