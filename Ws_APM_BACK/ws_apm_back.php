@@ -835,7 +835,7 @@ if ($post['accion'] == 'EliminarGrupo') {
         $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Grupo eliminado correctamente'));
     } else {
         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al eliminar Grupo: ' . mysqli_error($mysqli)));
-    }
+    
 
     echo $respuesta;
 }
@@ -1089,4 +1089,5 @@ if ($post['accion'] == "ActualizarStGrupo") {
         }
     
     echo $respuesta;
+}
 }
