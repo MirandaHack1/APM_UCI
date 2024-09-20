@@ -27,11 +27,11 @@ export class PasswordRecoveryPage implements OnInit {
     this.servicio.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
         // Crear token temporal
-        const token = res.user_admin[0].token;
+        const token = res.datos[0].token;
 
         // Guardar el código de la persona y el correo de recuperación en las preferencias
         this.servicio.saveToken(token); // Guarda el token generado
-        this.servicio.saveUserCode(res.user_admin[0].USAD_CODE); // Guarda el USAD_CODE
+        this.servicio.saveUserCode(res.datos[0].USAD_CODE); // Guarda el USAD_CODE
 
         // Enviar token por correo
         this.sendTokenEmail(this.email, token);

@@ -94,8 +94,8 @@ if ($post['accion'] == "sendTokenEmail") {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com'; // Cambia esto a tu servidor SMTP
         $mail->SMTPAuth = true;
-        $mail->Username = 'keevsanchez37@gmail.com'; // Cambia esto a tu usuario de correo SMTP
-        $mail->Password = 'qzda ekmn ztwd hyf'; // Cambia esto a tu contraseña
+        $mail->Username = ''; // Cambia esto a tu usuario de correo SMTP
+        $mail->Password = ''; // Cambia esto a tu contraseña
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // Protocolo de seguridad (TLS/SSL)
         $mail->Port = 587; // Puerto del servidor SMTP (587 para TLS, 465 para SSL)
 
@@ -175,11 +175,12 @@ if ($post['accion'] == "updatePassword") {
     $codigo = $post['codigo'];
 
     // Cifra la nueva contraseña
-    //$hashedPassword = password_hash($clave, PASSWORD_BCRYPT);
+   $hashedPassword = password_hash($clave, PASSWORD_BCRYPT);
 
     $update_query = sprintf(
         "UPDATE user_admin SET USAD_PASSWORD='%s' WHERE USAD_CODE='%s'",
-        $clave,
+        $hashedPassword,
+        
         $codigo
     );
 
@@ -504,63 +505,6 @@ if ($post['accion'] == "eliminarEmpresa") {
     }
     echo $respuesta;
 }
-
-
-//FUNCION PARA GUARDAR EMPRESA
-// Verifica que la solicitud contiene datos en $_POST
-if ($post['accion'] == "insertarEmpresa") {
-    $nombre = $post['nombre'];
-    $mision = $post['mision'];
-    $vision = $post['vision'];
-    $estado = $post['estado'];
-    $contacto = $post['contacto'];
-    $usuarioInsertar = $post['usuarioInsertar'];
-    $fechaInsertar = date("Y-m-d H:i:s");
-
-    // Procesar y guardar el logo
-    if (isset($_FILES['logo'])) {
-        $logoFileName = basename($_FILES['logo']['name']);
-        $logoFilePath = 'uploads/logos/' . $logoFileName;
-        move_uploaded_file($_FILES['logo']['tmp_name'], $logoFilePath);
-    }
-
-    // Procesar y guardar la imagen
-    if (isset($_FILES['image'])) {
-        $imageFileName = basename($_FILES['image']['name']);
-        // $imageFilePath = 'uploads/images/' . $imageFileName;
-        $imageFilePath = './uploads/images/' . $imageFileName;
-        move_uploaded_file($_FILES['image']['tmp_name'], $imageFilePath);
-    }
-
-    // Insertar los datos de la empresa
-    $sentencia_insertar = sprintf(
-        "INSERT INTO `business_information` (`BUIF_NAME`, `BUIF_LOGO`, `BUIF_MISSION`, `BUIF_VISION`, `BUIF_IMAGE`, `BUIF_STATE`, `BUIF_CONTACT`, `BUIF_USER_INSERT`, `BUIF_INSERT_DATE`) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-        $nombre,
-        $logoFilePath, // Dirección del logo guardada en la base de datos
-        $mision,
-        $vision,
-        $imageFilePath, // Dirección de la imagen guardada en la base de datos
-        $estado,
-        $contacto,
-        $usuarioInsertar,
-        $fechaInsertar
-    );
-
-    $result_insertar = mysqli_query($mysqli, $sentencia_insertar);
-
-    if ($result_insertar) {
-        $respuesta = json_encode(array('estado' => true, "mensaje" => "Empresa insertada correctamente"));
-    } else {
-        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar empresa"));
-    }
-
-    echo $respuesta;
-}
-
-
-
-
-
 
 
 //FUNCION PARA GUARDAR EMPRESA
@@ -1362,33 +1306,33 @@ if ($post['accion'] == "actualizar_sede") {
     }
     echo $respuesta;
 }
-//buscar personas 
-if ($post['accion'] == "searchUsers") {
-    //me trae el nombre, apellido o cedula
-    $searchTerm = $post['result'];
-    $sentencia = sprintf(
-        "SELECT * FROM info_client WHERE ICLI_FIRST_NAME LIKE '%%%s%%' OR ICLI_LAST_NAME LIKE '%%%s%%' OR ICLI_CARD LIKE '%%%s%%'",
-        mysqli_real_escape_string($mysqli, $searchTerm),
-        mysqli_real_escape_string($mysqli, $searchTerm),
-        mysqli_real_escape_string($mysqli, $searchTerm)
-    );
-    $result = mysqli_query($mysqli, $sentencia);
-    if (mysqli_num_rows($result) > 0) {
-        $datos = array();
-        while ($row = mysqli_fetch_array($result)) {
-            $datos[] = array(
-                'codigo' => $row['ICLI_CODE'],
-                'nombre' => $row['ICLI_FIRST_NAME'] . ' ' . $row['ICLI_LAST_NAME'],
-                'cedula' => $row['ICLI_CARD']
-            );
-        }
-        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
-    } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
-    }
+// //buscar personas 
+// if ($post['accion'] == "searchUsers") {
+//     //me trae el nombre, apellido o cedula
+//     $searchTerm = $post['result'];
+//     $sentencia = sprintf(
+//         "SELECT * FROM info_client WHERE ICLI_FIRST_NAME LIKE '%%%s%%' OR ICLI_LAST_NAME LIKE '%%%s%%' OR ICLI_CARD LIKE '%%%s%%'",
+//         mysqli_real_escape_string($mysqli, $searchTerm),
+//         mysqli_real_escape_string($mysqli, $searchTerm),
+//         mysqli_real_escape_string($mysqli, $searchTerm)
+//     );
+//     $result = mysqli_query($mysqli, $sentencia);
+//     if (mysqli_num_rows($result) > 0) {
+//         $datos = array();
+//         while ($row = mysqli_fetch_array($result)) {
+//             $datos[] = array(
+//                 'codigo' => $row['ICLI_CODE'],
+//                 'nombre' => $row['ICLI_FIRST_NAME'] . ' ' . $row['ICLI_LAST_NAME'],
+//                 'cedula' => $row['ICLI_CARD']
+//             );
+//         }
+//         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
+//     }
 
-    echo $respuesta;
-}
+//     echo $respuesta;
+// }
 // loadGroup
 if ($post['accion'] == "loadGroupData") {
     $spg_code = $post['SPG_CODE']; // Código del grupo deportivo
@@ -1422,6 +1366,7 @@ if ($post['accion'] == "loadGroupData") {
             sg.SPG_CODE = '$spg_code'
     ";
 
+    $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
         $datos = mysqli_fetch_array($result);
@@ -1448,6 +1393,7 @@ if ($post['accion'] == "loadGroupData") {
 
     echo $respuesta;
 }
+
 if ($post['accion'] == "insertGroup") {
     $insert_query = sprintf(
         "INSERT INTO sports_groups (SPG_TEAM_NAME, RU_CODE, SPG_LOGO, ICLI_GODMOTHER, ICLI_TEAM_PED_ID, ICLI_TEAM_LEADER_ID, SPG_SIGNATURE, SPG_OBSERVATIONS, SPG_CREATION_DATE, SPG_GENDER_TEAM, SPG_STATE_MATCH) 
