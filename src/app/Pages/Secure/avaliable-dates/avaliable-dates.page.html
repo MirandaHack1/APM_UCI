@@ -10,5 +10,33 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button (click)="newDate()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+    
+  </ion-fab>
+  
+  <ion-list>
+    <ion-item *ngFor="let date of dates">
+      <ion-label>
+        <h2>{{ date.date_type }}</h2>
+        <h3> <strong>Fecha: {{ date.date_avaliable }}</strong></h3>
+        <p> Desde: {{ date.date_hour_since }}</p>
+        <p> Hasta: {{ date.date_hour_until }}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button (click)="editDate(date.date_code)"> 
+          <ion-icon name="create"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button (click)="deleteDate(date.date_code)" color="danger"> 
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
   
 </ion-content>
+

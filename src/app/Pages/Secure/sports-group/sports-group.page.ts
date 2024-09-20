@@ -73,7 +73,4 @@ export class SportsGroupPage implements OnInit {
     this.navCtrl.navigateRoot(['avaliable-dates']);
     
   }
-  
-
-
 }

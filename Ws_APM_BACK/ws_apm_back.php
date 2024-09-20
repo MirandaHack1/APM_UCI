@@ -193,7 +193,7 @@ if ($post['accion'] == "updatePassword") {
 //loadbusinessinfo
 if ($post['accion'] == "loadbusinessinfo") {
     // Realizamos el INNER JOIN para obtener BUSH_CODE y BUIF_NAME
-    $sentencia = sprintf("SELECT bh.BUSH_CODE, bi.BUIF_NAME FROM busineess_headquarters bh INNER JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE");
+    $sentencia = sprintf("SELECT bh.BUSH_CODE, bh.BUSH_CITY FROM busineess_headquarters bh INNER JOIN business_information bi ON bh.BUIF_CODE = bi.BUIF_CODE");
 
     $result = mysqli_query($mysqli, $sentencia);
 
@@ -201,7 +201,7 @@ if ($post['accion'] == "loadbusinessinfo") {
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 'BUSH_CODE' => $row['BUSH_CODE'],
-                'BUIF_NAME' => $row['BUIF_NAME']
+                'BUIF_NAME' => $row['BUSH_CITY']
             );
         }
         $respuesta = json_encode(array('estado' => true, "datos" => $datos));
@@ -807,6 +807,64 @@ if ($post['accion'] == "updateGroup") {
         $respuesta = json_encode(array('estado' => true, "mensaje" => "Grupo deportivo actualizado correctamente"));
     } else {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar el grupo deportivo"));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "loadDates") {
+    $sentencia = sprintf(
+        "SELECT *
+        FROM available_dates av
+        INNER JOIN sports_groups sp ON av.SPG_CODE = sp.SPG_CODE
+        WHERE sp.ICLI_TEAM_LEADER_ID = '%s'", 
+        $post['codigo']
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'sport_code' => $row['SPG_CODE'],
+                'date_code' => $row['AVD_CODE'],
+                'date_type' => $row['AVD_TYPE'],
+                'date_avaliable' => $row['AVD_AVAILABLE_DATE'],
+                'date_hour_since' => $row['AVD_AVAILABLE_HOUR_SINCE'],
+                'date_hour_until' => $row['AVD_AVAILABLE_HOUR_UNITL']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "loadSportGroupName") {
+    $sentencia = sprintf(
+        "SELECT SPG_CODE, SPG_TEAM_NAME
+         FROM sports_groups 
+         WHERE ICLI_TEAM_LEADER_ID = '%s'", 
+        $post['codigo']
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'sport_code' => $row['SPG_CODE'],
+                'teamName' => $row['SPG_TEAM_NAME'],
+                
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
     }
 
     echo $respuesta;

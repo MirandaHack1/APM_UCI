@@ -1,13 +1,44 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>edit-avaliable-dates</ion-title>
+    <ion-title>Fecha Disponible</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">
+        Atras
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">edit-avaliable-dates</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Tipo:</ion-label>
+    <ion-select [(ngModel)]="txt_type">
+      <ion-select-option value="Fase de grupo">Fase de grupo</ion-select-option>
+      <ion-select-option value="Eliminatorias">Eliminatorias</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Equipo:</ion-label>
+    <ion-select [(ngModel)]="txt_sportGroupName">
+      <ion-select-option *ngFor="let item of sports" [value]="item.sport_code">
+        {{ item.teamName }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Fecha:</ion-label>
+    <ion-datetime displayFormat="MMM DD, YYYY" [(ngModel)]="txt_date"></ion-datetime>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Hora Desde:</ion-label>
+    <ion-input type="time" [(ngModel)]="txt_timeFrom"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Hora Hasta:</ion-label>
+    <ion-input type="time" [(ngModel)]="txt_timeTo"></ion-input>
+  </ion-item>
 </ion-content>
