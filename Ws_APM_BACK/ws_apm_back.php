@@ -1535,49 +1535,90 @@ if ($post['accion'] == "loadAvaliableDates") {
 
     echo $respuesta;
 }
-//insertar dates insertAvaliableDates  
+//insertar fechas
 if ($post['accion'] == "insertAvaliableDates") {
-    $insert_query = sprintf(
-        "INSERT INTO available_dates (AVD_TYPE, SPG_CODE, AVD_AVAILABLE_DATE, AVD_AVAILABLE_HOUR_SINCE, AVD_AVAILABLE_HOUR_UNITL)
-        VALUES ('%s', '%s', '%s', '%s', '%s')",
+    // Contar el número de fechas existentes para el tipo dado
+    $check_query = sprintf(
+        "SELECT COUNT(*) as total FROM available_dates WHERE AVD_TYPE = '%s' AND SPG_CODE = '%s'",
         $post['type'],
-        $post['sportGroupName'],
-        $post['date'],
-        $post['timeFrom'],
-        $post['timeTo']
+        $post['sportGroupName']
     );
+    
+    $result = mysqli_query($mysqli, $check_query);
+    $row = mysqli_fetch_assoc($result);
+    $total = $row['total'];
 
-    if (mysqli_query($mysqli, $insert_query)) {
-        $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha insertada correctamente"));
+    // Verificar el máximo de fechas para cada tipo
+    $maxFechas = 5;
+
+    if ($total >= $maxFechas) {
+        // Si ya se han insertado 5 fechas, no permitir más
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "El máximo de fechas para " . $post['type'] . " es de " . $maxFechas));
     } else {
-        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar la fecha"));
+        // Si no se ha alcanzado el límite, insertar la nueva fecha
+        $insert_query = sprintf(
+            "INSERT INTO available_dates (AVD_TYPE, SPG_CODE, AVD_AVAILABLE_DATE, AVD_AVAILABLE_HOUR_SINCE, AVD_AVAILABLE_HOUR_UNITL)
+            VALUES ('%s', '%s', '%s', '%s', '%s')",
+            $post['type'],
+            $post['sportGroupName'],
+            $post['date'],
+            $post['timeFrom'],
+            $post['timeTo']
+        );
+
+        if (mysqli_query($mysqli, $insert_query)) {
+            $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha insertada correctamente"));
+        } else {
+            $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar la fecha"));
+        }
     }
 
     echo $respuesta;
 }
-//updateAvaliableDates
+//update de fechas
 if ($post['accion'] == "updateAvaliableDates") {
-    $update_query = sprintf(
-        "UPDATE available_dates
-        SET AVD_TYPE='%s', SPG_CODE='%s', AVD_AVAILABLE_DATE='%s', AVD_AVAILABLE_HOUR_SINCE='%s', AVD_AVAILABLE_HOUR_UNITL='%s'
-        WHERE AVD_CODE='%s'",
+    // Contar el número de fechas existentes para el tipo dado, excluyendo la fecha actual
+    $check_query = sprintf(
+        "SELECT COUNT(*) as total FROM available_dates WHERE AVD_TYPE = '%s' AND SPG_CODE = '%s' AND AVD_CODE != '%s'",
         $post['type'],
         $post['sportGroupName'],
-        $post['date'],
-        $post['timeFrom'],
-        $post['timeTo'],
-        $post['codigo']
+        $post['codigo']  // Excluir el registro que se está actualizando
     );
+    
+    $result = mysqli_query($mysqli, $check_query);
+    $row = mysqli_fetch_assoc($result);
+    $total = $row['total'];
 
-    if (mysqli_query($mysqli, $update_query)) {
-        $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha actualizada correctamente"));
+    // Verificar el máximo de fechas para cada tipo
+    $maxFechas = 5;
+
+    if ($total >= $maxFechas) {
+        // Si ya se han insertado 5 fechas, no permitir más
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "El máximo de fechas para " . $post['type'] . " es de " . $maxFechas));
     } else {
-        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la fecha"));
+        // Si no se ha alcanzado el límite, actualizar la fecha
+        $update_query = sprintf(
+            "UPDATE available_dates
+            SET AVD_TYPE='%s', SPG_CODE='%s', AVD_AVAILABLE_DATE='%s', AVD_AVAILABLE_HOUR_SINCE='%s', AVD_AVAILABLE_HOUR_UNITL='%s'
+            WHERE AVD_CODE='%s'",
+            $post['type'],
+            $post['sportGroupName'],
+            $post['date'],
+            $post['timeFrom'],
+            $post['timeTo'],
+            $post['codigo']
+        );
+
+        if (mysqli_query($mysqli, $update_query)) {
+            $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha actualizada correctamente"));
+        } else {
+            $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la fecha"));
+        }
     }
 
     echo $respuesta;
 }
-//deleteAvaliableDates
+//eliminar fechas
 if ($post['accion'] == "deleteDate") {
     $delete_query = sprintf(
         "DELETE FROM available_dates

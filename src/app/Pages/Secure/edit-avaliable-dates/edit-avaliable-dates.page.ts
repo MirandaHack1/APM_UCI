@@ -13,8 +13,8 @@ export class EditAvaliableDatesPage implements OnInit {
   txt_sportGroupName : string = "";
  
   txt_date: string = "";
-txt_timeFrom: string = "";
-txt_timeTo: string = "";
+  txt_timeFrom: string = "00:00"; // Inicializa con 00:00
+  txt_timeTo: string = "00:00"; // Inicializa con 00:00
 
   cod: string= "";
   cod2: string= "";
@@ -95,6 +95,8 @@ txt_timeTo: string = "";
     
 
   }
+
+  //este es pra insertar fechas
   insertAvaliableDates(){
     let datos={
       "accion": "insertAvaliableDates",
