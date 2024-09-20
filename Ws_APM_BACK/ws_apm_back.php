@@ -922,37 +922,31 @@ if ($post['accion'] == 'AgregarGrupo') {
 }
 
 if ($post['accion'] == "ConGroupstage") {
-    $grupo = isset($post['GRUP_CODE']) ? $post['GRUP_CODE'] : '';
+    $nombreEquipo = isset($post['nombre']) ? $post['nombre'] : '';
+    $generoEquipo = isset($post['genero']) ? $post['genero'] : '';
 
-    // Construir la consulta SQL
-    if ($grupo != '') {
-        $sentencia = sprintf(
-            "SELECT g.GRUP_NAME,gs.GRS_CODE, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
-                    icl_leader.ICLI_FIRST_NAME AS leader_name, 
-                    icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
-                    r.RU_RULES_FOR_SPORTS AS sport_name, 
-                    sg.SPG_CREATION_DATE, sg.SPG_GENDER_TEAM
-             FROM groups g
-             INNER JOIN groupstage gs ON g.GRUP_CODE = gs.GRUP_CODE
-             INNER JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
-             LEFT JOIN info_client icl_leader ON sg.ICLI_TEAM_LEADER_ID = icl_leader.ICLI_CODE
-             LEFT JOIN info_client icl_mascot ON sg.ICLI_TEAM_PED_ID = icl_mascot.ICLI_CODE
-             LEFT JOIN rules r ON sg.RU_CODE = r.RU_CODE
-             WHERE g.GRUP_CODE = '%s'",
-            mysqli_real_escape_string($mysqli, $grupo)
-        );
-    } else {
-        $sentencia = "SELECT g.GRUP_NAME,gs.GRS_CODE, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
-                          icl_leader.ICLI_FIRST_NAME AS leader_name, 
-                          icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
-                          r.RU_RULES_FOR_SPORTS AS sport_name, 
-                          sg.SPG_CREATION_DATE, sg.SPG_GENDER_TEAM
-                    FROM groups g
-                    INNER JOIN groupstage gs ON g.GRUP_CODE = gs.GRUP_CODE
-                    INNER JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
-                    LEFT JOIN info_client icl_leader ON sg.ICLI_TEAM_LEADER_ID = icl_leader.ICLI_CODE
-                    LEFT JOIN info_client icl_mascot ON sg.ICLI_TEAM_PED_ID = icl_mascot.ICLI_CODE
-                    LEFT JOIN rules r ON sg.RU_CODE = r.RU_CODE";
+    // Construir la consulta SQL dinámicamente según los parámetros
+    $sentencia = "SELECT g.GRUP_NAME, gs.GRS_CODE, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
+                        icl_leader.ICLI_FIRST_NAME AS leader_name, 
+                        icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
+                        r.RU_RULES_FOR_SPORTS AS sport_name, 
+                        sg.SPG_CREATION_DATE, sg.SPG_GENDER_TEAM
+                 FROM groups g
+                 INNER JOIN groupstage gs ON g.GRUP_CODE = gs.GRUP_CODE
+                 INNER JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
+                 LEFT JOIN info_client icl_leader ON sg.ICLI_TEAM_LEADER_ID = icl_leader.ICLI_CODE
+                 LEFT JOIN info_client icl_mascot ON sg.ICLI_TEAM_PED_ID = icl_mascot.ICLI_CODE
+                 LEFT JOIN rules r ON sg.RU_CODE = r.RU_CODE
+                 WHERE 1=1"; // Evita problemas al concatenar condiciones
+
+    // Si se ingresa un nombre de equipo, se agrega a la consulta
+    if ($nombreEquipo != '') {
+        $sentencia .= " AND sg.SPG_TEAM_NAME LIKE '%" . mysqli_real_escape_string($mysqli, $nombreEquipo) . "%'";
+    }
+
+    // Si se selecciona un género, se agrega a la consulta
+    if ($generoEquipo != '') {
+        $sentencia .= " AND sg.SPG_GENDER_TEAM = '" . mysqli_real_escape_string($mysqli, $generoEquipo) . "'";
     }
 
     $result = mysqli_query($mysqli, $sentencia);
@@ -985,16 +979,22 @@ if ($post['accion'] == "ConGroupstage") {
 
 
 if ($post['accion'] == "searchGroups") {
-    // Obtener el término de búsqueda
+    // Obtener el término de búsqueda y el género del equipo
     $searchTerm = $post['result'];
+    $teamGender = $post['team_gender']; // El género se enviará desde el frontend
+
     $sentencia = sprintf(
         "SELECT g.GRUP_CODE, g.GRUP_NAME, 
-                (SELECT COUNT(*) FROM groupstage gs WHERE gs.GRUP_CODE = g.GRUP_CODE) AS player_count
+                (SELECT COUNT(*) 
+                 FROM groupstage gs 
+                 WHERE gs.GRUP_CODE = g.GRUP_CODE 
+                 AND gs.GRS_TYPE_GANDER = '%s') AS player_count
          FROM groups g
          WHERE g.GRUP_NAME LIKE '%%%s%%'",
+        mysqli_real_escape_string($mysqli, $teamGender), // Filtrar por género
         mysqli_real_escape_string($mysqli, $searchTerm)
     );
-    
+
     $result = mysqli_query($mysqli, $sentencia);
     
     if (mysqli_num_rows($result) > 0) {
@@ -1003,7 +1003,7 @@ if ($post['accion'] == "searchGroups") {
             $datos[] = array(
                 'codigo' => $row['GRUP_CODE'],
                 'nombre' => $row['GRUP_NAME'],
-                'player_count' => $row['player_count'] // Número de jugadores en el grupo
+                'player_count' => $row['player_count'] // Número de equipos del mismo género en el grupo
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
@@ -1016,16 +1016,20 @@ if ($post['accion'] == "searchGroups") {
 
 
 if ($post['accion'] == "searchTeams") {
-    // Trae el nombre del equipo
+    // Trae el nombre del equipo y el género
     $searchTerm = $post['result'];
+    $teamGender = $post['team_gender']; // El género que se enviará desde el frontend
+
     $sentencia = sprintf(
         "SELECT sg.SPG_CODE, sg.SPG_TEAM_NAME, avd.AVD_AVAILABLE_DATE, avd.AVD_AVAILABLE_HOUR_SINCE, avd.AVD_AVAILABLE_HOUR_UNITL
          FROM sports_groups sg
          LEFT JOIN available_dates avd ON sg.SPG_CODE = avd.SPG_CODE
          WHERE sg.SPG_TEAM_NAME LIKE '%%%s%%'
+         AND sg.SPG_GENDER_TEAM = '%s'  -- Filtrar por género
          AND sg.SPG_CODE NOT IN (SELECT SPG_CODE FROM groupstage)
          ORDER BY avd.AVD_AVAILABLE_DATE ASC, avd.AVD_AVAILABLE_HOUR_SINCE ASC",
-        mysqli_real_escape_string($mysqli, $searchTerm)
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $teamGender) // Filtrar por el género del equipo
     );
 
     $result = mysqli_query($mysqli, $sentencia);
@@ -1047,6 +1051,7 @@ if ($post['accion'] == "searchTeams") {
 
     echo $respuesta;
 }
+
 
 
 
@@ -1504,3 +1509,4 @@ if ($post['accion'] == "loadSportGroupName") {
 
     echo $respuesta;
 }
+
