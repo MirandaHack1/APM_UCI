@@ -984,21 +984,25 @@ if ($post['accion'] == "ConGroupstage") {
 
 
 if ($post['accion'] == "searchGroups") {
-    //me trae el nombre, apellido o cedula
+    // Obtener el término de búsqueda
     $searchTerm = $post['result'];
     $sentencia = sprintf(
-        "SELECT * FROM groups WHERE GRUP_NAME LIKE '%%%s%%'",
-        mysqli_real_escape_string($mysqli, $searchTerm),
-        mysqli_real_escape_string($mysqli, $searchTerm),
+        "SELECT g.GRUP_CODE, g.GRUP_NAME, 
+                (SELECT COUNT(*) FROM groupstage gs WHERE gs.GRUP_CODE = g.GRUP_CODE) AS player_count
+         FROM groups g
+         WHERE g.GRUP_NAME LIKE '%%%s%%'",
         mysqli_real_escape_string($mysqli, $searchTerm)
     );
+    
     $result = mysqli_query($mysqli, $sentencia);
+    
     if (mysqli_num_rows($result) > 0) {
         $datos = array();
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 'codigo' => $row['GRUP_CODE'],
-                'nombre' => $row['GRUP_NAME']
+                'nombre' => $row['GRUP_NAME'],
+                'player_count' => $row['player_count'] // Número de jugadores en el grupo
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
@@ -1008,6 +1012,7 @@ if ($post['accion'] == "searchGroups") {
 
     echo $respuesta;
 }
+
 
 if ($post['accion'] == "searchTeams") {
     // Trae el nombre del equipo

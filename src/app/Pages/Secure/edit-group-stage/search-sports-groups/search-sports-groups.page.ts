@@ -23,7 +23,7 @@ export class SearchSportsGroupsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.loadTeams(); // Cargar los equipos al iniciar
+   // this.loadTeams(); // Cargar los equipos al iniciar
   }
 
   // Cargar equipos desde el servidor o la base de datos
