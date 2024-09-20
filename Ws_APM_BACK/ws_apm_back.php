@@ -1690,4 +1690,21 @@ if ($post['accion'] == "Eliminargroupstage") {
     echo $respuesta;
 }
 
+// delete deleteSportGroup
+if ($post['accion'] == "deleteSportGroup") {
+    $delete_query = sprintf(
+        "DELETE FROM sports_groups WHERE SPG_CODE='%s'",
+        $post['codigo']
+    );
+
+    if (mysqli_query($mysqli, $delete_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Equipo eliminado correctamente"));
+    } else {
+        // Capturar el error de MySQL
+        $error = mysqli_error($mysqli);
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar el equipo", "error" => $error));
+    }
+
+    echo $respuesta;
+}
 

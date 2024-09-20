@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AuthService } from 'src/app/Services/auth/auth.service';
+import { AlertController } from '@ionic/angular';
 
 
 @Component({
@@ -16,6 +17,7 @@ export class AvaliableDatesPage implements OnInit {
 
   constructor(
     public navCtrl: NavController,
+    public alertController: AlertController,
     public servicio: AuthService
 
   ) 
@@ -51,23 +53,44 @@ export class AvaliableDatesPage implements OnInit {
 
 
   }
-  deleteDate(codigo: string){
-    let datos = {
-      "accion": "deleteDate",
-      codigo: codigo
-    };
-
-    this.servicio.postData(datos).subscribe((res: any) => {
-      if (res.estado == true) {
-        this.servicio.showToast(res.mensaje);
-        this.loadDates();
-      } else {
-        this.servicio.showToast(res.mensaje);
+  
+async confirmDeleteDate(codigo: string) {
+  const alert = await this.alertController.create({
+    header: 'Confirmación',
+    message: '¿Estás seguro de que deseas eliminar esta fecha?',
+    buttons: [
+      {
+        text: 'Cancelar',
+        role: 'cancel',
+        cssClass: 'secondary'
+      },
+      {
+        text: 'Eliminar',
+        handler: () => {
+          this.deleteDate(codigo);
+        }
       }
-    });
-    this.loadDates();
+    ]
+  });
 
-  }
+  await alert.present();
+}
+
+deleteDate(codigo: string) {
+  let datos = {
+    "accion": "deleteDate",
+    codigo: codigo
+  };
+
+  this.servicio.postData(datos).subscribe((res: any) => {
+    if (res.estado == true) {
+      this.servicio.showToast(res.mensaje);
+      this.loadDates();
+    } else {
+      this.servicio.showToast(res.mensaje);
+    }
+  });
+}
 
   loadDates(){
     let datos = {

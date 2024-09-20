@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AuthService } from 'src/app/Services/auth/auth.service';
+import { AlertController } from '@ionic/angular';
 
 
 @Component({
@@ -14,7 +15,8 @@ export class SportsGroupPage implements OnInit {
 
   constructor(
     public navCtrl: NavController,
-    public servicio: AuthService
+    public servicio: AuthService,
+    public alertController: AlertController
 
   ) 
   { 
@@ -72,5 +74,53 @@ export class SportsGroupPage implements OnInit {
     this.servicio.createSession('SPG_CODE', codigo);
     this.navCtrl.navigateRoot(['avaliable-dates']);
     
+  }
+
+  async confirmDelete(codigo: string) {
+    const alert = await this.alertController.create({
+      header: 'Confirmación',
+      message: '¿Estás seguro de que deseas eliminar este grupo deportivo?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Eliminar',
+          handler: () => {
+            this.deleteFecha(codigo);
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
+  }
+  
+  deleteFecha(codigo: string) {
+    this.servicio.createSession('SPG_CODE', codigo);
+    let datos = {
+      "accion": "deleteSportGroup",
+      codigo: codigo
+    };
+  
+    this.servicio.postData(datos).subscribe(
+      (res: any) => {
+        try {
+          if (res.estado == true) {
+            this.servicio.showToast(res.mensaje);
+            this.loadSportgroup();
+          } else {
+            this.servicio.showToast(res.mensaje);
+          }
+        } catch (error) {
+          this.servicio.showToast("No se puede eliminar, tiene registros relacionados.");
+        }
+      },
+      (error) => {
+        this.servicio.showToast("No se puede eliminar, tiene registros relacionados.");
+      }
+    );
   }
 }
