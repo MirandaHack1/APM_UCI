@@ -1452,8 +1452,10 @@ if ($post['accion'] == "loadDates") {
         "SELECT *
         FROM available_dates av
         INNER JOIN sports_groups sp ON av.SPG_CODE = sp.SPG_CODE
-        WHERE sp.ICLI_TEAM_LEADER_ID = '%s'", 
-        $post['codigo']
+        WHERE sp.ICLI_TEAM_LEADER_ID = '%s' and sp.SPG_CODE='%s' ", 
+        $post['codigo'],
+        $post['codigo2'],
+
     );
     
     $result = mysqli_query($mysqli, $sentencia);
@@ -1472,7 +1474,7 @@ if ($post['accion'] == "loadDates") {
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
     } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No existe fechas para este grupo'));
     }
 
     echo $respuesta;
@@ -1482,7 +1484,7 @@ if ($post['accion'] == "loadSportGroupName") {
     $sentencia = sprintf(
         "SELECT SPG_CODE, SPG_TEAM_NAME
          FROM sports_groups 
-         WHERE ICLI_TEAM_LEADER_ID = '%s'", 
+         WHERE SPG_CODE = '%s'", 
         $post['codigo']
     );
     
@@ -1504,3 +1506,93 @@ if ($post['accion'] == "loadSportGroupName") {
 
     echo $respuesta;
 }
+
+
+if ($post['accion'] == "loadAvaliableDates") {
+    $sentencia = sprintf(
+        "SELECT * FROM available_dates where AVD_CODE= '%s'", 
+        $post['codigo']
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'type' => $row['AVD_TYPE'],
+                'sportGroupName' => $row['SPG_CODE'],
+                'date' => $row['AVD_AVAILABLE_DATE'],
+                'timeFrom' => $row['AVD_AVAILABLE_HOUR_SINCE'],
+                'timeTo' => $row['AVD_AVAILABLE_HOUR_UNITL'],
+                
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'data' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+//insertar dates insertAvaliableDates  
+if ($post['accion'] == "insertAvaliableDates") {
+    $insert_query = sprintf(
+        "INSERT INTO available_dates (AVD_TYPE, SPG_CODE, AVD_AVAILABLE_DATE, AVD_AVAILABLE_HOUR_SINCE, AVD_AVAILABLE_HOUR_UNITL)
+        VALUES ('%s', '%s', '%s', '%s', '%s')",
+        $post['type'],
+        $post['sportGroupName'],
+        $post['date'],
+        $post['timeFrom'],
+        $post['timeTo']
+    );
+
+    if (mysqli_query($mysqli, $insert_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha insertada correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar la fecha"));
+    }
+
+    echo $respuesta;
+}
+//updateAvaliableDates
+if ($post['accion'] == "updateAvaliableDates") {
+    $update_query = sprintf(
+        "UPDATE available_dates
+        SET AVD_TYPE='%s', SPG_CODE='%s', AVD_AVAILABLE_DATE='%s', AVD_AVAILABLE_HOUR_SINCE='%s', AVD_AVAILABLE_HOUR_UNITL='%s'
+        WHERE AVD_CODE='%s'",
+        $post['type'],
+        $post['sportGroupName'],
+        $post['date'],
+        $post['timeFrom'],
+        $post['timeTo'],
+        $post['codigo']
+    );
+
+    if (mysqli_query($mysqli, $update_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha actualizada correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la fecha"));
+    }
+
+    echo $respuesta;
+}
+//deleteAvaliableDates
+if ($post['accion'] == "deleteDate") {
+    $delete_query = sprintf(
+        "DELETE FROM available_dates
+        WHERE AVD_CODE='%s'",
+        $post['codigo']
+    );
+
+    if (mysqli_query($mysqli, $delete_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha eliminada correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar la fecha"));
+    }
+
+    echo $respuesta;
+}
+
+
+

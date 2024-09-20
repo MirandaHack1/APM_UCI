@@ -15,8 +15,12 @@ export class EditAvaliableDatesPage implements OnInit {
   txt_date: string = "";
 txt_timeFrom: string = "";
 txt_timeTo: string = "";
+
   cod: string= "";
+  cod2: string= "";
   sports: any = [];
+  info: any = [];
+
   
 
   constructor(
@@ -26,11 +30,21 @@ txt_timeTo: string = "";
 
 
   ) { 
+    this.servicio.getSession('AVD_CODE').then((res:any) => {
+      this.cod2 = res;
+      if(this.cod2){
+        this.loadAvaliableDates()
+      }
+      
+      
+    });
 
-    this.servicio.getSession('ICLI_CODE').then((res:any) => {
+
+    this.servicio.getSession('SPG_CODE').then((res:any) => {
       this.cod = res;
       //this.txt_code = this.cod;
       this.loadSportGroupName();
+      
     });
 
   }
@@ -58,5 +72,80 @@ txt_timeTo: string = "";
     });
 
   }
+  loadAvaliableDates(){
+   
+      let datos={
+        "accion": "loadAvaliableDates",
+        codigo:this.cod2
+      };
+      this.servicio.postData(datos).subscribe((res:any)=>{
+        if(res.estado==true){
+          this.info = res.data[0]; 
+          this.txt_type= this.info.type;
+          this.txt_sportGroupName= this.info.sportGroupName;
+          this.txt_date= this.info.date;
+          this.txt_timeFrom= this.info.timeFrom;
+          this.txt_timeTo= this.info.timeTo;
+         
+        }
+        else{
+          this.servicio.showToast(res.mensaje);
+        }
+      })
+    
+
+  }
+  insertAvaliableDates(){
+    let datos={
+      "accion": "insertAvaliableDates",
+      
+      type:this.txt_type,
+      sportGroupName:this.txt_sportGroupName,
+      date:this.txt_date,
+      timeFrom:this.txt_timeFrom,
+      timeTo:this.txt_timeTo
+    };
+    this.servicio.postData(datos).subscribe((res:any)=>{
+      if(res.estado==true){
+        this.servicio.showToast(res.mensaje);
+        this.navCtrl.back();
+      }
+      else{
+        this.servicio.showToast(res.mensaje);
+      }
+    })
+
+  }
+  updateAvaliableDates(){
+    let datos={
+      "accion": "updateAvaliableDates",
+      codigo:this.cod2,
+      type:this.txt_type,
+      sportGroupName:this.txt_sportGroupName,
+      date:this.txt_date,
+      timeFrom:this.txt_timeFrom,
+      timeTo:this.txt_timeTo
+    };
+    this.servicio.postData(datos).subscribe((res:any)=>{
+      if(res.estado==true){
+        this.servicio.showToast(res.mensaje);
+        this.navCtrl.back();
+      }
+      else{
+        this.servicio.showToast(res.mensaje);
+      }
+    })
+
+  }
+
+  verify(){
+    if(this.cod2){
+      this.updateAvaliableDates();
+    }
+    else{
+      this.insertAvaliableDates();
+    }
+  }
+
 
 }
