@@ -1855,3 +1855,227 @@ if ($post['accion'] == "deleteSportGroup") {
     echo $respuesta;
 }
 
+if ($post['accion'] == "loadSearchPlayers") {
+    $codigo = mysqli_real_escape_string($mysqli, $post['codigo']);
+    $searchTerm = mysqli_real_escape_string($mysqli, $post['result']);
+
+    // Ajustar la consulta según si el $searchTerm está vacío o no
+    if (empty($searchTerm)) {
+        $sentencia = sprintf(
+            "SELECT t.TEAP_CODE, t.TEAP_SHIRT_NUMBER, c.ICLI_FIRST_NAME, c.ICLI_LAST_NAME, c.ICLI_CARD
+             FROM team_player t
+             JOIN info_client c ON t.ICLI_CODE = c.ICLI_CODE
+             WHERE t.SPG_CODE = '%s'",
+            $codigo
+        );
+    } else {
+        $sentencia = sprintf(
+            "SELECT t.TEAP_CODE, t.TEAP_SHIRT_NUMBER, c.ICLI_FIRST_NAME, c.ICLI_LAST_NAME, c.ICLI_CARD
+             FROM team_player t
+             JOIN info_client c ON t.ICLI_CODE = c.ICLI_CODE
+             WHERE t.SPG_CODE = '%s' 
+             AND (c.ICLI_FIRST_NAME LIKE '%%%s%%' OR c.ICLI_LAST_NAME LIKE '%%%s%%' OR c.ICLI_CARD LIKE '%%%s%%')",
+            $codigo, $searchTerm, $searchTerm, $searchTerm
+        );
+    }
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'nombre' => $row['ICLI_FIRST_NAME'] . ' ' . $row['ICLI_LAST_NAME'],
+                'cedula' => $row['ICLI_CARD'],
+                'teap_code' => $row['TEAP_CODE'] ,
+                'teap_shirt_number' => $row['TEAP_SHIRT_NUMBER']
+               
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron jugadores.'));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "deletePlayer") {
+    $delete_query = sprintf(
+        "DELETE FROM team_player WHERE TEAP_CODE='%s'",
+        $post['codigo']
+    );
+
+    if (mysqli_query($mysqli, $delete_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Jugador eliminado correctamente"));
+    } else {
+        // Capturar el error de MySQL
+        $error = mysqli_error($mysqli);
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar el Jugador", "error" => $error));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "searchPlayers") {
+    $search = $mysqli->real_escape_string($post['result']);
+    
+    $sentencia = sprintf(
+        "SELECT ic.ICLI_CODE, ic.ICLI_FIRST_NAME, ic.ICLI_LAST_NAME, ic.ICLI_CARD
+         FROM info_client ic
+         LEFT JOIN team_player tp ON ic.ICLI_CODE = tp.ICLI_CODE
+         WHERE tp.ICLI_CODE IS NULL
+         AND (ic.ICLI_FIRST_NAME LIKE '%%%s%%' OR ic.ICLI_CARD LIKE '%%%s%%')",
+         $search, $search
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+    
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $datos[] = array(
+                'codigo' => $row['ICLI_CODE'],
+                'nombre' => $row['ICLI_FIRST_NAME'] . ' ' . $row['ICLI_LAST_NAME'],
+                'cedula' => $row['ICLI_CARD']
+            );
+        }
+        echo json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        echo json_encode(array('estado' => false, 'mensaje' => "No se encontraron clientes"));
+    }
+}
+//insertPlayer 
+if ($post['accion'] == "insertPlayer") {
+    $ICLI_CODE = $mysqli->real_escape_string($post['player_code']);
+    $SPG_CODE = $mysqli->real_escape_string($post['group_code']);
+    $TEAP_SHIRT_NUMBER = $mysqli->real_escape_string($post['shirt_number']);
+
+    // Verificar si el grupo ya tiene 15 jugadores
+    $count_query = sprintf(
+        "SELECT COUNT(*) as total_players FROM team_player WHERE SPG_CODE = '%s'",
+        $SPG_CODE
+    );
+    
+    $count_result = mysqli_query($mysqli, $count_query);
+    $count_row = mysqli_fetch_assoc($count_result);
+
+    if ($count_row['total_players'] >= 15) {
+        // Si ya hay 15 jugadores, mandar mensaje de error
+        echo json_encode(array('estado' => false, 'mensaje' => "El máximo de jugadores permitidos es 15."));
+    } else {
+        // Verificar si el número de camiseta ya existe en el grupo
+        $check_query = sprintf(
+            "SELECT COUNT(*) as count FROM team_player WHERE SPG_CODE = '%s' AND TEAP_SHIRT_NUMBER = '%s'",
+            $SPG_CODE,
+            $TEAP_SHIRT_NUMBER
+        );
+        
+        $result = mysqli_query($mysqli, $check_query);
+        $row = mysqli_fetch_assoc($result);
+        
+        if ($row['count'] > 0) {
+            // Si el número de camiseta ya existe, se manda el mensaje de error
+            echo json_encode(array('estado' => false, 'mensaje' => "El número de camiseta ya existe, por favor elige otro."));
+        } else {
+            // Si no existe, se inserta el jugador
+            $sentencia = sprintf(
+                "INSERT INTO team_player (ICLI_CODE, SPG_CODE, TEAP_SHIRT_NUMBER) VALUES ('%s', '%s', '%s')",
+                $ICLI_CODE,
+                $SPG_CODE,
+                $TEAP_SHIRT_NUMBER
+            );
+            
+            if (mysqli_query($mysqli, $sentencia)) {
+                echo json_encode(array('estado' => true, 'mensaje' => "Jugador insertado correctamente"));
+            } else {
+                echo json_encode(array('estado' => false, 'mensaje' => "Error al insertar el jugador"));
+            }
+        }
+    }
+}
+
+
+//updatePlayer
+if ($post['accion'] == "updatePlayer") {
+    $ICLI_CODE = $mysqli->real_escape_string($post['player_code']);
+    $SPG_CODE = $mysqli->real_escape_string($post['group_code']);
+    $TEAP_SHIRT_NUMBER = $mysqli->real_escape_string($post['shirt_number']);
+    $TEAP_CODE = $mysqli->real_escape_string($post['teap_code']);
+    
+    // Obtener el número de camiseta actual del jugador
+    $current_number_query = sprintf(
+        "SELECT TEAP_SHIRT_NUMBER FROM team_player WHERE TEAP_CODE = '%s'",
+        $TEAP_CODE
+    );
+    
+    $result = mysqli_query($mysqli, $current_number_query);
+    $row = mysqli_fetch_assoc($result);
+    $current_shirt_number = $row['TEAP_SHIRT_NUMBER'];
+    
+    // Verificar si el nuevo número es diferente al actual
+    if ($TEAP_SHIRT_NUMBER != $current_shirt_number) {
+        // Si el número es diferente, verificar si ya está registrado en el mismo grupo
+        $check_query = sprintf(
+            "SELECT COUNT(*) as count FROM team_player WHERE SPG_CODE = '%s' AND TEAP_SHIRT_NUMBER = '%s'",
+            $SPG_CODE,
+            $TEAP_SHIRT_NUMBER
+        );
+        
+        $check_result = mysqli_query($mysqli, $check_query);
+        $check_row = mysqli_fetch_assoc($check_result);
+        
+        if ($check_row['count'] > 0) {
+            // Si el número ya está registrado en el grupo, mostrar mensaje de error
+            echo json_encode(array('estado' => false, 'mensaje' => "El número de camiseta ya está registrado, por favor elige otro."));
+            return;
+        }
+    }
+    
+    // Si el número es el mismo o no está registrado, se procede con la actualización
+    $update_query = sprintf(
+        "UPDATE team_player SET ICLI_CODE = '%s', SPG_CODE = '%s', TEAP_SHIRT_NUMBER = '%s' WHERE TEAP_CODE = '%s'",
+        $ICLI_CODE,
+        $SPG_CODE,
+        $TEAP_SHIRT_NUMBER,
+        $TEAP_CODE
+    );
+    
+    if (mysqli_query($mysqli, $update_query)) {
+        echo json_encode(array('estado' => true, 'mensaje' => "Jugador actualizado correctamente"));
+    } else {
+        echo json_encode(array('estado' => false, 'mensaje' => "Error al actualizar el jugador"));
+    }
+}
+
+if ($post['accion'] == "loadPlayer") {
+    $teap_code = $post['player_code'];  // Este es el código del jugador que envías desde Angular
+
+    // Realizamos el INNER JOIN para obtener ICLI_CODE, ICLI_FIRST_NAME, ICLI_LAST_NAME, SPG_CODE, TEAP_SHIRT_NUMBER
+    $sentencia = sprintf("
+        SELECT tp.TEAP_CODE, tp.ICLI_CODE, tp.SPG_CODE, tp.TEAP_SHIRT_NUMBER, ic.ICLI_FIRST_NAME, ic.ICLI_LAST_NAME
+        FROM team_player tp
+        INNER JOIN info_client ic ON tp.ICLI_CODE = ic.ICLI_CODE
+        WHERE tp.TEAP_CODE = '%s'
+    ", $teap_code);
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'TEAP_CODE' => $row['TEAP_CODE'],
+                'ICLI_CODE' => $row['ICLI_CODE'],
+                'ICLI_FIRST_NAME' => $row['ICLI_FIRST_NAME'],
+                'ICLI_LAST_NAME' => $row['ICLI_LAST_NAME'],
+                'SPG_CODE' => $row['SPG_CODE'],
+                'TEAP_SHIRT_NUMBER' => $row['TEAP_SHIRT_NUMBER']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'info' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false));
+    }
+
+    echo $respuesta;
+}
+
