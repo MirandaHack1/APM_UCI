@@ -29,9 +29,17 @@ export class EditGroupStagePage implements OnInit {
   ) { 
     this.authService.getSession('GRS_CODE').then((res: any) => {
       this.cod = res;
+      console.log(this.cod);
+      this.cargardatos()
       // this.loadGroups();
       // this.loadTeams();
     });
+    this.authService.getSession('SPG_GENDER_TEAM').then((res: any) => {
+      this.Genero = res;
+      console.log(this.Genero);
+    });
+
+    
   }
 
   ngOnInit() {}
@@ -50,19 +58,25 @@ export class EditGroupStagePage implements OnInit {
   //   });
   // }
 
-  // // Cargar equipos disponibles desde la base de datos
-  // loadTeams() {
-  //   let datos = {
-  //     "accion": "loadTeams"
-  //   };
-  //   this.authService.postData(datos).subscribe((res: any) => {
-  //     if (res.estado === true) {
-  //       this.teams = res.info;
-  //     } else {
-  //       this.authService.showToast('No hay equipos disponibles.');
-  //     }
-  //   });
-  // }
+  // Cargar equipos disponibles desde la base de datos
+  cargardatos() {
+    let datos = {
+      accion: "cargagroupstage",
+      cod:this.cod
+    };
+    this.authService.postData(datos).subscribe((res: any) => {
+      if (res.estado === true) {
+        let teams = res.datos[0]; 
+        this.grupCode= teams.grup_code;
+        this.txt_group=teams.nombregrupo;
+        this.spgCode= teams.spg_cod;
+        this.txt_team= teams.nombreequipo;
+        console.log(this.spgCode);
+      } else {
+        this.authService.showToast('No hay equipos disponibles.');
+      }
+    });
+  }
 
   // Abrir modal para seleccionar equipo
   async selectTeam() {

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AuthService } from 'src/app/Services/auth/auth.service';
-AuthService
 
 @Component({
   selector: 'app-group-stage',
@@ -9,9 +8,11 @@ AuthService
   styleUrls: ['./group-stage.page.scss'],
 })
 export class GroupStagePage implements OnInit {
-  grupos: any[] = []; // Aquí almacenamos todos los grupos
-  agrupadosPorGrupo: any[] = []; // Aquí agrupamos los equipos por grupo
-  buscarGrupo: string = ''; // Campo para buscar por grupo
+  grupos: any[] = [];
+  agrupadosPorGrupo: any[] = [];
+  buscarGrupo: string = '';
+  mostrarBotonAgregar: boolean = false; // Controla la visibilidad del botón de agregar
+  generoSeleccionado: string = ''; // Para almacenar el género seleccionado
 
   constructor(
     public authService: AuthService,
@@ -25,7 +26,7 @@ export class GroupStagePage implements OnInit {
   // Método para obtener todos los grupos y equipos
   obtenerGrupos() {
     let datos = {
-      accion: 'ConGroupstage', // Acción para consultar los grupos
+      accion: 'ConGroupstage',
     };
     this.authService.postData(datos).subscribe(
       (res: any) => {
@@ -51,7 +52,7 @@ export class GroupStagePage implements OnInit {
         acc.push(grupoExistente);
       }
       grupoExistente.equipos.push({
-        GRS_CODE:grupo.GRS_CODE,
+        GRS_CODE: grupo.GRS_CODE,
         SPG_TEAM_NAME: grupo.SPG_TEAM_NAME,
         SPG_GENDER_TEAM: grupo.SPG_GENDER_TEAM,
         leader_name: grupo.leader_name,
@@ -64,14 +65,14 @@ export class GroupStagePage implements OnInit {
     }, []);
     return agrupados;
   }
-  
 
-  // Método para buscar grupos por nombre
   buscarGrupos() {
     let datos = {
       accion: 'ConGroupstage',
-      nombre: this.buscarGrupo
+      nombre: this.buscarGrupo || '', // Búsqueda por nombre de equipo
+      genero: this.generoSeleccionado || '', // Filtrar por género
     };
+  
     this.authService.postData(datos).subscribe(
       (res: any) => {
         if (res.estado === true) {
@@ -86,35 +87,57 @@ export class GroupStagePage implements OnInit {
       }
     );
   }
-
-  // Método para eliminar un equipo
-  eliminar(SPG_CODE: string) {
-    if (SPG_CODE) {
-      let datos = {
-        accion: 'EliminarEquipo',
-        SPG_CODE: SPG_CODE
-      };
-      this.authService.postData(datos).subscribe(
-        (res: any) => {
-          if (res.estado === true) {
-            this.authService.showToast('Equipo eliminado correctamente');
-            this.obtenerGrupos(); // Refrescamos los datos tras eliminar
-          } else {
-            this.authService.showToast(res.mensaje);
-          }
-        },
-        (error) => {
-          console.error('Error en la solicitud:', error);
-        }
-      );
-    } else {
-      this.authService.showToast('Código del equipo no encontrado');
-    }
+  cargarAmbosGeneros() {
+    this.generoSeleccionado = ''; // Restablecer el género seleccionado
+    this.buscarGrupo = ''; // Limpiar el campo de búsqueda
+    this.obtenerGrupos(); 
+    this.mostrarBotonAgregar = false;// Obtener todos los grupos nuevamente
   }
+    
 
-  // Método para redirigir a la página de edición de equipos
-  irEditar(GRS_CODE : string) {
+// Método para filtrar por género
+filtrarPorGenero(genero: string) {
+  this.generoSeleccionado = genero;
+  this.mostrarBotonAgregar = true; // Mostrar el botón de agregar cuando se filtra por género
+
+  // Filtrar los grupos según el género seleccionado
+  const gruposFiltrados = this.grupos.filter(grupo => 
+    grupo.SPG_GENDER_TEAM === genero
+  );
+
+  // Agrupar los grupos filtrados nuevamente
+  this.agrupadosPorGrupo = this.agruparPorGrupo(gruposFiltrados);
+}
+
+// Método para eliminar un equipo
+eliminar(GRS_CODE: string) {
+  if (GRS_CODE) {
+    let datos = {
+      accion: 'Eliminargroupstage',
+      GRS_CODE: GRS_CODE
+    };
+    this.authService.postData(datos).subscribe(
+      (res: any) => {
+        if (res.estado === true) {
+          this.authService.showToast('Equipo eliminado correctamente');
+          this.obtenerGrupos(); // Refrescamos los datos tras eliminar
+        } else {
+          this.authService.showToast(res.mensaje);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  } else {
+    this.authService.showToast('Código del equipo no encontrado');
+  }
+}
+
+  irEditar(GRS_CODE: string, genero: string) {
     this.authService.createSession('GRS_CODE', GRS_CODE);
+   
+    this.authService.createSession('SPG_GENDER_TEAM', genero);
     this.navCtrl.navigateRoot(['edit-group-stage']);
   }
 
@@ -125,7 +148,8 @@ export class GroupStagePage implements OnInit {
 
   // Método para agregar un nuevo equipo
   agregarEquipo() {
-    this.authService.createSession('GRS_CODE','');
+    this.authService.createSession('GRS_CODE', '');
+    this.authService.createSession('SPG_GENDER_TEAM', this.generoSeleccionado);
     this.navCtrl.navigateRoot(['edit-group-stage']);
   }
 }

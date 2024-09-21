@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController, AlertController } from '@ionic/angular';
 import { AuthService } from 'src/app/Services/auth/auth.service';
 
+
 @Component({
   selector: 'app-search-groups',
   templateUrl: './search-groups.page.html',
@@ -10,85 +11,96 @@ import { AuthService } from 'src/app/Services/auth/auth.service';
 export class SearchGroupsPage implements OnInit {
   txt_search: string = "";
   groups: any[] = [];
-  type: string = "";
+  Genero: string = "";
 
   constructor(
     public modalCtrl: ModalController,
-    public servicio: AuthService,
+    public authService: AuthService,
     public alertCtrl: AlertController // Agregado para usar el ion-alert
   ) {
-    // Obtener el tipo de sesión (tipo de grupo) cuando se crea el componente
-    // this.servicio.getSession('group_type').then((res: any) => {
-    //   this.type = res;
-    // });
+    this.authService.getSession('SPG_GENDER_TEAM').then((res: any) => {
+      this.Genero = res;
+      console.log(this.Genero);
+      this.searchGroups();
+    });
   }
 
   ngOnInit() {
-   // this.loadGroups(); // Cargar los grupos al iniciar
   }
 
-  // Cargar grupos desde el servidor o la base de datos
   loadGroups() {
     let datos = {
       "accion": "loadGroups"
     };
 
-    this.servicio.postData(datos).subscribe((res: any) => {
+    this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
         this.groups = res.datos; // Asignar los grupos recibidos
       } else {
-        this.servicio.showToast('No se encontraron grupos.');
+        this.authService.showToast('No se encontraron grupos.');
       }
     });
   }
 
-  // Búsqueda de grupos por nombre
   searchGroups() {
     let datos = {
       "accion": "searchGroups",
-      "result": this.txt_search
+      "result": this.txt_search,
+      "team_gender": this.Genero // Enviar el género del equipo
     };
 
-    this.servicio.postData(datos).subscribe((res: any) => {
+    this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
         this.groups = res.datos; // Asignar los resultados de la búsqueda
       } else {
-        this.servicio.showToast('No se encontraron grupos con ese nombre.');
+        this.authService.showToast('No se encontraron grupos con ese nombre.');
       }
     });
-  }
+}
+
 
   // Selección de un grupo
   async addGroup(codigo: string, nombre: string, playerCount: number) {
     if (playerCount >= 4) {
-      // Mostrar alerta si el grupo tiene más de 4 jugadores
-      const alert = await this.alertCtrl.create({
-        header: 'Confirmar',
-        message: `El grupo "${nombre}" ya tiene ${playerCount} equipos registrados. ¿Estás seguro de que quieres agregar otro?`,
-        buttons: [
-          {
-            text: 'Cancelar',
-            role: 'cancel',
-            handler: () => {
-              console.log('Operación cancelada');
-            }
-          },
-          {
-            text: 'Agregar',
-            handler: () => {
-              // Si el usuario confirma, se procede con la operación
-              this.addGroupToSession(codigo, nombre);
-            }
-          }
-        ]
-      });
+        // Definir mensaje según el valor de this.Genero
+        let mensaje = '';
+        if (this.Genero === 'Femenino') {
+            mensaje = `El grupo "${nombre}" ya tiene ${playerCount} equipos femeninos registrados. ¿Estás segura de que quieres agregar otro?`;
+        } else if (this.Genero === 'Masculino') {
+            mensaje = `El grupo "${nombre}" ya tiene ${playerCount} equipos masculinos registrados. ¿Estás seguro de que quieres agregar otro?`;
+        } else {
+            mensaje = `El grupo "${nombre}" ya tiene ${playerCount} equipos registrados. ¿Estás seguro de que quieres agregar otro?`;
+        }
 
-      await alert.present();
+        // Mostrar alerta con el mensaje personalizado
+        const alert = await this.alertCtrl.create({
+            header: 'Confirmar',
+            message: mensaje,
+            buttons: [
+                {
+                    text: 'Cancelar',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Operación cancelada');
+                    }
+                },
+                {
+                    text: 'Agregar',
+                    handler: () => {
+                        // Si el usuario confirma, se procede con la operación
+                        this.addGroupToSession(codigo, nombre);
+                    }
+                }
+            ]
+        });
+
+        await alert.present();
     } else {
-      // Si el grupo tiene menos de 4 jugadores, se agrega directamente
-      this.addGroupToSession(codigo, nombre);
+        // Si el grupo tiene menos de 4 jugadores, se agrega directamente
+        this.addGroupToSession(codigo, nombre);
     }
-  }
+}
+
 
   // Agregar el grupo a la sesión
   addGroupToSession(codigo: string, nombre: string) {
@@ -97,8 +109,8 @@ export class SearchGroupsPage implements OnInit {
       name: nombre
     };
     
-    this.servicio.createSession('GRUP_CODE', codigo);
-    this.servicio.createSession('GRUP_NAME', nombre);
+    this.authService.createSession('GRUP_CODE', codigo);
+    this.authService.createSession('GRUP_NAME', nombre);
     
     this.modalCtrl.dismiss(result); // Cierra el modal y devuelve el resultado
   }

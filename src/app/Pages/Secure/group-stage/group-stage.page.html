@@ -2,19 +2,24 @@
   <ion-toolbar>
     <ion-title>Group Stage</ion-title>
     <ion-buttons slot="start">
-      <ion-button (click)="cancelar()">
-        Menú
-      </ion-button>
+      <ion-button (click)="cancelar()">Menú</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <!-- Botones para filtrar por género -->
+  <ion-item>
+    <ion-button (click)="filtrarPorGenero('Masculino')">Masculino</ion-button>
+    <ion-button (click)="filtrarPorGenero('Femenino')">Femenino</ion-button>
+    <ion-button (click)="cargarAmbosGeneros()">Cargar Ambos Géneros</ion-button>
+  </ion-item>
+  
   <ion-item>
     <ion-input [(ngModel)]="buscarGrupo" placeholder="Buscar grupo por nombre"></ion-input>
     <ion-button expand="full" (click)="buscarGrupos()">Buscar</ion-button>
   </ion-item>
-
+  
   <ion-accordion-group>
     <!-- Recorremos los datos agrupados por grupos -->
     <ion-accordion *ngFor="let grupo of agrupadosPorGrupo">
@@ -37,7 +42,7 @@
               <p>Creado el: {{ equipo.SPG_CREATION_DATE | date }}</p>
             </ion-label>
             <ion-buttons slot="end">
-              <ion-button (click)="irEditar(equipo.GRS_CODE)">
+              <ion-button (click)="irEditar(equipo.GRS_CODE, equipo.SPG_GENDER_TEAM)">
                 <ion-icon name="create"></ion-icon>
               </ion-button>
               <ion-button (click)="eliminar(equipo.GRS_CODE)">
@@ -48,10 +53,10 @@
         </ion-list>
       </div>
     </ion-accordion>
-    
   </ion-accordion-group>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <!-- Mostrar el botón de agregar solo si se ha seleccionado un género -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="mostrarBotonAgregar">
     <ion-fab-button (click)="agregarEquipo()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>

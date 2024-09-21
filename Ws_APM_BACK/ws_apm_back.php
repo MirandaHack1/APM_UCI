@@ -925,37 +925,31 @@ if ($post['accion'] == 'ActualizarGrupo') {
 }
 
 if ($post['accion'] == "ConGroupstage") {
-    $grupo = isset($post['GRUP_CODE']) ? $post['GRUP_CODE'] : '';
+    $nombreEquipo = isset($post['nombre']) ? $post['nombre'] : '';
+    $generoEquipo = isset($post['genero']) ? $post['genero'] : '';
 
-    // Construir la consulta SQL
-    if ($grupo != '') {
-        $sentencia = sprintf(
-            "SELECT g.GRUP_NAME,gs.GRS_CODE, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
-                    icl_leader.ICLI_FIRST_NAME AS leader_name, 
-                    icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
-                    r.RU_RULES_FOR_SPORTS AS sport_name, 
-                    sg.SPG_CREATION_DATE, sg.SPG_GENDER_TEAM
-             FROM groups g
-             INNER JOIN groupstage gs ON g.GRUP_CODE = gs.GRUP_CODE
-             INNER JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
-             LEFT JOIN info_client icl_leader ON sg.ICLI_TEAM_LEADER_ID = icl_leader.ICLI_CODE
-             LEFT JOIN info_client icl_mascot ON sg.ICLI_TEAM_PED_ID = icl_mascot.ICLI_CODE
-             LEFT JOIN rules r ON sg.RU_CODE = r.RU_CODE
-             WHERE g.GRUP_CODE = '%s'",
-            mysqli_real_escape_string($mysqli, $grupo)
-        );
-    } else {
-        $sentencia = "SELECT g.GRUP_NAME,gs.GRS_CODE, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
-                          icl_leader.ICLI_FIRST_NAME AS leader_name, 
-                          icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
-                          r.RU_RULES_FOR_SPORTS AS sport_name, 
-                          sg.SPG_CREATION_DATE, sg.SPG_GENDER_TEAM
-                    FROM groups g
-                    INNER JOIN groupstage gs ON g.GRUP_CODE = gs.GRUP_CODE
-                    INNER JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
-                    LEFT JOIN info_client icl_leader ON sg.ICLI_TEAM_LEADER_ID = icl_leader.ICLI_CODE
-                    LEFT JOIN info_client icl_mascot ON sg.ICLI_TEAM_PED_ID = icl_mascot.ICLI_CODE
-                    LEFT JOIN rules r ON sg.RU_CODE = r.RU_CODE";
+    // Construir la consulta SQL dinámicamente según los parámetros
+    $sentencia = "SELECT g.GRUP_NAME, gs.GRS_CODE, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
+                        icl_leader.ICLI_FIRST_NAME AS leader_name, 
+                        icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
+                        r.RU_RULES_FOR_SPORTS AS sport_name, 
+                        sg.SPG_CREATION_DATE, sg.SPG_GENDER_TEAM
+                 FROM groups g
+                 INNER JOIN groupstage gs ON g.GRUP_CODE = gs.GRUP_CODE
+                 INNER JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
+                 LEFT JOIN info_client icl_leader ON sg.ICLI_TEAM_LEADER_ID = icl_leader.ICLI_CODE
+                 LEFT JOIN info_client icl_mascot ON sg.ICLI_TEAM_PED_ID = icl_mascot.ICLI_CODE
+                 LEFT JOIN rules r ON sg.RU_CODE = r.RU_CODE
+                 WHERE 1=1"; // Evita problemas al concatenar condiciones
+
+    // Si se ingresa un nombre de equipo, se agrega a la consulta
+    if ($nombreEquipo != '') {
+        $sentencia .= " AND sg.SPG_TEAM_NAME LIKE '%" . mysqli_real_escape_string($mysqli, $nombreEquipo) . "%'";
+    }
+
+    // Si se selecciona un género, se agrega a la consulta
+    if ($generoEquipo != '') {
+        $sentencia .= " AND sg.SPG_GENDER_TEAM = '" . mysqli_real_escape_string($mysqli, $generoEquipo) . "'";
     }
 
     $result = mysqli_query($mysqli, $sentencia);
@@ -988,13 +982,19 @@ if ($post['accion'] == "ConGroupstage") {
 
 
 if ($post['accion'] == "searchGroups") {
-    // Obtener el término de búsqueda
+    // Obtener el término de búsqueda y el género del equipo
     $searchTerm = $post['result'];
+    $teamGender = $post['team_gender']; // El género se enviará desde el frontend
+
     $sentencia = sprintf(
         "SELECT g.GRUP_CODE, g.GRUP_NAME, 
-                (SELECT COUNT(*) FROM groupstage gs WHERE gs.GRUP_CODE = g.GRUP_CODE) AS player_count
+                (SELECT COUNT(*) 
+                 FROM groupstage gs 
+                 WHERE gs.GRUP_CODE = g.GRUP_CODE 
+                 AND gs.GRS_TYPE_GANDER = '%s') AS player_count
          FROM groups g
          WHERE g.GRUP_NAME LIKE '%%%s%%'",
+        mysqli_real_escape_string($mysqli, $teamGender), // Filtrar por género
         mysqli_real_escape_string($mysqli, $searchTerm)
     );
 
@@ -1006,7 +1006,7 @@ if ($post['accion'] == "searchGroups") {
             $datos[] = array(
                 'codigo' => $row['GRUP_CODE'],
                 'nombre' => $row['GRUP_NAME'],
-                'player_count' => $row['player_count'] // Número de jugadores en el grupo
+                'player_count' => $row['player_count'] // Número de equipos del mismo género en el grupo
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
@@ -1019,16 +1019,20 @@ if ($post['accion'] == "searchGroups") {
 
 
 if ($post['accion'] == "searchTeams") {
-    // Trae el nombre del equipo
+    // Trae el nombre del equipo y el género
     $searchTerm = $post['result'];
+    $teamGender = $post['team_gender']; // El género que se enviará desde el frontend
+
     $sentencia = sprintf(
         "SELECT sg.SPG_CODE, sg.SPG_TEAM_NAME, avd.AVD_AVAILABLE_DATE, avd.AVD_AVAILABLE_HOUR_SINCE, avd.AVD_AVAILABLE_HOUR_UNITL
          FROM sports_groups sg
          LEFT JOIN available_dates avd ON sg.SPG_CODE = avd.SPG_CODE
          WHERE sg.SPG_TEAM_NAME LIKE '%%%s%%'
+         AND sg.SPG_GENDER_TEAM = '%s'  -- Filtrar por género
          AND sg.SPG_CODE NOT IN (SELECT SPG_CODE FROM groupstage)
          ORDER BY avd.AVD_AVAILABLE_DATE ASC, avd.AVD_AVAILABLE_HOUR_SINCE ASC",
-        mysqli_real_escape_string($mysqli, $searchTerm)
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $teamGender) // Filtrar por el género del equipo
     );
 
     $result = mysqli_query($mysqli, $sentencia);
@@ -1050,6 +1054,7 @@ if ($post['accion'] == "searchTeams") {
 
     echo $respuesta;
 }
+
 
 
 
@@ -1599,8 +1604,10 @@ if ($post['accion'] == "loadDates") {
         "SELECT *
         FROM available_dates av
         INNER JOIN sports_groups sp ON av.SPG_CODE = sp.SPG_CODE
-        WHERE sp.ICLI_TEAM_LEADER_ID = '%s'",
-        $post['codigo']
+        WHERE sp.ICLI_TEAM_LEADER_ID = '%s' and sp.SPG_CODE='%s' ", 
+        $post['codigo'],
+        $post['codigo2'],
+
     );
 
     $result = mysqli_query($mysqli, $sentencia);
@@ -1619,7 +1626,7 @@ if ($post['accion'] == "loadDates") {
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
     } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No existe fechas para este grupo'));
     }
 
     echo $respuesta;
@@ -1629,7 +1636,7 @@ if ($post['accion'] == "loadSportGroupName") {
     $sentencia = sprintf(
         "SELECT SPG_CODE, SPG_TEAM_NAME
          FROM sports_groups 
-         WHERE ICLI_TEAM_LEADER_ID = '%s'",
+         WHERE SPG_CODE = '%s'", 
         $post['codigo']
     );
 
@@ -1651,3 +1658,200 @@ if ($post['accion'] == "loadSportGroupName") {
 
     echo $respuesta;
 }
+
+
+if ($post['accion'] == "loadAvaliableDates") {
+    $sentencia = sprintf(
+        "SELECT * FROM available_dates where AVD_CODE= '%s'", 
+        $post['codigo']
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'type' => $row['AVD_TYPE'],
+                'sportGroupName' => $row['SPG_CODE'],
+                'date' => $row['AVD_AVAILABLE_DATE'],
+                'timeFrom' => $row['AVD_AVAILABLE_HOUR_SINCE'],
+                'timeTo' => $row['AVD_AVAILABLE_HOUR_UNITL'],
+                
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'data' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+//insertar fechas
+if ($post['accion'] == "insertAvaliableDates") {
+    // Contar el número de fechas existentes para el tipo dado
+    $check_query = sprintf(
+        "SELECT COUNT(*) as total FROM available_dates WHERE AVD_TYPE = '%s' AND SPG_CODE = '%s'",
+        $post['type'],
+        $post['sportGroupName']
+    );
+    
+    $result = mysqli_query($mysqli, $check_query);
+    $row = mysqli_fetch_assoc($result);
+    $total = $row['total'];
+
+    // Verificar el máximo de fechas para cada tipo
+    $maxFechas = 5;
+
+    if ($total >= $maxFechas) {
+        // Si ya se han insertado 5 fechas, no permitir más
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "El máximo de fechas para " . $post['type'] . " es de " . $maxFechas));
+    } else {
+        // Si no se ha alcanzado el límite, insertar la nueva fecha
+        $insert_query = sprintf(
+            "INSERT INTO available_dates (AVD_TYPE, SPG_CODE, AVD_AVAILABLE_DATE, AVD_AVAILABLE_HOUR_SINCE, AVD_AVAILABLE_HOUR_UNITL)
+            VALUES ('%s', '%s', '%s', '%s', '%s')",
+            $post['type'],
+            $post['sportGroupName'],
+            $post['date'],
+            $post['timeFrom'],
+            $post['timeTo']
+        );
+
+        if (mysqli_query($mysqli, $insert_query)) {
+            $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha insertada correctamente"));
+        } else {
+            $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar la fecha"));
+        }
+    }
+
+    echo $respuesta;
+}
+//update de fechas
+if ($post['accion'] == "updateAvaliableDates") {
+    // Contar el número de fechas existentes para el tipo dado, excluyendo la fecha actual
+    $check_query = sprintf(
+        "SELECT COUNT(*) as total FROM available_dates WHERE AVD_TYPE = '%s' AND SPG_CODE = '%s' AND AVD_CODE != '%s'",
+        $post['type'],
+        $post['sportGroupName'],
+        $post['codigo']  // Excluir el registro que se está actualizando
+    );
+    
+    $result = mysqli_query($mysqli, $check_query);
+    $row = mysqli_fetch_assoc($result);
+    $total = $row['total'];
+
+    // Verificar el máximo de fechas para cada tipo
+    $maxFechas = 5;
+
+    if ($total >= $maxFechas) {
+        // Si ya se han insertado 5 fechas, no permitir más
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "El máximo de fechas para " . $post['type'] . " es de " . $maxFechas));
+    } else {
+        // Si no se ha alcanzado el límite, actualizar la fecha
+        $update_query = sprintf(
+            "UPDATE available_dates
+            SET AVD_TYPE='%s', SPG_CODE='%s', AVD_AVAILABLE_DATE='%s', AVD_AVAILABLE_HOUR_SINCE='%s', AVD_AVAILABLE_HOUR_UNITL='%s'
+            WHERE AVD_CODE='%s'",
+            $post['type'],
+            $post['sportGroupName'],
+            $post['date'],
+            $post['timeFrom'],
+            $post['timeTo'],
+            $post['codigo']
+        );
+
+        if (mysqli_query($mysqli, $update_query)) {
+            $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha actualizada correctamente"));
+        } else {
+            $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la fecha"));
+        }
+    }
+
+    echo $respuesta;
+}
+//eliminar fechas
+if ($post['accion'] == "deleteDate") {
+    $delete_query = sprintf(
+        "DELETE FROM available_dates
+        WHERE AVD_CODE='%s'",
+        $post['codigo']
+    );
+
+    if (mysqli_query($mysqli, $delete_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Fecha eliminada correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar la fecha"));
+    }
+
+    echo $respuesta;
+}
+
+//////////////////////////////////////////////////////////////////////
+//cargar informacion groupstage del usuario
+if ($post['accion'] == "cargagroupstage") {
+    // Obtenemos el código de grupo
+    $sentencia = sprintf(
+        "SELECT gs.GRS_CODE, sg.SPG_CODE, sg.SPG_TEAM_NAME, gg.GRUP_CODE, gg.GRUP_NAME 
+                FROM groupstage gs
+                LEFT JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
+                LEFT JOIN groups gg ON gs.GRUP_CODE = gg.GRUP_CODE
+                WHERE gs.GRS_CODE = '%s'",
+        mysqli_real_escape_string($mysqli, $post['cod'])
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                //'GRUP_CODE' => $row['GRP_CODE'], 
+                'grup_code' => $row['GRUP_CODE'],     
+                'nombregrupo' => $row['GRUP_NAME'] , 
+                'spg_cod' => $row['SPG_CODE'],     
+                'nombreequipo' => $row['SPG_TEAM_NAME']   
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'ERROR'));
+    }
+
+    echo $respuesta;
+}
+
+//FUNCION PARA ELIMINAR EMPRESA 
+if ($post['accion'] == "Eliminargroupstage") {
+    $Empresaid = $post['GRS_CODE'];
+    $sentencia = sprintf(
+        "DELETE FROM groupstage WHERE GRS_CODE = '%s'",
+        $Empresaid
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos eliminados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar datos"));
+    }
+    echo $respuesta;
+}
+
+// delete deleteSportGroup
+if ($post['accion'] == "deleteSportGroup") {
+    $delete_query = sprintf(
+        "DELETE FROM sports_groups WHERE SPG_CODE='%s'",
+        $post['codigo']
+    );
+
+    if (mysqli_query($mysqli, $delete_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Equipo eliminado correctamente"));
+    } else {
+        // Capturar el error de MySQL
+        $error = mysqli_error($mysqli);
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar el equipo", "error" => $error));
+    }
+
+    echo $respuesta;
+}
+
