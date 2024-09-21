@@ -2085,19 +2085,22 @@ if ($post['accion'] == "ConMatches") {
     $nombreEquipo = isset($post['nombre']) ? $post['nombre'] : '';
     $generoEquipo = isset($post['genero']) ? $post['genero'] : '';
 
-    $sentencia = "SELECT m.MATC_CODE, m.MATC_DATE, m.MATC_HOUR, m.CANC_CODE, 
+    $sentencia = "SELECT m.MATC_CODE, m.MATC_DATE, m.MATC_HOUR, m.CANC_CODE, cr.CANC_NAME, 
                         eq1.SPG_TEAM_NAME AS SPG_TEAM_NAME_ONE, eq1.SPG_GENDER_TEAM AS SPG_GENDER_TEAM_ONE, 
                         eq2.SPG_TEAM_NAME AS SPG_TEAM_NAME_TWO, eq2.SPG_GENDER_TEAM AS SPG_GENDER_TEAM_TWO
                  FROM matches m
                  INNER JOIN sports_groups eq1 ON m.SPG_CODE_ONE = eq1.SPG_CODE
                  INNER JOIN sports_groups eq2 ON m.SPG_CODE_TWO = eq2.SPG_CODE
+                 INNER JOIN court cr ON m.CANC_CODE = cr.CANC_CODE
                  WHERE 1=1";
 
+    // Filtrar por nombre de equipo si se ingresa
     if ($nombreEquipo != '') {
         $sentencia .= " AND (eq1.SPG_TEAM_NAME LIKE '%" . mysqli_real_escape_string($mysqli, $nombreEquipo) . "%' 
                          OR eq2.SPG_TEAM_NAME LIKE '%" . mysqli_real_escape_string($mysqli, $nombreEquipo) . "%')";
     }
 
+    // Filtrar por género de equipo si se selecciona
     if ($generoEquipo != '') {
         $sentencia .= " AND (eq1.SPG_GENDER_TEAM = '" . mysqli_real_escape_string($mysqli, $generoEquipo) . "' 
                          OR eq2.SPG_GENDER_TEAM = '" . mysqli_real_escape_string($mysqli, $generoEquipo) . "')";
@@ -2115,3 +2118,4 @@ if ($post['accion'] == "ConMatches") {
         echo json_encode(["estado" => false, "mensaje" => "No se encontraron partidos."]);
     }
 }
+

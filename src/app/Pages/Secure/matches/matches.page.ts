@@ -49,7 +49,7 @@ export class MatchesPage implements OnInit {
           MATC_CODE: match.MATC_CODE,
           MATC_DATE: match.MATC_DATE,
           MATC_HOUR: match.MATC_HOUR,
-          CANC_CODE: match.CANC_CODE,
+          CANC_NAME: match.CANC_NAME,
           equipo1: {
             SPG_TEAM_NAME: match.SPG_TEAM_NAME_ONE,
             SPG_GENDER_TEAM: match.SPG_GENDER_TEAM_ONE,
@@ -132,7 +132,7 @@ export class MatchesPage implements OnInit {
 
   irEditar(MATC_CODE: string) {
     this.authService.createSession('MATC_CODE', MATC_CODE);
-    this.navCtrl.navigateRoot(['edit-match']);
+    this.navCtrl.navigateRoot(['edit-matches']);
   }
 
   cancelar() {
@@ -141,6 +141,6 @@ export class MatchesPage implements OnInit {
 
   agregarMatch() {
     this.authService.createSession('MATC_CODE', '');
-    this.navCtrl.navigateRoot(['edit-match']);
+    this.navCtrl.navigateRoot(['edit-matches']);
   }
 }

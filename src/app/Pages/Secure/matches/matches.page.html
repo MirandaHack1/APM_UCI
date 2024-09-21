@@ -25,9 +25,9 @@
     <ion-accordion *ngFor="let match of agrupadosPorGrupo">
       <ion-item slot="header">
         <ion-label>
-          <h2>Fecha del encuentro: {{ match.MATC_DATE | date }}</h2>
+          <h2>Fecha encuentro: {{ match.MATC_DATE | date }}</h2>
           <p>Hora: {{ match.MATC_HOUR }}</p>
-          <p>Cancha: {{ match.CANC_CODE }}</p>
+          <p>Cancha: {{ match.CANC_NAME }}</p>
         </ion-label>
       </ion-item>
       <div class="ion-padding" slot="content">
@@ -35,8 +35,7 @@
           <!-- Mostramos los equipos involucrados en el match -->
           <ion-item>
             <ion-label>
-              <h3>Equipo 1: {{ match.equipo1.SPG_TEAM_NAME }} ({{ match.equipo1.SPG_GENDER_TEAM }})</h3>
-              <h3>Equipo 2: {{ match.equipo2.SPG_TEAM_NAME }} ({{ match.equipo2.SPG_GENDER_TEAM }})</h3>
+              <p>Enfrentamiento de equipos</p>
             </ion-label>
             <ion-buttons slot="end">
               <ion-button (click)="irEditar(match.MATC_CODE)">
@@ -46,6 +45,18 @@
                 <ion-icon name="trash"></ion-icon>
               </ion-button>
             </ion-buttons>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>Equipo 1:</h3>
+              <h4>{{ match.equipo1.SPG_TEAM_NAME }} ({{ match.equipo1.SPG_GENDER_TEAM }})</h4>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>Equipo 2:</h3>
+              <h4>{{ match.equipo2.SPG_TEAM_NAME }} ({{ match.equipo2.SPG_GENDER_TEAM }})</h4>
+            </ion-label>
           </ion-item>
         </ion-list>
       </div>
