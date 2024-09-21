@@ -175,12 +175,12 @@ if ($post['accion'] == "updatePassword") {
     $codigo = $post['codigo'];
 
     // Cifra la nueva contraseña
-   $hashedPassword = password_hash($clave, PASSWORD_BCRYPT);
+    $hashedPassword = password_hash($clave, PASSWORD_BCRYPT);
 
     $update_query = sprintf(
         "UPDATE user_admin SET USAD_PASSWORD='%s' WHERE USAD_CODE='%s'",
         $hashedPassword,
-        
+
         $codigo
     );
 
@@ -509,58 +509,59 @@ if ($post['accion'] == "eliminarEmpresa") {
 
 //FUNCION PARA GUARDAR EMPRESA
 // Verifica que la solicitud contiene datos en $_POST
-if ($post['accion'] == "insertarEmpresa") {
+if ($post['accion'] == "insertarEmpresa" || $post['accion'] == "actualizarEmpresa") {
     $nombre = $post['nombre'];
     $mision = $post['mision'];
     $vision = $post['vision'];
     $estado = $post['estado'];
     $contacto = $post['contacto'];
-    $usuarioInsertar = $post['usuarioInsertar'];
-    $fechaInsertar = date("Y-m-d H:i:s");
+    $logoUrl = isset($post['logo']) ? $post['logo'] : '';
+    $imageUrl = isset($post['image']) ? $post['image'] : '';
 
-    // Procesar y guardar el logo
-    if (isset($_FILES['logo'])) {
-        $logoFileName = basename($_FILES['logo']['name']);
-        $logoFilePath = 'uploads/logos/' . $logoFileName;
-        move_uploaded_file($_FILES['logo']['tmp_name'], $logoFilePath);
+    // Preparar la consulta SQL
+    if ($post['accion'] == "insertarEmpresa") {
+        $insertarEmpresa = sprintf(
+            "INSERT INTO business_information (BUIF_NAME, BUIF_LOGO, BUIF_MISSION, BUIF_VISION, BUIF_IMAGE, BUIF_STATE, BUIF_CONTACT) 
+            VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+            mysqli_real_escape_string($mysqli, $nombre),
+            mysqli_real_escape_string($mysqli, $logoUrl),
+            mysqli_real_escape_string($mysqli, $mision),
+            mysqli_real_escape_string($mysqli, $vision),
+            mysqli_real_escape_string($mysqli, $imageUrl),
+            mysqli_real_escape_string($mysqli, $estado),
+            mysqli_real_escape_string($mysqli, $contacto)
+        );
+
+        if (mysqli_query($mysqli, $insertarEmpresa)) {
+            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Empresa agregada correctamente.'));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al agregar la empresa: ' . mysqli_error($mysqli)));
+        }
+    } elseif ($post['accion'] == "actualizarEmpresa") {
+        // Asegúrate de recibir el código de la empresa a actualizar
+        $codigoEmpresa = $post['codigo']; // Debes agregar esto en tu componente
+        $actualizarEmpresa = sprintf(
+            "UPDATE business_information SET BUIF_NAME = '%s', BUIF_LOGO = '%s', BUIF_MISSION = '%s', 
+            BUIF_VISION = '%s', BUIF_IMAGE = '%s', BUIF_STATE = '%s', BUIF_CONTACT = '%s' 
+            WHERE BUIF_CODE = '%s'",
+            mysqli_real_escape_string($mysqli, $nombre),
+            mysqli_real_escape_string($mysqli, $logoUrl),
+            mysqli_real_escape_string($mysqli, $mision),
+            mysqli_real_escape_string($mysqli, $vision),
+            mysqli_real_escape_string($mysqli, $imageUrl),
+            mysqli_real_escape_string($mysqli, $estado),
+            mysqli_real_escape_string($mysqli, $contacto),
+            mysqli_real_escape_string($mysqli, $codigoEmpresa)
+        );
+
+        if (mysqli_query($mysqli, $actualizarEmpresa)) {
+            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Empresa actualizada correctamente.'));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar la empresa: ' . mysqli_error($mysqli)));
+        }
     }
-
-    // Procesar y guardar la imagen
-    if (isset($_FILES['image'])) {
-        $imageFileName = basename($_FILES['image']['name']);
-        // $imageFilePath = 'uploads/images/' . $imageFileName;
-        $imageFilePath = './uploads/images/' . $imageFileName;
-        move_uploaded_file($_FILES['image']['tmp_name'], $imageFilePath);
-    }
-
-    // Insertar los datos de la empresa
-    $sentencia_insertar = sprintf(
-        "INSERT INTO business_information (BUIF_NAME, BUIF_LOGO, BUIF_MISSION, BUIF_VISION, BUIF_IMAGE, BUIF_STATE, BUIF_CONTACT, BUIF_USER_INSERT, BUIF_INSERT_DATE) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-        $nombre,
-        $logoFilePath, // Dirección del logo guardada en la base de datos
-        $mision,
-        $vision,
-        $imageFilePath, // Dirección de la imagen guardada en la base de datos
-        $estado,
-        $contacto,
-        $usuarioInsertar,
-        $fechaInsertar
-    );
-
-    $result_insertar = mysqli_query($mysqli, $sentencia_insertar);
-
-    if ($result_insertar) {
-        $respuesta = json_encode(array('estado' => true, "mensaje" => "Empresa insertada correctamente"));
-    } else {
-        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar empresa"));
-    }
-
     echo $respuesta;
 }
-
-
-
-
 
 
 
@@ -765,7 +766,7 @@ if ($post['accion'] == "searchUsers") {
 // Verifica la acción y ejecuta la consulta correspondiente
 if ($post['accion'] == "ConGrupos") {
     $buscar = isset($post['buscar']) ? $post['buscar'] : '';
-    
+
     // Si se proporciona un nombre para buscar, se filtran los grupos, de lo contrario, se obtienen todos
     if ($buscar != '') {
         $sentencia = sprintf(
@@ -790,7 +791,7 @@ if ($post['accion'] == "ConGrupos") {
         $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
     }
     echo $respuesta;
-}             
+}
 /*********************************** */
 //CANCHAS
 /********************************** */
@@ -826,7 +827,7 @@ if ($post['accion'] == 'EliminarGrupo') {
     $id_groups = $post['GRUP_CODE'];
 
     $sentencia = sprintf(
-        "DELETE FROM groups WHERE GRUP_CODE = '%s'", 
+        "DELETE FROM groups WHERE GRUP_CODE = '%s'",
         mysqli_real_escape_string($mysqli, $id_groups)
     );
 
@@ -842,7 +843,7 @@ if ($post['accion'] == 'EliminarGrupo') {
 }
 
 if ($post['accion'] == "cgrupos") {
-    $sentencia = sprintf("SELECT * FROM groups WHERE GRUP_CODE ='%s'",$post['idGrupo']);
+    $sentencia = sprintf("SELECT * FROM groups WHERE GRUP_CODE ='%s'", $post['idGrupo']);
     $result = mysqli_query($mysqli, $sentencia);
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_array($result)) {
@@ -862,10 +863,12 @@ if ($post['accion'] == "cgrupos") {
 
 if ($post['accion'] == 'AgregarGrupo') {
     $nombreGrupo = $post['nombreGrupo'];
-    
+
     // Verifica si el grupo ya existe
-    $verificar_grupo = sprintf("SELECT * FROM groups WHERE GRUP_NAME='%s'", 
-    mysqli_real_escape_string($mysqli, $nombreGrupo));
+    $verificar_grupo = sprintf(
+        "SELECT * FROM groups WHERE GRUP_NAME='%s'",
+        mysqli_real_escape_string($mysqli, $nombreGrupo)
+    );
     $resultado_verificacion = mysqli_query($mysqli, $verificar_grupo);
 
     if (mysqli_num_rows($resultado_verificacion) > 0) {
@@ -886,9 +889,9 @@ if ($post['accion'] == 'AgregarGrupo') {
         }
     }
     echo $respuesta;
-} 
+}
 
-    if ($post['accion'] == 'ActualizarGrupo') {
+if ($post['accion'] == 'ActualizarGrupo') {
     $id_grupo = $post['id_grupo'];
     $nombreGrupo = $post['nombreGrupo'];
 
@@ -996,7 +999,7 @@ if ($post['accion'] == "searchGroups") {
     );
 
     $result = mysqli_query($mysqli, $sentencia);
-    
+
     if (mysqli_num_rows($result) > 0) {
         $datos = array();
         while ($row = mysqli_fetch_array($result)) {
@@ -1078,22 +1081,22 @@ if ($post['accion'] == "ActualizarStGrupo") {
     $grupCode = $post['grupCode'];
     $spgCode = $post['spgCode'];
     //$genero = $post['Genero'];
-        // Actualizar los datos del grupo
-        $sentencia = sprintf(
-            "UPDATE groupstage SET GRUP_CODE='%s',SPG_CODE='%s' WHERE GRS_CODE='%s'",
-            mysqli_real_escape_string($mysqli, $grupCode),
-            mysqli_real_escape_string($mysqli, $spgCode),
-            mysqli_real_escape_string($mysqli, $stagecod)
-        );
+    // Actualizar los datos del grupo
+    $sentencia = sprintf(
+        "UPDATE groupstage SET GRUP_CODE='%s',SPG_CODE='%s' WHERE GRS_CODE='%s'",
+        mysqli_real_escape_string($mysqli, $grupCode),
+        mysqli_real_escape_string($mysqli, $spgCode),
+        mysqli_real_escape_string($mysqli, $stagecod)
+    );
 
-        $result = mysqli_query($mysqli, $sentencia);
+    $result = mysqli_query($mysqli, $sentencia);
 
-        if ($result) {
-            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Datos actualizados correctamente.'));
-        } else {
-            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar.'));
-        }
-    
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Datos actualizados correctamente.'));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar.'));
+    }
+
     echo $respuesta;
 }
 
@@ -1147,6 +1150,68 @@ if ($post['accion'] == "consultarSede") {
     echo $respuesta;
 }
 
+
+if ($post['accion'] == "AgregarRegistro" || $post['accion'] == "ActualizarRegistro") {
+    $nombre = $post['nombre'];
+    $logo = $post['logo']; // URL del logo
+    $mision = $post['mision'];
+    $vision = $post['vision'];
+    $imagen = $post['imagen']; // URL de la imagen
+    $estado = $post['estado'];
+    $contacto = $post['contacto'];
+    $usuarioCodigo = $post['usuario_codigo'];
+    $fecha = date('Y-m-d H:i:s');
+
+    // Preparar la consulta SQL
+    if ($post['accion'] == "AgregarRegistro") {
+        $insertarRegistro = sprintf(
+            "INSERT INTO business_information (BUIF_NAME, BUIF_LOGO, BUIF_MISSION, BUIF_VISION, BUIF_IMAGE, BUIF_STATE, BUIF_CONTACT, BUIF_USER_INSERT, BUIF_INSERT_DATE) 
+            VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+            mysqli_real_escape_string($mysqli, $nombre),
+            mysqli_real_escape_string($mysqli, $logo),
+            mysqli_real_escape_string($mysqli, $mision),
+            mysqli_real_escape_string($mysqli, $vision),
+            mysqli_real_escape_string($mysqli, $imagen),
+            mysqli_real_escape_string($mysqli, $estado),
+            mysqli_real_escape_string($mysqli, $contacto),
+            mysqli_real_escape_string($mysqli, $usuarioCodigo),
+            $fecha
+        );
+
+        if (mysqli_query($mysqli, $insertarRegistro)) {
+            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Registro agregado correctamente.'));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al agregar registro: ' . mysqli_error($mysqli)));
+        }
+    } elseif ($post['accion'] == "ActualizarRegistro") {
+        $codigo = $post['codigo']; // Asumiendo que este es el código único del registro
+        $actualizarRegistro = sprintf(
+            "UPDATE business_information SET BUIF_NAME = '%s', BUIF_LOGO = '%s', BUIF_MISSION = '%s', BUIF_VISION = '%s', BUIF_IMAGE = '%s', BUIF_STATE = '%s', BUIF_CONTACT = '%s', BUIF_USER_UPDATE = '%s', BUIF_UPDATE_DATE = '%s' 
+            WHERE BUIF_CODE = '%s'",
+            mysqli_real_escape_string($mysqli, $nombre),
+            mysqli_real_escape_string($mysqli, $logo),
+            mysqli_real_escape_string($mysqli, $mision),
+            mysqli_real_escape_string($mysqli, $vision),
+            mysqli_real_escape_string($mysqli, $imagen),
+            mysqli_real_escape_string($mysqli, $estado),
+            mysqli_real_escape_string($mysqli, $contacto),
+            mysqli_real_escape_string($mysqli, $usuarioCodigo),
+            $fecha,
+            mysqli_real_escape_string($mysqli, $codigo)
+        );
+
+        if (mysqli_query($mysqli, $actualizarRegistro)) {
+            $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Registro actualizado correctamente.'));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar registro: ' . mysqli_error($mysqli)));
+        }
+    }
+    echo $respuesta;
+}
+
+
+
+
 // ESTE TRAE EMPRESA
 //loadbusinessinfo
 if ($post['accion'] == "loadbusinessinfo2") {
@@ -1197,6 +1262,88 @@ if ($post['accion'] == "insertar_sede") {
     }
     echo $respuesta;
 }
+
+
+// if ($post['accion'] == "empresasdatos") {
+//     $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama 'codigo'
+//     $sentencia = sprintf("SELECT * FROM business_information WHERE BUIF_CODE = '%s'", mysqli_real_escape_string($mysqli, $codigo));
+//     $result = mysqli_query($mysqli, $sentencia);
+
+//     if (mysqli_num_rows($result) > 0) {
+//         $datos = [];
+//         while ($row = mysqli_fetch_array($result)) {
+//             $datos[] = array(
+//                 'codigo' => $row['BUIF_CODE'],
+//                 'nombre' => $row['BUIF_NAME'],
+//                 'logo' => $row['BUIF_LOGO'], // URL del logo
+//                 'mision' => $row['BUIF_MISSION'],
+//                 'vision' => $row['BUIF_VISION'],
+//                 'image' => $row['BUIF_IMAGE'], // URL de la imagen
+//                 'estado' => $row['BUIF_STATE'],
+//                 'contacto' => $row['BUIF_CONTACT']
+//             );
+//         }
+//         $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+//     }
+//     echo $respuesta;
+// }
+
+
+if ($post['accion'] == "empresasdatos") { 
+    $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama 'codigo'
+    $sentencia = sprintf("SELECT * FROM business_information WHERE BUIF_CODE = '%s'", mysqli_real_escape_string($mysqli, $codigo));
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = [];
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['BUIF_CODE'],
+                'nombre' => $row['BUIF_NAME'],
+                'logo' => str_replace('\\', '', $row['BUIF_LOGO']), // Reemplazar \ por / en la URL del logo
+                'mision' => $row['BUIF_MISSION'],
+                'vision' => $row['BUIF_VISION'],
+                'image' => str_replace('\\', '', $row['BUIF_IMAGE']), // Reemplazar \ por / en la URL de la imagen
+                'estado' => $row['BUIF_STATE'],
+                'contacto' => $row['BUIF_CONTACT']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}
+
+
+// if ($post['accion'] == "empresasdatos") {
+//     $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama 'codigo'
+//     $sentencia = sprintf("SELECT * FROM business_information WHERE BUIF_CODE = '%s'", mysqli_real_escape_string($mysqli, $codigo));
+//     $result = mysqli_query($mysqli, $sentencia);
+
+//     if (mysqli_num_rows($result) > 0) {
+//         $datos = [];
+//         while ($row = mysqli_fetch_array($result)) {
+//             $datos[] = array(
+//                 'codigo' => $row['BUIF_CODE'],
+//                 'nombre' => $row['BUIF_NAME'],
+//                 'logo' => 'http://localhost/' . $row['BUIF_LOGO'], // Asegúrate de incluir la URL base
+//                 'mision' => $row['BUIF_MISSION'],
+//                 'vision' => $row['BUIF_VISION'],
+//                 'image' => 'http://localhost/' . $row['BUIF_IMAGE'], // Asegúrate de incluir la URL base
+//                 'estado' => $row['BUIF_STATE'],
+//                 'contacto' => $row['BUIF_CONTACT']
+//             );
+//         }
+//         $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+//     }
+//     echo $respuesta;
+// }
+
 
 
 //FUNCION PARA ELIMINAR EMPRESA 
@@ -1376,7 +1523,7 @@ if ($post['accion'] == "loadGroupData") {
     if (mysqli_num_rows($result) > 0) {
         $datos = mysqli_fetch_array($result);
         $respuesta = json_encode(array(
-            'estado' => true, 
+            'estado' => true,
             'info' => array(
                 'group_name' => $datos['SPG_TEAM_NAME'],
                 'creation_date' => $datos['SPG_CREATION_DATE'],
@@ -1462,7 +1609,7 @@ if ($post['accion'] == "loadDates") {
         $post['codigo2'],
 
     );
-    
+
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
@@ -1492,7 +1639,7 @@ if ($post['accion'] == "loadSportGroupName") {
          WHERE SPG_CODE = '%s'", 
         $post['codigo']
     );
-    
+
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
@@ -1501,7 +1648,7 @@ if ($post['accion'] == "loadSportGroupName") {
             $datos[] = array(
                 'sport_code' => $row['SPG_CODE'],
                 'teamName' => $row['SPG_TEAM_NAME'],
-                
+
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
