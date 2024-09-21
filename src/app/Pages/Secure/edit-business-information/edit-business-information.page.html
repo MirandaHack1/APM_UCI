@@ -19,10 +19,37 @@
     <ion-label position="stacked" class="bold-label">Nombre Empresa:</ion-label>
     <ion-input type="text" [(ngModel)]="nombre"></ion-input>
   </ion-item>
+
+   <!-- Campo para mostrar el logo -->
+   <ion-item *ngIf="logoUrl" style="text-align: center;">
+    <ion-label>Logo:</ion-label>
+    <ion-img 
+      [src]="codigo ? logooo.replace('localhost', 'http://127.0.0.1') : 
+            logoUrl.replace('localhost', 'http://127.0.0.1')"
+      style="max-width: 100px; max-height: 100px; display: inline-block;">
+    </ion-img>
+  </ion-item>
+
   <!-- Campo para subir el logo -->
   <ion-item>
-    <ion-label position="stacked" class="bold-label">Logo:</ion-label>
-    <input type="file" (change)="onFileSelected($event, 'logo')" />
+    <ion-label position="stacked" class="bold-label">Subir Logo:</ion-label>
+    <input type="file" (change)="seleccionarLogo($event)" accept=".png, .jpg, .jpeg"/>
+  </ion-item>
+
+  <!-- Otros campos -->
+  <ion-item *ngIf="imageUrl" style="text-align: center;">
+    <ion-label>Imagen:</ion-label>
+    <ion-img 
+      [src]="codigo ? imagennn.replace('localhost', 'http://127.0.0.1') : 
+            imageUrl.replace('localhost', 'http://127.0.0.1')"
+      style="max-width: 100px; max-height: 100px; display: inline-block;">
+    </ion-img>
+  </ion-item>
+
+  <!-- Campo para subir la imagen -->
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Subir Imagen:</ion-label>
+    <input type="file" (change)="seleccionarImagen($event)" accept=".png, .jpg, .jpeg"/>
   </ion-item>
 
   <ion-item>
@@ -35,17 +62,11 @@
     <ion-textarea [(ngModel)]="vision"></ion-textarea>
   </ion-item>
 
-  <!-- Campo para subir la imagen -->
-  <ion-item>
-    <ion-label position="stacked" class="bold-label">Imagen:</ion-label>
-    <input type="file" (change)="onFileSelected($event, 'image')" />
-  </ion-item>
-
   <ion-item>
     <ion-label position="stacked" class="bold-label">Estado:</ion-label>
     <ion-select [(ngModel)]="estado">
-      <ion-select-option value="Activo">Activo</ion-select-option>
-      <ion-select-option value="Inactivo">Inactivo</ion-select-option>
+      <ion-select-option value="1">Activo</ion-select-option>
+      <ion-select-option value="0">Inactivo</ion-select-option>
     </ion-select>
   </ion-item>
 

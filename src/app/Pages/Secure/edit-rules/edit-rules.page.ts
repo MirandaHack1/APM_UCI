@@ -8,22 +8,18 @@ import { AuthService } from 'src/app/Services/auth/auth.service';
   styleUrls: ['./edit-rules.page.scss'],
 })
 export class EditRulesPage implements OnInit {
-
   nombreRegla: string = '';
   archivoReglas: File | null = null;
   archivoUrl: string = '';
   cod: string = '';
   codigoRegla: string = '';
 
-  constructor(
-    public authService: AuthService,
-    public navCtrl: NavController
-  ) { 
-    this.authService.getSession('USAD_CODE').then((res:any) => {
+  constructor(public authService: AuthService, public navCtrl: NavController) {
+    this.authService.getSession('USAD_CODE').then((res: any) => {
       this.cod = res;
     });
 
-    this.authService.getSession('codigorules').then((res:any) => {
+    this.authService.getSession('codigorules').then((res: any) => {
       this.codigoRegla = res;
       if (this.codigoRegla) {
         this.obtenerRegla();
@@ -31,30 +27,51 @@ export class EditRulesPage implements OnInit {
     });
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   obtenerRegla() {
     let datos = {
-      accion: 'reglasdatos', 
-      id_regla: this.codigoRegla
+      accion: 'reglasdatos',
+      id_regla: this.codigoRegla,
     };
-    this.authService.postData(datos).subscribe((res: any) => {
-      if (res.estado === true) {
-        let regla = res.datos[0]; 
-        this.nombreRegla = regla.nombrer;
-        this.archivoUrl = regla.pdf; // Asignar la URL del archivo PDF
-      } else {
-        this.authService.showToast('No se encontró la regla');
+    this.authService.postData(datos).subscribe(
+      (res: any) => {
+        if (res.estado === true) {
+          let regla = res.datos[0];
+          this.nombreRegla = regla.nombrer;
+          this.archivoUrl = regla.pdf; // Asignar la URL del archivo PDF
+        } else {
+          this.authService.showToast('No se encontró la regla');
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
       }
-    }, (error) => {
-      console.error('Error en la solicitud:', error);
-    });
+    );
   }
 
+  // seleccionarArchivo(event: any) {
+  //   let file = event.target.files[0];
+  //   if (file) {
+  //     this.archivoReglas = file;
+  //   }
+  // }
+
   seleccionarArchivo(event: any) {
-    let file = event.target.files[0];
-    if (file) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/pdf') {
       this.archivoReglas = file;
+
+      // Previsualizar el archivo PDF
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.archivoUrl = reader.result as string; // Actualiza la vista con la previsualización
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.authService.showToast(
+        'Por favor, selecciona un archivo PDF válido.'
+      );
     }
   }
 
@@ -62,15 +79,18 @@ export class EditRulesPage implements OnInit {
     if (!this.archivoReglas) {
       return this.archivoUrl; // Usa la URL existente si no hay nuevo archivo
     }
-  
+
     const formData = new FormData();
     formData.append('archivo', this.archivoReglas);
-  
+
     try {
-      const response = await fetch('http://localhost/APM_UCI/Ws_APM_BACK/upload.php', {
-        method: 'POST',
-        body: formData
-      });
+      const response = await fetch(
+        'http://localhost/APM_UCI/Ws_APM_BACK/upload.php',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
       const result = await response.json();
       if (result.estado) {
         return result.archivo_url; // URL del archivo en el servidor
@@ -84,30 +104,36 @@ export class EditRulesPage implements OnInit {
       return this.archivoUrl; // Retorna la URL existente en caso de error
     }
   }
-  
+
   async guardarRegla() {
     const archivoUrl = await this.subirArchivo();
-  
+
     let datos = {
       accion: this.codigoRegla ? 'ActualizarRegla' : 'AgregarRegla',
       id_regla: this.codigoRegla || '',
       nombre_regla: this.nombreRegla,
       usuario_codigo: this.cod,
-      archivo_url: archivoUrl // Aquí colocas la URL del archivo
+      archivo_url: archivoUrl, // Aquí colocas la URL del archivo
     };
-    console.log(datos);
-    this.authService.postData(datos).subscribe((res: any) => {
-      if (res.estado === true) {
-        this.authService.showToast(this.codigoRegla ? 'Regla actualizada correctamente' : 'Regla guardada correctamente');
-        this.navCtrl.back();
-      } else {
-        this.authService.showToast(res.mensaje);
+
+    this.authService.postData(datos).subscribe(
+      (res: any) => {
+        if (res.estado === true) {
+          this.authService.showToast(
+            this.codigoRegla
+              ? 'Regla actualizada correctamente'
+              : 'Regla guardada correctamente'
+          );
+          this.navCtrl.back();
+        } else {
+          this.authService.showToast(res.mensaje);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
       }
-    }, (error) => {
-      console.error('Error en la solicitud:', error);
-    });
+    );
   }
-  
 
   cancelar() {
     this.navCtrl.back();
