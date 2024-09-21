@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Grupos de deporte</ion-title>
+    <ion-title>Jugadores</ion-title>
     <ion-buttons slot="start">
       <ion-button (click)="back()">
         Menu
@@ -10,5 +10,36 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button   (click)="newPlayer()">
+      <ion-icon name="add" ></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  
+  <ion-item>
+    <ion-input [(ngModel)]="txt_search" placeholder="Ingrese el nombre o cédula"></ion-input>
+    <ion-button expand="full" (click)="loadSearchPlayers()">Buscar</ion-button>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let player of players">
+      <ion-label>
+       
+        <h2>{{ player.nombre }}</h2>
+        <p>{{ player.cedula}}</p>
+        <p> Número de camiseta: {{ player.teap_shirt_number}}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button (click)="irEditar(player.teap_code)"> 
+        </ion-button>
+          <ion-icon name="create"></ion-icon>
+        <ion-button color="danger" (click)="confirmDeletePlayer(player.teap_code)">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+  
  
 </ion-content>

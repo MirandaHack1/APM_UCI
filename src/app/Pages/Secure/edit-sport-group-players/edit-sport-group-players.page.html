@@ -1,13 +1,38 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>edit-sport-group-players</ion-title>
+    <ion-title> Jugador</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">
+        Atras
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">edit-sport-group-players</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-item>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="!isEditMode" (click)="searchPlayer()">
+        Seleccionar
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    
+    <ion-label position="stacked" class="bold-label">Jugador:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_player" [value]="player_code" readonly></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Número de camiseta:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_shirtNumber" ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-button (click)="verify()" expand="block" shape="round">
+      Guardar
+    </ion-button>
+    <ion-button (click)="back()" expand="block" color="danger" shape="round">
+      Cancelar
+    </ion-button>
+  </ion-item>
 </ion-content>

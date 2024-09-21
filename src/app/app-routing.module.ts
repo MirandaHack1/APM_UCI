@@ -324,6 +324,13 @@ const routes: Routes = [
         (m) => m.EditHeadquartersPageModule
       ),
   },
+  {
+    path: 'search-group-players',
+    loadChildren: () =>
+      import(
+        './Pages/Secure/edit-sport-group-players/search-group-players/search-group-players.module'
+      ).then((m) => m.SearchGroupPlayersPageModule),
+  }
 ];
 
 @NgModule({
