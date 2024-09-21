@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/Services/auth/auth.service';
 export class SearchSportsGroupsPage implements OnInit {
   txt_search: string = ""; 
   teams: any[] = []; 
+  groupedTeams: any[] = []; // Para almacenar los equipos agrupados
   Genero: string = ""; 
 
   constructor(
@@ -20,16 +21,18 @@ export class SearchSportsGroupsPage implements OnInit {
       this.Genero = res;
       console.log(this.Genero);
       this.searchTeams();
+    }).catch(err => {
+      console.error('Error fetching session:', err);
     });
-
   }
 
   ngOnInit() {
+    // Inicializaciones si son necesarias
   }
 
   // Búsqueda de equipos por nombre
   searchTeams() {
-    let datos = {
+    const datos = {
       "accion": "searchTeams",
       "result": this.txt_search,
       "team_gender": this.Genero
@@ -37,16 +40,55 @@ export class SearchSportsGroupsPage implements OnInit {
 
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
-        this.teams = res.datos; // Asignar los resultados de la búsqueda
+        this.groupedTeams = this.agruparEquiposPorFecha(res.datos); // Agrupar resultados
       } else {
         this.authService.showToast('No se encontraron equipos con ese nombre.');
+        this.groupedTeams = []; // Limpiar si no hay resultados
       }
+    }, err => {
+      console.error('Error during searchTeams:', err);
+      this.authService.showToast('Error al buscar equipos.');
+      this.groupedTeams = []; // Limpiar en caso de error
     });
   }
 
+  // Agrupar equipos por nombre y fechas disponibles
+  agruparEquiposPorFecha(teams: any[]) {
+    return teams.reduce((acc, team) => {
+      let equipoExistente = acc.find((t: { codigo: any; }) => t.codigo === team.codigo);
+      if (!equipoExistente) {
+        equipoExistente = { 
+          codigo: team.codigo, 
+          nombre: team.nombre, 
+          fechas: [],
+          showDates: false // Inicializa la propiedad para mostrar las fechas
+        };
+        acc.push(equipoExistente);
+      }
+      equipoExistente.fechas.push({
+        fecha: team.fecha,
+        horaDesde: team.horaDesde,
+        horaHasta: team.horaHasta
+      });
+      return acc;
+    }, []);
+  }
+  
+  // Alternar la visualización de fechas
+toggleAccordion(team: { showDates: boolean; }) {
+  // Cerrar otros acordeones
+  this.groupedTeams.forEach(t => {
+    if (t !== team) {
+      t.showDates = false;
+    }
+  });
+  team.showDates = !team.showDates;
+}
+
+  
   // Selección de un equipo
   addTeam(codigo: string, nombre: string) {
-    let result = {
+    const result = {
       code: codigo,
       name: nombre
     };

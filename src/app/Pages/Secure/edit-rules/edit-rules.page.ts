@@ -95,7 +95,7 @@ export class EditRulesPage implements OnInit {
       usuario_codigo: this.cod,
       archivo_url: archivoUrl // Aquí colocas la URL del archivo
     };
-  
+    console.log(datos);
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
         this.authService.showToast(this.codigoRegla ? 'Regla actualizada correctamente' : 'Regla guardada correctamente');
