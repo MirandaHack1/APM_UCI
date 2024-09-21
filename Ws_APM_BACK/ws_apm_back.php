@@ -812,7 +812,7 @@ if ($post['accion'] == "consultarCanchas") {
             $datos[] = array(
                 'codigo' => $row['CANC_CODE'],
                 'nombre' => $row['CANC_NAME'],
-                'ubicacion' => $row['CANC_LOCATE'],
+                'direccion' => $row['CANC_LOCATE'],
                 'estado' => $row['CANC_STATE']
             );
         }
@@ -2079,3 +2079,107 @@ if ($post['accion'] == "loadPlayer") {
     echo $respuesta;
 }
 
+
+//CRUD DE CANCHAS
+
+if ($post['accion'] == "dcanchas") {
+    // $sentencia = "SELECT * FROM court  WHERE CANC_CODE='%s'" ;
+    $sentencia = sprintf("SELECT * FROM court WHERE CANC_CODE='%s'", $post['codigo']);
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['CANC_CODE'],
+                'nombre' => $row['CANC_NAME'],
+                'direccion' => $row['CANC_LOCATE'],
+                'estado' => $row['CANC_STATE'],
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, "datos" => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "No se encontraron resultados."));
+    }
+    echo $respuesta;
+}
+
+
+
+if ($post['accion'] == "actualizar_cancha") {
+    // Paso 1: Preparar la sentencia de actualización
+    $sentencia = sprintf(
+        "UPDATE court 
+         SET CANC_NAME = '%s', 
+             CANC_LOCATE = '%s', 
+             CANC_STATE = '%s' 
+         WHERE CANC_CODE = '%s'",
+        $post['nombre'],
+        $post['direccion'],
+        $post['estado'],
+        $post['codigo'] // Este es el campo que se usa para hacer la actualización
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar datos"));
+    }
+    echo $respuesta;
+}
+
+if ($post['accion'] == "insertar_cancha") {
+    // Insertar los datos directamente en la tabla 'court'
+    $sentencia = sprintf(
+        "INSERT INTO court (
+            CANC_NAME, 
+            CANC_LOCATE, 
+            CANC_STATE
+        ) VALUES ('%s', '%s', '%s')",
+        $post['nombre'],
+        $post['direccion'],
+        $post['estado']
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos insertados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar datos"));
+    }
+    echo $respuesta;
+}
+
+
+//FUNCION PARA ELIMINAR EMPRESA 
+if ($post['accion'] == "eliminarEmpresa") {
+    $Empresaid = $post['codigo'];
+    $sentencia = sprintf(
+        "DELETE FROM business_information WHERE BUIF_CODE = '%s'",
+        $Empresaid
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos eliminados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar datos"));
+    }
+    echo $respuesta;
+}
+
+
+// FUNCIÓN PARA ELIMINAR REGISTRO DE LA TABLA COURT
+if ($post['accion'] == "eliminarCanchas") {
+    $codigoCancha = $post['codigo'];
+    $sentencia = sprintf(
+        "DELETE FROM court WHERE CANC_CODE = '%s'",
+        $codigoCancha
+    );
+    $result = mysqli_query($mysqli, $sentencia);
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos eliminados correctamente"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar datos"));
+    }
+    echo $respuesta;
+}
