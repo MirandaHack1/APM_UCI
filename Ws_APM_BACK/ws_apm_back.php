@@ -2441,3 +2441,163 @@ if ($post['accion'] == "EliminarMatch") {
 
     echo $respuesta;
 }
+if ($post['accion'] == "LoadsearchMatches") {
+    $search = $mysqli->real_escape_string($post['search']);
+    $option = $mysqli->real_escape_string($post['option']);
+
+    // Si no se ingresó texto de búsqueda, ignorar el filtro por búsqueda
+    $searchFilter = $search ? "AND (team_one.SPG_TEAM_NAME LIKE '%$search%' OR team_two.SPG_TEAM_NAME LIKE '%$search%')" : "";
+
+    if ($option == 'proximos') {
+        // Cargar los próximos partidos (sin registros en vocalía_general)
+        $query = "
+            SELECT m.MATC_CODE, m.MATC_DATE, m.MATC_HOUR, team_one.SPG_TEAM_NAME AS team_one, team_two.SPG_TEAM_NAME AS team_two
+            FROM matches m
+            INNER JOIN sports_groups team_one ON m.SPG_CODE_ONE = team_one.SPG_CODE
+            INNER JOIN sports_groups team_two ON m.SPG_CODE_TWO = team_two.SPG_CODE
+            LEFT JOIN vocalia_general vg ON vg.MATC_CODE = m.MATC_CODE
+            WHERE vg.VOGE_CODE IS NULL $searchFilter
+            ORDER BY m.MATC_DATE, m.MATC_HOUR
+        ";
+    } elseif ($option == 'finalizados') {
+        // Cargar los partidos finalizados (con registros en vocalía_general)
+        $query = "
+            SELECT m.MATC_CODE, m.MATC_DATE, m.MATC_HOUR, team_one.SPG_TEAM_NAME AS team_one, team_two.SPG_TEAM_NAME AS team_two, 
+                   vg.VOGE_TOTAL_GOALS_TEAM_ONE, vg.VOGE_TOTAL_GOALS_TEAM_TWO
+            FROM matches m
+            INNER JOIN sports_groups team_one ON m.SPG_CODE_ONE = team_one.SPG_CODE
+            INNER JOIN sports_groups team_two ON m.SPG_CODE_TWO = team_two.SPG_CODE
+            INNER JOIN vocalia_general vg ON vg.MATC_CODE = m.MATC_CODE
+            WHERE 1=1 $searchFilter
+            ORDER BY m.MATC_DATE, m.MATC_HOUR
+        ";
+    }
+
+    $result = mysqli_query($mysqli, $query);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $datos[] = array(
+                'codigo' => $row['MATC_CODE'],
+                'team_one' => $row['team_one'],
+                'team_two' => $row['team_two'],
+                'date' => $row['MATC_DATE'],
+                'hour' => $row['MATC_HOUR'],
+                'goals_team_one' => isset($row['VOGE_TOTAL_GOALS_TEAM_ONE']) ? $row['VOGE_TOTAL_GOALS_TEAM_ONE'] : null,
+                'goals_team_two' => isset($row['VOGE_TOTAL_GOALS_TEAM_TWO']) ? $row['VOGE_TOTAL_GOALS_TEAM_TWO'] : null
+            );
+        }
+        echo json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        echo json_encode(array('estado' => false, 'mensaje' => "No se encontraron partidos"));
+    }
+}
+
+
+
+if ($post['accion'] == "loadInfoMatchDetail") {
+    $codigoPartido = $post['codigo'];
+
+    // Obtener detalles generales del partido
+    $query = sprintf("SELECT 
+                        m.MATC_DATE AS match_date,
+                        sg1.SPG_TEAM_NAME AS team_one_name,
+                        sg2.SPG_TEAM_NAME AS team_two_name,
+                        vg.VOGE_TOTAL_GOALS_TEAM_ONE AS total_goals_team_one,
+                        vg.VOGE_TOTAL_GOALS_TEAM_TWO AS total_goals_team_two,
+                        vg.VOGE_TOTAL_YELLOW_CARD AS total_yellow_cards,
+                        vg.VOGE_TOTAL_RED_CARD AS total_red_cards,
+                        vg.VOGE_TOTAL_CHANGES AS total_changes,
+                        vg.VOGE_REFEREE_REPORT AS referee_report,
+                        vg.VOGE_VOCAL_REPORT AS vocal_report,
+                        vg.VOGE_TEAM_WINNER AS team_winner,
+                        vg.VOGE_TEAM_LOSER AS team_loser,
+                        vg.VOGE_TEAM_DRAW AS team_draw
+                      FROM matches m
+                      JOIN sports_groups sg1 ON m.SPG_CODE_ONE = sg1.SPG_CODE
+                      JOIN sports_groups sg2 ON m.SPG_CODE_TWO = sg2.SPG_CODE
+                      JOIN vocalia_general vg ON vg.MATC_CODE = m.MATC_CODE
+                      WHERE m.MATC_CODE = '%s'", $codigoPartido);
+
+    $result = mysqli_query($mysqli, $query);
+
+    if ($post['accion'] == "loadInfoMatchDetail") {
+        $codigoPartido = $post['codigo'];
+    
+        // Obtener detalles generales del partido
+        $query = sprintf("SELECT 
+                            m.MATC_DATE AS match_date,
+                            sg1.SPG_TEAM_NAME AS team_one_name,
+                            sg2.SPG_TEAM_NAME AS team_two_name,
+                            sg1.SPG_CODE AS team_one_code,
+                            sg2.SPG_CODE AS team_two_code,
+                            vg.VOGE_TOTAL_GOALS_TEAM_ONE AS total_goals_team_one,
+                            vg.VOGE_TOTAL_GOALS_TEAM_TWO AS total_goals_team_two,
+                            vg.VOGE_TOTAL_YELLOW_CARD AS total_yellow_cards,
+                            vg.VOGE_TOTAL_RED_CARD AS total_red_cards,
+                            vg.VOGE_TOTAL_CHANGES AS total_changes,
+                            vg.VOGE_REFEREE_REPORT AS referee_report,
+                            vg.VOGE_VOCAL_REPORT AS vocal_report,
+                            vg.VOGE_TEAM_WINNER AS team_winner,
+                            vg.VOGE_TEAM_LOSER AS team_loser,
+                            vg.VOGE_TEAM_DRAW AS team_draw
+                          FROM matches m
+                          JOIN sports_groups sg1 ON m.SPG_CODE_ONE = sg1.SPG_CODE
+                          JOIN sports_groups sg2 ON m.SPG_CODE_TWO = sg2.SPG_CODE
+                          JOIN vocalia_general vg ON vg.MATC_CODE = m.MATC_CODE
+                          WHERE m.MATC_CODE = '%s'", $codigoPartido);
+    
+        $result = mysqli_query($mysqli, $query);
+    
+        if (mysqli_num_rows($result) > 0) {
+            $matchData = mysqli_fetch_array($result);
+    
+            // Obtener jugadores del equipo 1 utilizando el SPG_CODE del equipo 1
+            $teamOnePlayers = array();
+            $queryPlayersOne = sprintf("SELECT ic.ICLI_FIRST_NAME, ic.ICLI_LAST_NAME, vs.VOSH_GOALS, vs.VOSH_YELLOW_CARD, vs.VOSH_RED_CARD
+                                        FROM vocalia_sheet vs
+                                        JOIN team_player tp ON vs.TEAP_CODE = tp.TEAP_CODE
+                                        JOIN info_client ic ON tp.ICLI_CODE = ic.ICLI_CODE
+                                        WHERE tp.SPG_CODE = '%s'", $matchData['team_one_code']);  // Cambiado a team_one_code
+    
+            $resultPlayersOne = mysqli_query($mysqli, $queryPlayersOne);
+            while ($rowPlayer = mysqli_fetch_array($resultPlayersOne)) {
+                $teamOnePlayers[] = array(
+                    'name' => $rowPlayer['ICLI_FIRST_NAME'] . ' ' . $rowPlayer['ICLI_LAST_NAME'],
+                    'goals' => $rowPlayer['VOSH_GOALS'],
+                    'yellow_cards' => $rowPlayer['VOSH_YELLOW_CARD'],
+                    'red_cards' => $rowPlayer['VOSH_RED_CARD']
+                );
+            }
+    
+            // Obtener jugadores del equipo 2 utilizando el SPG_CODE del equipo 2
+            $teamTwoPlayers = array();
+            $queryPlayersTwo = sprintf("SELECT ic.ICLI_FIRST_NAME, ic.ICLI_LAST_NAME, vs.VOSH_GOALS, vs.VOSH_YELLOW_CARD, vs.VOSH_RED_CARD
+                                        FROM vocalia_sheet vs
+                                        JOIN team_player tp ON vs.TEAP_CODE = tp.TEAP_CODE
+                                        JOIN info_client ic ON tp.ICLI_CODE = ic.ICLI_CODE
+                                        WHERE tp.SPG_CODE = '%s'", $matchData['team_two_code']);  // Cambiado a team_two_code
+    
+            $resultPlayersTwo = mysqli_query($mysqli, $queryPlayersTwo);
+            while ($rowPlayer = mysqli_fetch_array($resultPlayersTwo)) {
+                $teamTwoPlayers[] = array(
+                    'name' => $rowPlayer['ICLI_FIRST_NAME'] . ' ' . $rowPlayer['ICLI_LAST_NAME'],
+                    'goals' => $rowPlayer['VOSH_GOALS'],
+                    'yellow_cards' => $rowPlayer['VOSH_YELLOW_CARD'],
+                    'red_cards' => $rowPlayer['VOSH_RED_CARD']
+                );
+            }
+    
+            // Agregar los jugadores al arreglo de datos del partido
+            $matchData['team_one_players'] = $teamOnePlayers;
+            $matchData['team_two_players'] = $teamTwoPlayers;
+    
+            // Devolver la respuesta como JSON
+            $respuesta = json_encode(array('estado' => true, 'datos' => [$matchData]));
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron detalles del partido.'));
+        }
+    
+        echo $respuesta;
+    }
+}
