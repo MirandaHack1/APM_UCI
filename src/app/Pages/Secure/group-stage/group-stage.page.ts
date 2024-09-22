@@ -43,6 +43,20 @@ export class GroupStagePage implements OnInit {
     );
   }
 
+  filtrarFinalistas() {
+    // Estados que no queremos mostrar
+    const estadosExcluidos = ['Equipo no clasificado', 'Eliminado'];
+  
+    // Filtrar los grupos con equipos en un estado válido
+    const gruposFiltrados = this.grupos.filter(grupo => 
+      !estadosExcluidos.includes(grupo.SPG_STATE_MATCH) // Verificamos que el estado no esté en la lista excluida
+    );
+  
+    // Agrupar los grupos filtrados nuevamente
+    this.agrupadosPorGrupo = this.agruparPorGrupo(gruposFiltrados);
+  }
+  
+
   // Método para agrupar equipos por grupo
   agruparPorGrupo(grupos: any[]) {
     let agrupados = grupos.reduce((acc, grupo) => {

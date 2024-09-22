@@ -12,7 +12,7 @@ export class SearchSportsGroupsDosPage implements OnInit {
   teams: any[] = []; 
   groupedTeams: any[] = []; // Para almacenar los equipos agrupados
   Genero: string = ""; 
-
+  matchDate: string = ""; // Recibir la fecha seleccionada
   constructor(
     public modalCtrl: ModalController,
     public authService: AuthService
@@ -29,26 +29,26 @@ export class SearchSportsGroupsDosPage implements OnInit {
   ngOnInit() {}
 
   // Búsqueda de equipos por grupo
-  searchTeams() {
-    const datos = {
-      "accion": "searchTeamsdos",
-      "result": this.txt_search,
-      "team_gender": this.Genero
-    };
   
+
+  searchTeams() {
+    const dateOnly = this.matchDate.split('T')[0];
+    const datos = {
+      accion: "searchTeamsdos",
+      result: this.txt_search,
+      team_gender: this.Genero,
+      match_date: dateOnly // Incluir la fecha seleccionada
+    };
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
-        this.groupedTeams = this.agruparEquiposPorGrupo(res.datos); // Agrupar resultados por grupo
+        this.groupedTeams = this.agruparEquiposPorGrupo(res.datos);
       } else {
         this.authService.showToast('No se encontraron equipos con ese nombre.');
-        this.groupedTeams = []; // Limpiar si no hay resultados
+        this.groupedTeams = [];
       }
-    }, err => {
-      console.error('Error durante la búsqueda de equipos:', err);
-      this.authService.showToast('Error al buscar equipos.');
-      this.groupedTeams = []; // Limpiar en caso de error
     });
   }
+  
   
 
   agruparEquiposPorGrupo(teams: any[]) {

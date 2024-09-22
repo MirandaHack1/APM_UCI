@@ -12,7 +12,7 @@
   <ion-item>
     <ion-button (click)="filtrarPorGenero('Masculino')">Masculino</ion-button>
     <ion-button (click)="filtrarPorGenero('Femenino')">Femenino</ion-button>
-    <ion-button (click)="cargarAmbosGeneros()">Cargar Ambos Géneros</ion-button>
+    <ion-button (click)="cargarAmbosGeneros()">Ambos Géneros</ion-button>
   </ion-item>
   
   <ion-item>
@@ -42,7 +42,7 @@
               <p><strong>Equipo 2:</strong> {{ match.equipo2.SPG_TEAM_NAME }}</p>
             </ion-label>
             <ion-buttons slot="end">
-              <ion-button (click)="irEditar(match.MATC_CODE,match.SPG_GENDER_TEAM)">
+              <ion-button (click)="irEditar(match.MATC_CODE,match.equipo1.SPG_GENDER_TEAM )">
                 <ion-icon name="create"></ion-icon>
               </ion-button>
               <ion-button (click)="eliminar(match.MATC_CODE)">

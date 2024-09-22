@@ -39,9 +39,8 @@
   <!-- Botón para seleccionar Equipo 1 (SPG_CODE_ONE) -->
   <ion-item>
     <ion-buttons slot="end">
-      <ion-button (click)="selectEquipo1()">
+      <ion-button (click)="selectEquipo1()" [disabled]="!matchDate">
         Seleccionar Equipo 1
-        <ion-icon name="create"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-label position="stacked" class="bold-label">Equipo 1 seleccionado:</ion-label>
@@ -51,9 +50,8 @@
   <!-- Botón para seleccionar Equipo 2 (SPG_CODE_TWO) -->
   <ion-item>
     <ion-buttons slot="end">
-      <ion-button (click)="selectEquipo2()">
+      <ion-button (click)="selectEquipo2()" [disabled]="!matchDate">
         Seleccionar Equipo 2
-        <ion-icon name="create"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-label position="stacked" class="bold-label">Equipo 2 seleccionado:</ion-label>

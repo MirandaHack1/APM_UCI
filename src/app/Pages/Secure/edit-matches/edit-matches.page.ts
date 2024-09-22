@@ -79,24 +79,31 @@ export class EditMatchesPage implements OnInit {
   // Abrir modal para seleccionar equipo 1
   async selectEquipo1() {
     const modal = await this.modalCtrl.create({
-      component: SearchSportsGroupsDosPage
+      component: SearchSportsGroupsDosPage,
+      componentProps: {
+        matchDate: this.matchDate
+      }
     });
-
+  
     modal.onDidDismiss().then((result) => {
       if (result.data) {
         const { code, name } = result.data;
         this.txt_equipo1 = name;
-        this.spgCodeOne = code; // Código del equipo 1 seleccionado
+        this.spgCodeOne = code;
       }
     });
-
+  
     return await modal.present();
   }
+  
 
   // Abrir modal para seleccionar equipo 2
   async selectEquipo2() {
     const modal = await this.modalCtrl.create({
-      component: SearchSportsGroupsDosPage
+      component: SearchSportsGroupsDosPage,
+      componentProps: {
+        matchDate: this.matchDate
+      }
     });
 
     modal.onDidDismiss().then((result) => {
@@ -131,6 +138,8 @@ export class EditMatchesPage implements OnInit {
     });
   }
 
+
+  
   // Navegar hacia atrás
   back() {
     this.navCtrl.back();

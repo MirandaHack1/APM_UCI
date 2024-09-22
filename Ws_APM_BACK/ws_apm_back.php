@@ -927,20 +927,21 @@ if ($post['accion'] == 'ActualizarGrupo') {
 if ($post['accion'] == "ConGroupstage") {
     $nombreEquipo = isset($post['nombre']) ? $post['nombre'] : '';
     $generoEquipo = isset($post['genero']) ? $post['genero'] : '';
+    $soloFinalistas = isset($post['solo_finalistas']) ? $post['solo_finalistas'] : false;
 
     // Construir la consulta SQL dinámicamente según los parámetros
     $sentencia = "SELECT g.GRUP_NAME, gs.GRS_CODE, gs.GRS_TYPE_GANDER, sg.SPG_TEAM_NAME, 
                         icl_leader.ICLI_FIRST_NAME AS leader_name, 
                         icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
                         r.RU_RULES_FOR_SPORTS AS sport_name, 
-                        sg.SPG_CREATION_DATE, sg.SPG_GENDER_TEAM
+                        sg.SPG_CREATION_DATE, sg.SPG_GENDER_TEAM, sg.SPG_STATE_MATCH
                  FROM groups g
                  INNER JOIN groupstage gs ON g.GRUP_CODE = gs.GRUP_CODE
                  INNER JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
                  LEFT JOIN info_client icl_leader ON sg.ICLI_TEAM_LEADER_ID = icl_leader.ICLI_CODE
                  LEFT JOIN info_client icl_mascot ON sg.ICLI_TEAM_PED_ID = icl_mascot.ICLI_CODE
                  LEFT JOIN rules r ON sg.RU_CODE = r.RU_CODE
-                 WHERE 1=1"; // Evita problemas al concatenar condiciones
+                 WHERE 1=1 AND sg.SPG_STATE_MATCH != 'Eliminado'"; // Base de la consulta
 
     // Si se ingresa un nombre de equipo, se agrega a la consulta
     if ($nombreEquipo != '') {
@@ -950,6 +951,11 @@ if ($post['accion'] == "ConGroupstage") {
     // Si se selecciona un género, se agrega a la consulta
     if ($generoEquipo != '') {
         $sentencia .= " AND sg.SPG_GENDER_TEAM = '" . mysqli_real_escape_string($mysqli, $generoEquipo) . "'";
+    }
+
+    // Filtro de finalistas (excluir estados 'Equipo no clasificado' y 'Eliminado')
+    if ($soloFinalistas) {
+        $sentencia .= " AND sg.SPG_STATE_MATCH NOT IN ('Equipo no clasificado', 'Eliminado')";
     }
 
     $result = mysqli_query($mysqli, $sentencia);
@@ -968,6 +974,7 @@ if ($post['accion'] == "ConGroupstage") {
                     'sport_name' => $row['sport_name'],
                     'SPG_CREATION_DATE' => $row['SPG_CREATION_DATE'],
                     'SPG_GENDER_TEAM' => $row['SPG_GENDER_TEAM'],
+                    'SPG_STATE_MATCH' => $row['SPG_STATE_MATCH']
                 );
             }
             $respuesta = json_encode(array('estado' => true, "datos" => $datos));
@@ -979,6 +986,7 @@ if ($post['accion'] == "ConGroupstage") {
     }
     echo $respuesta;
 }
+
 
 
 if ($post['accion'] == "searchGroups") {
@@ -1028,6 +1036,7 @@ if ($post['accion'] == "searchTeams") {
          FROM sports_groups sg
          LEFT JOIN available_dates avd ON sg.SPG_CODE = avd.SPG_CODE
          WHERE sg.SPG_TEAM_NAME LIKE '%%%s%%'
+          AND sg.SPG_STATE_MATCH != 'Eliminado'
          AND sg.SPG_GENDER_TEAM = '%s'  -- Filtrar por género
          AND sg.SPG_CODE NOT IN (SELECT SPG_CODE FROM groupstage)
          ORDER BY avd.AVD_AVAILABLE_DATE ASC, avd.AVD_AVAILABLE_HOUR_SINCE ASC",
@@ -1792,11 +1801,11 @@ if ($post['accion'] == "deleteDate") {
 if ($post['accion'] == "cargagroupstage") {
     // Obtenemos el código de grupo
     $sentencia = sprintf(
-        "SELECT gs.GRS_CODE, sg.SPG_CODE, sg.SPG_TEAM_NAME, gg.GRUP_CODE, gg.GRUP_NAME 
+        "SELECT gs.GRS_CODE, sg.SPG_CODE, sg.SPG_TEAM_NAME, gg.GRUP_CODE, gg.GRUP_NAME,sg.SPG_STATE_MATCH
                 FROM groupstage gs
                 LEFT JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
                 LEFT JOIN groups gg ON gs.GRUP_CODE = gg.GRUP_CODE
-                WHERE gs.GRS_CODE = '%s'",
+                WHERE s.GRS_CODE = '%s'",
         mysqli_real_escape_string($mysqli, $post['cod'])
     );
     
@@ -2257,11 +2266,16 @@ if ($post['accion'] == "searchCourts") {
 if ($post['accion'] == "searchTeamsdos") {
     $searchTerm = $post['result'];
     $teamGender = $post['team_gender'];
+    $matchDate = $post['match_date'];
 
     $sentencia = sprintf(
         "SELECT g.GRUP_NAME AS grupo, sg.SPG_CODE, sg.SPG_TEAM_NAME, 
         CASE 
-            WHEN EXISTS (SELECT 1 FROM matches m WHERE m.SPG_CODE_ONE = sg.SPG_CODE OR m.SPG_CODE_TWO = sg.SPG_CODE) 
+            WHEN EXISTS (
+                SELECT 1 FROM matches m 
+                WHERE (m.SPG_CODE_ONE = sg.SPG_CODE OR m.SPG_CODE_TWO = sg.SPG_CODE)
+                AND m.MATC_DATE = '%s' -- Filtrar por fecha de partido
+            ) 
             THEN 1 
             ELSE 0 
         END AS en_partido
@@ -2272,6 +2286,7 @@ if ($post['accion'] == "searchTeamsdos") {
         AND sg.SPG_GENDER_TEAM = '%s'
         AND sg.SPG_STATE_MATCH != 'Eliminado'
         ORDER BY g.GRUP_NAME, sg.SPG_TEAM_NAME ASC",
+        mysqli_real_escape_string($mysqli, $matchDate),
         mysqli_real_escape_string($mysqli, $searchTerm),
         mysqli_real_escape_string($mysqli, $teamGender)
     );
@@ -2284,7 +2299,7 @@ if ($post['accion'] == "searchTeamsdos") {
                 'grupo' => $row['grupo'],
                 'codigo' => $row['SPG_CODE'],
                 'nombre' => $row['SPG_TEAM_NAME'],
-                'en_partido' => $row['en_partido'] // 1 si está en partido, 0 si no lo está
+                'en_partido' => $row['en_partido']
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
@@ -2294,6 +2309,7 @@ if ($post['accion'] == "searchTeamsdos") {
 
     echo $respuesta;
 }
+
 
 if ($post['accion'] == "EliminarMatch") {
     $delete_query = sprintf(
