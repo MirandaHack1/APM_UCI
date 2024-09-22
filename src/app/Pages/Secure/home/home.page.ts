@@ -82,6 +82,9 @@ export class HomePage implements OnInit {
   matches() {
     this.navCtrl.navigateForward('info-matches-general');
   }
+  matches2(){
+    this.navCtrl.navigateForward('matches');
+  }
   sportGroup() {
     this.navCtrl.navigateForward('sports-group');
   }

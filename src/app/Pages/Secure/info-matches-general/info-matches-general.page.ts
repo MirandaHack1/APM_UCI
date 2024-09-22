@@ -11,11 +11,17 @@ export class InfoMatchesGeneralPage implements OnInit {
   txt_search: string = '';
   selectedSegment: string = 'proximos'; // Por defecto en "proximos"
   group: any[] = [];
+  rol: string ="";
 
   constructor(
     public navCtrl: NavController,
     public servicio: AuthService,
-  ) { }
+  ) { 
+    this.servicio.getSession('USAD_ROLE').then((res: any) => {
+      this.rol = res;
+    });
+
+  }
 
   ngOnInit() {
     // Cargar los próximos partidos al iniciar la página
