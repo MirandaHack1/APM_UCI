@@ -24,7 +24,6 @@
       placeholder="Ingrese su apellido:"
       [(ngModel)]="lastName"
       type="text"
-      
     ></ion-input>
   </ion-item>
 
@@ -35,7 +34,7 @@
     ></ion-checkbox>
   </ion-item> -->
 
-  <ion-item >
+  <ion-item>
     <ion-label position="stacked">Cédula:</ion-label>
     <ion-input
       placeholder="Ingrese su cédula:"
@@ -163,7 +162,10 @@
   <ion-item>
     <ion-label position="stacked">Sede:</ion-label>
     <ion-select [(ngModel)]="sede">
-      <ion-select-option *ngFor="let item of businessInfo" [value]="item.BUSH_CODE">
+      <ion-select-option
+        *ngFor="let item of businessInfo"
+        [value]="item.BUSH_CODE"
+      >
         {{ item.BUIF_NAME }}
       </ion-select-option>
     </ion-select>
@@ -195,7 +197,6 @@
       [type]="showPassword ? 'text' : 'password'"
       placeholder="Ingrese su Contraseña:"
       [(ngModel)]="password_user"
-      
       (focusout)="validatePassword()"
     ></ion-input>
     <ion-icon
@@ -211,7 +212,6 @@
       [type]="showPassword ? 'text' : 'password'"
       placeholder="Ingrese su Contraseña:"
       [(ngModel)]="password_user2"
-      
       (focusout)="validatePassword()"
     ></ion-input>
     <ion-icon
@@ -232,9 +232,7 @@
     ></ion-input>
   </ion-item>
 
-  <ion-item>
-    <ion-button expand="block" color="success" (click)="userRegister()">
-      Registrar
-    </ion-button>
-  </ion-item>
+  <ion-button expand="block" color="secondary" (click)="userRegister()">
+    Registrar
+  </ion-button>
 </ion-content>

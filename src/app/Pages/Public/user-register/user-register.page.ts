@@ -61,7 +61,7 @@ export class UserRegisterPage implements OnInit {
     // Lógica de validación de cédula
     const isValid = this.isForeigner ? true : cardNumber.length === 10;
     if (!isValid) {
-      console.log("Cédula inválida");
+      this.servicio.showToast('Error: Cédula incorrecta ');
     }
   }
 
@@ -75,7 +75,7 @@ export class UserRegisterPage implements OnInit {
   validateEmail(email: string) {
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!regex.test(email)) {
-      console.log("Correo electrónico no válido");
+      this.servicio.showToast('Error: Correo electronico no valido');
     }
   }
 
@@ -84,7 +84,7 @@ export class UserRegisterPage implements OnInit {
       !this.phoneNumber || !this.address || !this.city || !this.province || !this.career ||
       !this.semester || !this.age || !this.gender || !this.weight || !this.height ||
       !this.institutionalEmail || !this.dateOfBirth || !this.sede) {  // Asegurarse de que la sede esté seleccionada
-      console.log("Por favor, complete todos los campos");
+      this.servicio.showToast('Error: Completar todo los campos');
       return;
     } else {
       let datos = {
@@ -121,13 +121,15 @@ export class UserRegisterPage implements OnInit {
       });
     }
   
-    console.log("Registro exitoso");
+    // console.log("Registro exitoso");
+    this.servicio.showToast('Exitoso: Registro cliente');
   }
   validatePassword() {
     if(this.password_user == this.password_user2){
       this.mensaje = "";
     }else{
-      this.mensaje = "Las claves no coinciden";
+      // this.mensaje = "Las claves no coinciden";
+      this.servicio.showToast('Error: Contraseñas nos coinciden');
     }
     
   }
