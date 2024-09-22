@@ -1,0 +1,39 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Buscar Canchas</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        Atras
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <br>
+  <ion-item>
+    <ion-input [(ngModel)]="txt_search" placeholder="Ingrese el nombre de la cancha"></ion-input>
+    <ion-button expand="full" (click)="searchCourts()">Buscar</ion-button>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let court of courts">
+      <ion-label>
+        <h2>{{ court.nombre }}</h2>
+        <p>{{ court.ubicacion }}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button (click)="selectCourt(court.codigo, court.nombre)">
+          <ion-icon name="add-circle"></ion-icon>
+          Seleccionar
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  <ion-item>
+    <ion-button (click)="cancel()" expand="block" color="danger" shape="round">
+      Cancelar
+    </ion-button>
+  </ion-item>
+</ion-content>

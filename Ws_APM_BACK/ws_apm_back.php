@@ -2087,11 +2087,14 @@ if ($post['accion'] == "ConMatches") {
 
     $sentencia = "SELECT m.MATC_CODE, m.MATC_DATE, m.MATC_HOUR, m.CANC_CODE, cr.CANC_NAME, 
                         eq1.SPG_TEAM_NAME AS SPG_TEAM_NAME_ONE, eq1.SPG_GENDER_TEAM AS SPG_GENDER_TEAM_ONE, 
-                        eq2.SPG_TEAM_NAME AS SPG_TEAM_NAME_TWO, eq2.SPG_GENDER_TEAM AS SPG_GENDER_TEAM_TWO
+                        eq2.SPG_TEAM_NAME AS SPG_TEAM_NAME_TWO, eq2.SPG_GENDER_TEAM AS SPG_GENDER_TEAM_TWO,
+                        grs.GRUP_NAME
                  FROM matches m
                  INNER JOIN sports_groups eq1 ON m.SPG_CODE_ONE = eq1.SPG_CODE
                  INNER JOIN sports_groups eq2 ON m.SPG_CODE_TWO = eq2.SPG_CODE
                  INNER JOIN court cr ON m.CANC_CODE = cr.CANC_CODE
+                 INNER JOIN groupstage gs ON gs.SPG_CODE = eq1.SPG_CODE OR gs.SPG_CODE = eq2.SPG_CODE
+                 INNER JOIN groups grs ON grs.GRUP_CODE=gs.GRUP_CODE
                  WHERE 1=1";
 
     // Filtrar por nombre de equipo si se ingresa
@@ -2119,3 +2122,172 @@ if ($post['accion'] == "ConMatches") {
     }
 }
 
+// cargar informacion match del usuario
+if ($post['accion'] == "cargaMatch") {
+    // Obtenemos el código del partido
+    $sentencia = sprintf(
+        "SELECT m.MATC_CODE, m.MATC_DATE, m.MATC_HOUR, c.CANC_CODE, c.CANC_NAME, 
+                t1.SPG_CODE AS SPG_CODE_ONE, t1.SPG_TEAM_NAME AS TEAM_ONE, 
+                t2.SPG_CODE AS SPG_CODE_TWO, t2.SPG_TEAM_NAME AS TEAM_TWO
+         FROM matches m
+         LEFT JOIN court c ON m.CANC_CODE = c.CANC_CODE
+         LEFT JOIN sports_groups t1 ON m.SPG_CODE_ONE = t1.SPG_CODE
+         LEFT JOIN sports_groups t2 ON m.SPG_CODE_TWO = t2.SPG_CODE
+         WHERE m.MATC_CODE = '%s'",
+        mysqli_real_escape_string($mysqli, $post['cod'])
+    );
+    
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'match_code' => $row['MATC_CODE'],      // Código del partido
+                'fecha' => $row['MATC_DATE'],           // Fecha del partido
+                'hora' => $row['MATC_HOUR'],            // Hora del partido
+                'cancha_code' => $row['CANC_CODE'],     // Código de la cancha
+                'cancha_nombre' => $row['CANC_NAME'],   // Nombre de la cancha
+                'team_one_code' => $row['SPG_CODE_ONE'], // Código del primer equipo
+                'team_one_name' => $row['TEAM_ONE'],    // Nombre del primer equipo
+                'team_two_code' => $row['SPG_CODE_TWO'], // Código del segundo equipo
+                'team_two_name' => $row['TEAM_TWO']     // Nombre del segundo equipo
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron datos del partido.'));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "AgregarMatch") {
+    // Obtener los datos del POST
+    $canchaCode = $post['cancCode'];  
+    $fecha = $post['matchDate'];                
+    $hora = $post['matchHour']; 
+    $teamOneCode = $post['spgCodeOne'];  
+    $teamTwoCode = $post['spgCodeTwo'];  
+
+    // Insertar el nuevo partido en la tabla `matches`
+    $sentencia = sprintf(
+        "INSERT INTO matches (CANC_CODE,MATC_DATE,MATC_HOUR,SPG_CODE_ONE,SPG_CODE_TWO) 
+         VALUES ('%s', '%s', '%s', '%s', '%s')",
+        mysqli_real_escape_string($mysqli, $teamOneCode),
+        mysqli_real_escape_string($mysqli, $teamTwoCode),
+        mysqli_real_escape_string($mysqli, $canchaCode),
+        mysqli_real_escape_string($mysqli, $fecha),
+        mysqli_real_escape_string($mysqli, $hora)
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Partido guardado correctamente."));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al guardar el partido."));
+    }
+
+    echo $respuesta;
+}
+if ($post['accion'] == "ActualizarMatch") {
+    // Obtener los datos del POST
+    $matchCode = $post['id_partido'];       
+    $canchaCode = $post['cancCode'];  
+    $fecha = $post['matchDate'];                
+    $hora = $post['matchHour']; 
+    $teamOneCode = $post['spgCodeOne'];  
+    $teamTwoCode = $post['spgCodeTwo']; 
+
+    // Actualizar los detalles del partido
+    $sentencia = sprintf(
+        "UPDATE matches 
+         SET  CANC_CODE='%s', MATC_DATE='%s', MATC_HOUR='%s',SPG_CODE_ONE='%s', SPG_CODE_TWO='%s' 
+         WHERE MATC_CODE='%s'",
+        mysqli_real_escape_string($mysqli, $canchaCode),
+        mysqli_real_escape_string($mysqli, $fecha),
+        mysqli_real_escape_string($mysqli, $hora),
+        mysqli_real_escape_string($mysqli, $teamOneCode),
+        mysqli_real_escape_string($mysqli, $teamTwoCode),
+        mysqli_real_escape_string($mysqli, $matchCode)
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if ($result) {
+        $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Partido actualizado correctamente.'));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar el partido.'));
+    }
+
+    echo $respuesta;
+}
+
+
+if ($post['accion'] == "searchCourts") {
+    // Obtener el término de búsqueda
+    $searchTerm = $post['result'];
+
+    // Sentencia para buscar canchas por nombre
+    $sentencia = sprintf(
+        "SELECT CANC_CODE, CANC_NAME, CANC_LOCATE FROM court WHERE CANC_NAME LIKE '%%%s%%'",
+        mysqli_real_escape_string($mysqli, $searchTerm)
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['CANC_CODE'],
+                'nombre' => $row['CANC_NAME'],
+                'ubicacion' => $row['CANC_LOCATE']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "searchTeamsdos") {
+    // Traer el nombre del equipo, género y estado del equipo (que no esté en "Eliminado")
+    $searchTerm = $post['result'];
+    $teamGender = $post['team_gender']; // El género enviado desde el frontend
+
+    $sentencia = sprintf(
+        "SELECT sg.SPG_CODE, sg.SPG_TEAM_NAME, avd.AVD_AVAILABLE_DATE, avd.AVD_AVAILABLE_HOUR_SINCE, avd.AVD_AVAILABLE_HOUR_UNITL
+                FROM sports_groups sg
+                LEFT JOIN available_dates avd ON sg.SPG_CODE = avd.SPG_CODE
+                WHERE sg.SPG_TEAM_NAME LIKE '%s'  -- Filtro por nombre, si aplicas
+                AND sg.SPG_GENDER_TEAM = '%s'  -- Filtrar por género
+                AND sg.SPG_STATE_MATCH != 'Eliminado'  -- Filtrar equipos que no estén en estado 'Eliminado'
+                AND sg.SPG_CODE IN (SELECT SPG_CODE FROM groupstage)  -- Solo equipos que están en 'groupstage'
+                ORDER BY avd.AVD_AVAILABLE_DATE ASC, avd.AVD_AVAILABLE_HOUR_SINCE ASC",
+        mysqli_real_escape_string($mysqli, $searchTerm),
+        mysqli_real_escape_string($mysqli, $teamGender) // Filtrar por género
+    );
+
+    $result = mysqli_query($mysqli, $sentencia);
+    if (mysqli_num_rows($result) > 0) {
+        $datos = array();
+        while ($row = mysqli_fetch_array($result)) {
+            $datos[] = array(
+                'codigo' => $row['SPG_CODE'],
+                'nombre' => $row['SPG_TEAM_NAME'],
+                'fecha' => $row['AVD_AVAILABLE_DATE'],
+                'horaDesde' => $row['AVD_AVAILABLE_HOUR_SINCE'],
+                'horaHasta' => $row['AVD_AVAILABLE_HOUR_UNITL']
+            );
+        }
+        $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
+    }
+
+    echo $respuesta;
+}

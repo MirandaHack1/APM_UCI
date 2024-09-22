@@ -40,31 +40,44 @@ export class MatchesPage implements OnInit {
     );
   }
 
-  // Método para agrupar matches
-  agruparPorMatch(matches: any[]) {
-    let agrupados = matches.reduce((acc, match) => {
-      let matchExistente = acc.find((m: any) => m.MATC_CODE === match.MATC_CODE);
-      if (!matchExistente) {
-        matchExistente = {
-          MATC_CODE: match.MATC_CODE,
-          MATC_DATE: match.MATC_DATE,
-          MATC_HOUR: match.MATC_HOUR,
-          CANC_NAME: match.CANC_NAME,
-          equipo1: {
-            SPG_TEAM_NAME: match.SPG_TEAM_NAME_ONE,
-            SPG_GENDER_TEAM: match.SPG_GENDER_TEAM_ONE,
-          },
-          equipo2: {
-            SPG_TEAM_NAME: match.SPG_TEAM_NAME_TWO,
-            SPG_GENDER_TEAM: match.SPG_GENDER_TEAM_TWO,
-          },
-        };
-        acc.push(matchExistente);
-      }
-      return acc;
-    }, []);
-    return agrupados;
-  }
+// Método para agrupar matches por grupo
+agruparPorMatch(matches: any[]) {
+  let agrupados = matches.reduce((acc, match) => {
+    // Busca si ya existe el grupo
+    let grupoExistente = acc.find((g: any) => g.grupo === match.GRUP_NAME);
+
+    if (!grupoExistente) {
+      grupoExistente = { grupo: match.GRUP_NAME, matches: [] };
+      acc.push(grupoExistente);
+    }
+
+    // Verifica si el match ya existe en el grupo
+    let matchExistente = grupoExistente.matches.find((m: any) => m.MATC_CODE === match.MATC_CODE);
+    
+    if (!matchExistente) {
+      // Añade el match al grupo correspondiente
+      grupoExistente.matches.push({
+        MATC_CODE: match.MATC_CODE,
+        MATC_DATE: match.MATC_DATE,
+        MATC_HOUR: match.MATC_HOUR,
+        CANC_NAME: match.CANC_NAME,
+        equipo1: {
+          SPG_TEAM_NAME: match.SPG_TEAM_NAME_ONE,
+          SPG_GENDER_TEAM: match.SPG_GENDER_TEAM_ONE,
+        },
+        equipo2: {
+          SPG_TEAM_NAME: match.SPG_TEAM_NAME_TWO,
+          SPG_GENDER_TEAM: match.SPG_GENDER_TEAM_TWO,
+        },
+      });
+    }
+
+    return acc;
+  }, []);
+  return agrupados;
+}
+
+
 
   // Método para buscar matches por nombre de equipo
   buscarGrupos() {
@@ -130,8 +143,9 @@ export class MatchesPage implements OnInit {
     }
   }
 
-  irEditar(MATC_CODE: string) {
+  irEditar(MATC_CODE: string,genero: string) {
     this.authService.createSession('MATC_CODE', MATC_CODE);
+    this.authService.createSession('SPG_GENDER_TEAM', genero);
     this.navCtrl.navigateRoot(['edit-matches']);
   }
 
@@ -141,6 +155,7 @@ export class MatchesPage implements OnInit {
 
   agregarMatch() {
     this.authService.createSession('MATC_CODE', '');
+    this.authService.createSession('SPG_GENDER_TEAM', this.generoSeleccionado);
     this.navCtrl.navigateRoot(['edit-matches']);
   }
 }

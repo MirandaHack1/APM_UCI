@@ -22,41 +22,33 @@
 
   <ion-accordion-group>
     <!-- Recorremos los datos agrupados por grupo -->
-    <ion-accordion *ngFor="let match of agrupadosPorGrupo">
+    <ion-accordion *ngFor="let grupo of agrupadosPorGrupo">
       <ion-item slot="header">
         <ion-label>
-          <h2>Fecha encuentro: {{ match.MATC_DATE | date }}</h2>
-          <p>Hora: {{ match.MATC_HOUR }}</p>
-          <p>Cancha: {{ match.CANC_NAME }}</p>
+          <h2>Grupo: {{ grupo.grupo }}</h2>
         </ion-label>
       </ion-item>
       <div class="ion-padding" slot="content">
         <ion-list>
-          <!-- Mostramos los equipos involucrados en el match -->
-          <ion-item>
+          <ion-item *ngFor="let match of grupo.matches">
             <ion-label>
-              <p>Enfrentamiento de equipos</p>
+              <h3>Fecha del Encuentro: {{ match.MATC_DATE | date }}</h3>
+              <p><strong>Hora:</strong> {{ match.MATC_HOUR }}</p>
+              <p><strong>Género:</strong> {{ match.equipo1.SPG_GENDER_TEAM }}</p>
+              <p><strong>Cancha:</strong> {{ match.CANC_NAME }}</p>
+              <h3>Enfrentamiento:</h3>
+              <p><strong>Equipo 1:</strong> {{ match.equipo1.SPG_TEAM_NAME }}</p>
+              <h3>VS</h3>
+              <p><strong>Equipo 2:</strong> {{ match.equipo2.SPG_TEAM_NAME }}</p>
             </ion-label>
             <ion-buttons slot="end">
-              <ion-button (click)="irEditar(match.MATC_CODE)">
+              <ion-button (click)="irEditar(match.MATC_CODE,match.SPG_GENDER_TEAM)">
                 <ion-icon name="create"></ion-icon>
               </ion-button>
               <ion-button (click)="eliminar(match.MATC_CODE)">
                 <ion-icon name="trash"></ion-icon>
               </ion-button>
             </ion-buttons>
-          </ion-item>
-          <ion-item>
-            <ion-label>
-              <h3>Equipo 1:</h3>
-              <h4>{{ match.equipo1.SPG_TEAM_NAME }} ({{ match.equipo1.SPG_GENDER_TEAM }})</h4>
-            </ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>
-              <h3>Equipo 2:</h3>
-              <h4>{{ match.equipo2.SPG_TEAM_NAME }} ({{ match.equipo2.SPG_GENDER_TEAM }})</h4>
-            </ion-label>
           </ion-item>
         </ion-list>
       </div>

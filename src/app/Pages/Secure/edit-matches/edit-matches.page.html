@@ -1,13 +1,72 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>edit-matches</ion-title>
+    <!-- <ion-title>{{ isEditing ? 'Editar' : 'Insertar' }} Encuentro</ion-title> -->
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">
+        Atrás
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">edit-matches</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Fecha del encuentro:</ion-label>
+    <ion-datetime displayFormat="YYYY-MM-DD" [(ngModel)]="matchDate"></ion-datetime>
+  </ion-item>
+
+  <!-- <ion-item>
+    <ion-label position="stacked" class="bold-label">Hora del encuentro:</ion-label>
+    <ion-datetime displayFormat="HH:mm" [(ngModel)]="matchHour"></ion-datetime>
+  </ion-item> -->
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Hora Desde:</ion-label>
+    <ion-input type="time" [(ngModel)]="matchHour"></ion-input>
+  </ion-item>
+  <!-- Botón para seleccionar cancha (CANC_CODE) -->
+  <ion-item>
+    <ion-buttons slot="end">
+      <ion-button (click)="selectCancha()">
+        Seleccionar Cancha
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-label position="stacked" class="bold-label">Cancha seleccionada:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_cancha" readonly></ion-input>
+  </ion-item>
+
+  <!-- Botón para seleccionar Equipo 1 (SPG_CODE_ONE) -->
+  <ion-item>
+    <ion-buttons slot="end">
+      <ion-button (click)="selectEquipo1()">
+        Seleccionar Equipo 1
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-label position="stacked" class="bold-label">Equipo 1 seleccionado:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_equipo1" readonly></ion-input>
+  </ion-item>
+
+  <!-- Botón para seleccionar Equipo 2 (SPG_CODE_TWO) -->
+  <ion-item>
+    <ion-buttons slot="end">
+      <ion-button (click)="selectEquipo2()">
+        Seleccionar Equipo 2
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-label position="stacked" class="bold-label">Equipo 2 seleccionado:</ion-label>
+    <ion-input type="text" [(ngModel)]="txt_equipo2" readonly></ion-input>
+  </ion-item>
+
+  <!-- Botones de Guardar y Cancelar -->
+  <ion-item>
+    <ion-button (click)="saveMatch()" expand="block" shape="round">
+      Guardar
+    </ion-button>
+    <ion-button (click)="back()" expand="block" color="danger" shape="round">
+      Cancelar
+    </ion-button>
+  </ion-item>
 </ion-content>

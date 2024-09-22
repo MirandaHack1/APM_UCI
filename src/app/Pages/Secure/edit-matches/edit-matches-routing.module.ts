@@ -7,7 +7,16 @@ const routes: Routes = [
   {
     path: '',
     component: EditMatchesPage
+  },
+  {
+    path: 'search-court',
+    loadChildren: () => import('./search-court/search-court.module').then( m => m.SearchCourtPageModule)
+  },
+  {
+    path: 'search-sports-groups-dos',
+    loadChildren: () => import('./search-sports-groups-dos/search-sports-groups-dos.module').then( m => m.SearchSportsGroupsDosPageModule)
   }
+
 ];
 
 @NgModule({
