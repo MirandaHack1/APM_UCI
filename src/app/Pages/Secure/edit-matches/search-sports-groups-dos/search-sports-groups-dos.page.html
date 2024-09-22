@@ -16,34 +16,46 @@
     <ion-button expand="full" (click)="searchTeams()">Buscar</ion-button>
   </ion-item>
 
+  <!-- Lista de grupos y equipos -->
   <ion-list>
     <ion-accordion-group>
-      <ion-accordion *ngFor="let team of groupedTeams">
-        <ion-item slot="header" (click)="toggleAccordion(team)">
+      <!-- Iterar sobre los grupos -->
+      <ion-accordion *ngFor="let group of groupedTeams">
+        <ion-item slot="header">
           <ion-label>
-            <h2>Nombre: {{ team.nombre }}</h2>
+            <h2>{{ group.grupo }}</h2> <!-- Nombre del grupo -->
           </ion-label>
-          <ion-buttons slot="end">
-            <ion-button (click)="addTeam(team.codigo, team.nombre)">
-              <ion-icon name="add-circle"></ion-icon>
-              Seleccionar
-            </ion-button>
-          </ion-buttons>
         </ion-item>
-        <div class="ion-padding" slot="content">
-          <ion-list *ngIf="team.showDates">
-            <ion-item *ngFor="let fecha of team.fechas">
+      
+        <div slot="content">
+          <ion-list>
+            <!-- Iterar sobre los equipos del grupo -->
+            <ion-item *ngFor="let team of group.equipos">
               <ion-label>
-                <p>Fecha Disponible: {{ fecha.fecha }}</p>
-                <p>Hora Desde: {{ fecha.horaDesde }} - Hora Hasta: {{ fecha.horaHasta }}</p>
+                <h3>{{ team.nombre }}</h3> <!-- Nombre del equipo -->
               </ion-label>
+      
+              <!-- Verificar si el equipo está en un partido -->
+              <ion-badge *ngIf="team.en_partido" color="danger">
+                En partido
+              </ion-badge>
+      
+              <ion-buttons slot="end">
+                <ion-button (click)="addTeam(team.codigo, team.nombre)">
+                  <ion-icon name="add-circle"></ion-icon>
+                  Seleccionar
+                </ion-button>
+              </ion-buttons>
             </ion-item>
           </ion-list>
         </div>
       </ion-accordion>
+      
+      
     </ion-accordion-group>
   </ion-list>
 
+  <!-- Botón de cancelar -->
   <ion-item>
     <ion-button (click)="cancel()" expand="block" color="danger" shape="round">
       Cancelar

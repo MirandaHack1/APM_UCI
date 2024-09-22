@@ -26,21 +26,19 @@ export class SearchSportsGroupsDosPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    // Inicializaciones si son necesarias
-  }
+  ngOnInit() {}
 
-  // Búsqueda de equipos por nombre
+  // Búsqueda de equipos por grupo
   searchTeams() {
     const datos = {
-      "accion": "searchTeams",
+      "accion": "searchTeamsdos",
       "result": this.txt_search,
       "team_gender": this.Genero
     };
-
+  
     this.authService.postData(datos).subscribe((res: any) => {
       if (res.estado === true) {
-        this.groupedTeams = this.agruparEquiposPorFecha(res.datos); // Agrupar resultados
+        this.groupedTeams = this.agruparEquiposPorGrupo(res.datos); // Agrupar resultados por grupo
       } else {
         this.authService.showToast('No se encontraron equipos con ese nombre.');
         this.groupedTeams = []; // Limpiar si no hay resultados
@@ -51,38 +49,45 @@ export class SearchSportsGroupsDosPage implements OnInit {
       this.groupedTeams = []; // Limpiar en caso de error
     });
   }
+  
 
-  // Agrupar equipos por nombre y fechas disponibles
-  agruparEquiposPorFecha(teams: any[]) {
+  agruparEquiposPorGrupo(teams: any[]) {
     return teams.reduce((acc, team) => {
-      let equipoExistente = acc.find((t: { codigo: any; }) => t.codigo === team.codigo);
-      if (!equipoExistente) {
-        equipoExistente = { 
-          codigo: team.codigo, 
-          nombre: team.nombre, 
-          fechas: [],
-          showDates: false // Inicializa la propiedad para mostrar las fechas
+      // Encontrar si ya existe el grupo en el arreglo de agrupación
+      let grupoExistente = acc.find((g: { grupo: any; }) => g.grupo === team.grupo);
+      
+      if (!grupoExistente) {
+        grupoExistente = { 
+          grupo: team.grupo, 
+          equipos: []  // Crear un array para los equipos de este grupo
         };
-        acc.push(equipoExistente);
+        acc.push(grupoExistente); // Añadir el grupo al acumulador
       }
-      equipoExistente.fechas.push({
-        fecha: team.fecha,
-        horaDesde: team.horaDesde,
-        horaHasta: team.horaHasta
+  
+      // Convertir el valor de 'en_partido' a un booleano (1 = true, 0 = false)
+      const estaEnPartido = team.en_partido === "1"; // Si es "1", es true, de lo contrario false
+  
+      // Añadir el equipo al grupo correspondiente
+      grupoExistente.equipos.push({
+        codigo: team.codigo,
+        nombre: team.nombre,
+        en_partido: estaEnPartido // Usar valor booleano
       });
+  
       return acc;
     }, []);
   }
   
-  // Alternar la visualización de fechas
-  toggleAccordion(team: { showDates: boolean; }) {
-    // Cerrar otros acordeones
-    this.groupedTeams.forEach(t => {
-      if (t !== team) {
-        t.showDates = false;
+  
+
+  // Alternar la visualización de equipos por grupo
+  toggleAccordion(group: { showTeams: boolean; }) {
+    this.groupedTeams.forEach(g => {
+      if (g !== group) {
+        g.showTeams = false;
       }
     });
-    team.showDates = !team.showDates;
+    group.showTeams = !group.showTeams;
   }
 
   // Selección de un equipo
@@ -92,14 +97,12 @@ export class SearchSportsGroupsDosPage implements OnInit {
       name: nombre
     };
 
-    // Crear sesión para el equipo seleccionado
     this.authService.createSession('SPG_CODE', codigo);
     this.authService.createSession('SPG_TEAM_NAME', nombre);
 
-    this.modalCtrl.dismiss(result); // Cerrar el modal y devolver el resultado
+    this.modalCtrl.dismiss(result);
   }
 
-  // Cancelar y cerrar el modal
   cancel() {
     this.modalCtrl.dismiss();
   }

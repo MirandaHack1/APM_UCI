@@ -2172,13 +2172,13 @@ if ($post['accion'] == "AgregarMatch") {
 
     // Insertar el nuevo partido en la tabla `matches`
     $sentencia = sprintf(
-        "INSERT INTO matches (CANC_CODE,MATC_DATE,MATC_HOUR,SPG_CODE_ONE,SPG_CODE_TWO) 
+        "INSERT INTO matches(CANC_CODE,MATC_DATE,MATC_HOUR,SPG_CODE_ONE,SPG_CODE_TWO) 
          VALUES ('%s', '%s', '%s', '%s', '%s')",
-        mysqli_real_escape_string($mysqli, $teamOneCode),
-        mysqli_real_escape_string($mysqli, $teamTwoCode),
-        mysqli_real_escape_string($mysqli, $canchaCode),
-        mysqli_real_escape_string($mysqli, $fecha),
-        mysqli_real_escape_string($mysqli, $hora)
+       mysqli_real_escape_string($mysqli, $canchaCode),
+       mysqli_real_escape_string($mysqli, $fecha),
+       mysqli_real_escape_string($mysqli, $hora),
+       mysqli_real_escape_string($mysqli, $teamOneCode),
+       mysqli_real_escape_string($mysqli, $teamTwoCode),
     );
 
     $result = mysqli_query($mysqli, $sentencia);
@@ -2255,21 +2255,25 @@ if ($post['accion'] == "searchCourts") {
 }
 
 if ($post['accion'] == "searchTeamsdos") {
-    // Traer el nombre del equipo, género y estado del equipo (que no esté en "Eliminado")
     $searchTerm = $post['result'];
-    $teamGender = $post['team_gender']; // El género enviado desde el frontend
+    $teamGender = $post['team_gender'];
 
     $sentencia = sprintf(
-        "SELECT sg.SPG_CODE, sg.SPG_TEAM_NAME, avd.AVD_AVAILABLE_DATE, avd.AVD_AVAILABLE_HOUR_SINCE, avd.AVD_AVAILABLE_HOUR_UNITL
-                FROM sports_groups sg
-                LEFT JOIN available_dates avd ON sg.SPG_CODE = avd.SPG_CODE
-                WHERE sg.SPG_TEAM_NAME LIKE '%s'  -- Filtro por nombre, si aplicas
-                AND sg.SPG_GENDER_TEAM = '%s'  -- Filtrar por género
-                AND sg.SPG_STATE_MATCH != 'Eliminado'  -- Filtrar equipos que no estén en estado 'Eliminado'
-                AND sg.SPG_CODE IN (SELECT SPG_CODE FROM groupstage)  -- Solo equipos que están en 'groupstage'
-                ORDER BY avd.AVD_AVAILABLE_DATE ASC, avd.AVD_AVAILABLE_HOUR_SINCE ASC",
+        "SELECT g.GRUP_NAME AS grupo, sg.SPG_CODE, sg.SPG_TEAM_NAME, 
+        CASE 
+            WHEN EXISTS (SELECT 1 FROM matches m WHERE m.SPG_CODE_ONE = sg.SPG_CODE OR m.SPG_CODE_TWO = sg.SPG_CODE) 
+            THEN 1 
+            ELSE 0 
+        END AS en_partido
+        FROM sports_groups sg
+        INNER JOIN groupstage gs ON sg.SPG_CODE = gs.SPG_CODE
+        INNER JOIN groups g ON gs.GRUP_CODE = g.GRUP_CODE
+        WHERE sg.SPG_TEAM_NAME LIKE '%%%s%%'
+        AND sg.SPG_GENDER_TEAM = '%s'
+        AND sg.SPG_STATE_MATCH != 'Eliminado'
+        ORDER BY g.GRUP_NAME, sg.SPG_TEAM_NAME ASC",
         mysqli_real_escape_string($mysqli, $searchTerm),
-        mysqli_real_escape_string($mysqli, $teamGender) // Filtrar por género
+        mysqli_real_escape_string($mysqli, $teamGender)
     );
 
     $result = mysqli_query($mysqli, $sentencia);
@@ -2277,16 +2281,32 @@ if ($post['accion'] == "searchTeamsdos") {
         $datos = array();
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
+                'grupo' => $row['grupo'],
                 'codigo' => $row['SPG_CODE'],
                 'nombre' => $row['SPG_TEAM_NAME'],
-                'fecha' => $row['AVD_AVAILABLE_DATE'],
-                'horaDesde' => $row['AVD_AVAILABLE_HOUR_SINCE'],
-                'horaHasta' => $row['AVD_AVAILABLE_HOUR_UNITL']
+                'en_partido' => $row['en_partido'] // 1 si está en partido, 0 si no lo está
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
     } else {
         $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
+    }
+
+    echo $respuesta;
+}
+
+if ($post['accion'] == "EliminarMatch") {
+    $delete_query = sprintf(
+        "DELETE FROM matches WHERE MATC_CODE='%s'",
+        $post['MATC_CODE']
+    );
+
+    if (mysqli_query($mysqli, $delete_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Jugador eliminado correctamente"));
+    } else {
+        // Capturar el error de MySQL
+        $error = mysqli_error($mysqli);
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al eliminar el Jugador", "error" => $error));
     }
 
     echo $respuesta;
