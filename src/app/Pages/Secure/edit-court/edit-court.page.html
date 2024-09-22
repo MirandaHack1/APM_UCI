@@ -1,13 +1,41 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>edit-court</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="back()" defaultHref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ codigo ? 'Editar Cancha' : 'Nueva Cancha' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">edit-court</ion-title>
+      <ion-title size="large"
+        >{{ codigo ? 'Editar Cancha' : 'Nueva Cancha' }}</ion-title
+      >
     </ion-toolbar>
   </ion-header>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Nombre:</ion-label>
+    <ion-textarea type="text" [(ngModel)]="nombre"></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Direccion:</ion-label>
+    <ion-textarea type="text" [(ngModel)]="direccion"></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Estado:</ion-label>
+    <ion-select [(ngModel)]="estado">
+      <ion-select-option value="1">Activo</ion-select-option>
+      <ion-select-option value="0">Inactivo</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Botón para guardar o actualizar -->
+  <ion-button expand="full" (click)="guardar()">
+    {{ codigo ? 'Actualizar' : 'Guardar' }}
+  </ion-button>
 </ion-content>
