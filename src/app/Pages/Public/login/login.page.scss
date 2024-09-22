@@ -1,8 +1,44 @@
-ion-content {
-  --background: #111b22; /* Fondo afuera */
- 
+/* Modo claro */
+body.light-mode ion-content {
+  --background: #f0f0f0; /* Fondo claro */
 }
 
+body.light-mode ion-card {
+  background-color: #ffffff; /* Fondo claro en la tarjeta */
+}
+
+body.light-mode ion-card-title,
+body.light-mode ion-label,
+body.light-mode ion-button,
+body.light-mode ion-input::part(native) {
+  color: #111 !important; /* Texto oscuro para modo claro */
+}
+
+body.light-mode ion-item ion-input {
+  --color: #111; /* Texto negro en los inputs para modo claro */
+}
+
+/* Modo oscuro */
+body.dark-mode ion-content {
+  --background: #111b22; /* Fondo oscuro */
+}
+
+body.dark-mode ion-card {
+  background-color: #0a2538; /* Fondo oscuro en la tarjeta */
+}
+
+body.dark-mode ion-card-title,
+body.dark-mode ion-label,
+body.dark-mode ion-button,
+body.dark-mode ion-input::part(native) {
+  color: white !important; /* Texto blanco para modo oscuro */
+}
+
+body.dark-mode ion-item ion-input {
+  --color: white; /* Texto blanco en los inputs para modo oscuro */
+}
+
+/* General styles */
 .login-container {
   display: flex;
   justify-content: center;
@@ -14,21 +50,8 @@ ion-content {
 ion-card {
   width: 100%;
   max-width: 400px;
-  background-color: #0a2538; /* Fondo azul adentro */
- 
-}
-
-ion-card-title,
-ion-label,
-ion-button,
-ion-input::part(native) {
-  color: white !important; /* Asegura que todo el texto sea blanco */
 }
 
 ion-button {
   --color: white; /* Asegura que el texto del botón sea blanco */
-}
-
-ion-item::part(native) {
-  color: rgb(0, 0, 0); /* Asegura que el texto de los inputs sea blanco */
 }
