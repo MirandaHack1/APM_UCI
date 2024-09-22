@@ -1,13 +1,41 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>info-matches-general</ion-title>
+    <ion-title>Partidos</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">
+        Menu
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">info-matches-general</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <!-- Buscador -->
+  <ion-searchbar placeholder="Buscar equipo" [(ngModel)]="txt_search" (ionInput)="LoadsearchMatches()"></ion-searchbar>
+
+  <!-- Opciones -->
+  <ion-segment [(ngModel)]="selectedSegment" (ionChange)="LoadsearchMatches()">
+    <ion-segment-button value="proximos">
+      <ion-label>Próximos Partidos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="finalizados">
+      <ion-label>Partidos Finalizados</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Lista de partidos -->
+  <ion-list>
+    <ion-item *ngFor="let match of group">
+      <ion-label>
+        <h2>{{ match.team_one }} vs {{ match.team_two }}</h2>
+        <p>{{ match.date }} - {{ match.hour }}</p>
+
+        <!-- Mostrar solo si está en la sección de finalizados -->
+        <div *ngIf="selectedSegment === 'finalizados'">
+          <p>Marcador: {{ match.goals_team_one }} - {{ match.goals_team_two }}</p>
+          <ion-button color="primary" (click)="stadistics(match.codigo)">Ver Estadísticas</ion-button>
+        </div>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>

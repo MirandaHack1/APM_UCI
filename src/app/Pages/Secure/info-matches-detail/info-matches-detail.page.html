@@ -1,0 +1,70 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Resultados del Partido</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">Menu</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card *ngIf="matchData">
+    <ion-card-header>
+      <ion-card-title>{{ matchData.team_one_name }} vs {{ matchData.team_two_name }}</ion-card-title>
+      <ion-card-subtitle>{{ matchData.match_date }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <p><strong>Goles {{ matchData.team_one_name }}:</strong> {{ matchData.total_goals_team_one }}</p>
+      <p><strong>Goles {{ matchData.team_two_name }}:</strong> {{ matchData.total_goals_team_two }}</p>
+      <br>
+      <p><strong>Total Tarjetas Amarillas:</strong> {{ matchData.total_yellow_cards }}</p>
+      <p><strong>Total Tarjetas Rojas:</strong> {{ matchData.total_red_cards }}</p>
+      <p><strong>Total de Cambios:</strong> {{ matchData.total_changes }}</p>
+      <br>
+      <p><strong>Reporte del Árbitro:</strong> {{ matchData.referee_report }}</p>
+      <p><strong>Reporte del Vocal:</strong> {{ matchData.vocal_report }}</p>
+      <br>
+      <p *ngIf="matchData.team_winner"><strong >Equipo Ganador:</strong> {{ matchData.team_winner }}</p>
+      <p *ngIf="matchData.team_loser"><strong>Equipo Perdedor:</strong> {{ matchData.team_loser }}</p>
+      <p *ngIf="matchData.team_draw"><strong>Empate:</strong> {{ matchData.team_draw }}</p>
+      
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="teamOnePlayers.length > 0">
+    <ion-card-header>
+      <ion-card-title>Jugadores del {{ matchData.team_one_name }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let player of teamOnePlayers">
+          <ion-label>
+            <h2>{{ player.name }}</h2>
+            <p>Goles: {{ player.goals }}</p>
+            <p>Tarjetas Amarillas: {{ player.yellow_cards }}</p>
+            <p>Tarjetas Rojas: {{ player.red_cards }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="teamTwoPlayers.length > 0">
+    <ion-card-header>
+      <ion-card-title>Jugadores del {{ matchData.team_two_name }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let player of teamTwoPlayers">
+          <ion-label>
+            <h2>{{ player.name }}</h2>
+            <p>Goles: {{ player.goals }}</p>
+            <p>Tarjetas Amarillas: {{ player.yellow_cards }}</p>
+            <p>Tarjetas Rojas: {{ player.red_cards }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

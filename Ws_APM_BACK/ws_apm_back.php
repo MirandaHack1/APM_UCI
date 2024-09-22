@@ -2079,3 +2079,12 @@ if ($post['accion'] == "loadPlayer") {
     echo $respuesta;
 }
 
+
+
+
+
+
+
+
+
+
