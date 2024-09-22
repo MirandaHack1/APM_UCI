@@ -1,13 +1,64 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>matches</ion-title>
+    <ion-title>Matches</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelar()">Menú</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">matches</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Botones para filtrar por género -->
+  <ion-item>
+    <ion-button (click)="filtrarPorGenero('Masculino')">Masculino</ion-button>
+    <ion-button (click)="filtrarPorGenero('Femenino')">Femenino</ion-button>
+    <ion-button (click)="cargarAmbosGeneros()">Ambos Géneros</ion-button>
+  </ion-item>
+  
+  <ion-item>
+    <ion-input [(ngModel)]="buscarGrupo" placeholder="Buscar grupo por nombre"></ion-input>
+    <ion-button expand="full" (click)="buscarGrupos()">Buscar</ion-button>
+  </ion-item>
+
+  <ion-accordion-group>
+    <!-- Recorremos los datos agrupados por grupo -->
+    <ion-accordion *ngFor="let grupo of agrupadosPorGrupo">
+      <ion-item slot="header">
+        <ion-label>
+          <h2>Grupo: {{ grupo.grupo }}</h2>
+        </ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <ion-list>
+          <ion-item *ngFor="let match of grupo.matches">
+            <ion-label>
+              <h3>Fecha del Encuentro: {{ match.MATC_DATE | date }}</h3>
+              <p><strong>Hora:</strong> {{ match.MATC_HOUR }}</p>
+              <p><strong>Género:</strong> {{ match.equipo1.SPG_GENDER_TEAM }}</p>
+              <p><strong>Cancha:</strong> {{ match.CANC_NAME }}</p>
+              <h3>Enfrentamiento:</h3>
+              <p><strong>Equipo 1:</strong> {{ match.equipo1.SPG_TEAM_NAME }}</p>
+              <h3>VS</h3>
+              <p><strong>Equipo 2:</strong> {{ match.equipo2.SPG_TEAM_NAME }}</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button (click)="irEditar(match.MATC_CODE,match.equipo1.SPG_GENDER_TEAM )">
+                <ion-icon name="create"></ion-icon>
+              </ion-button>
+              <ion-button (click)="eliminar(match.MATC_CODE)">
+                <ion-icon name="trash"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+  
+  <!-- Mostrar el botón de agregar solo si se ha seleccionado un género -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="mostrarBotonAgregar">
+    <ion-fab-button (click)="agregarMatch()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

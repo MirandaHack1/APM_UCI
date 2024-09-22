@@ -28,20 +28,6 @@ export class SearchGroupsPage implements OnInit {
   ngOnInit() {
   }
 
-  loadGroups() {
-    let datos = {
-      "accion": "loadGroups"
-    };
-
-    this.authService.postData(datos).subscribe((res: any) => {
-      if (res.estado === true) {
-        this.groups = res.datos; // Asignar los grupos recibidos
-      } else {
-        this.authService.showToast('No se encontraron grupos.');
-      }
-    });
-  }
-
   searchGroups() {
     let datos = {
       "accion": "searchGroups",

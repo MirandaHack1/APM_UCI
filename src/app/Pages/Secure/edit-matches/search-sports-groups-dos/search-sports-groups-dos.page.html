@@ -1,0 +1,64 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Buscar Equipos</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        Atrás
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <br>
+  <ion-item>
+    <ion-input [(ngModel)]="txt_search" placeholder="Ingrese el nombre del equipo"></ion-input>
+    <ion-button expand="full" (click)="searchTeams()">Buscar</ion-button>
+  </ion-item>
+
+  <!-- Lista de grupos y equipos -->
+  <ion-list>
+    <ion-accordion-group>
+      <!-- Iterar sobre los grupos -->
+      <ion-accordion *ngFor="let group of groupedTeams">
+        <ion-item slot="header">
+          <ion-label>
+            <h2>{{ group.grupo }}</h2> <!-- Nombre del grupo -->
+          </ion-label>
+        </ion-item>
+      
+        <div slot="content">
+          <ion-list>
+            <!-- Iterar sobre los equipos del grupo -->
+            <ion-item *ngFor="let team of group.equipos">
+              <ion-label>
+                <h3>{{ team.nombre }}</h3> <!-- Nombre del equipo -->
+              </ion-label>
+      
+              <!-- Verificar si el equipo está en un partido -->
+              <ion-badge *ngIf="team.en_partido" color="danger">
+                En partido
+              </ion-badge>
+      
+              <ion-buttons slot="end">
+                <ion-button (click)="addTeam(team.codigo, team.nombre)">
+                  <ion-icon name="add-circle"></ion-icon>
+                  Seleccionar
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-accordion>
+      
+      
+    </ion-accordion-group>
+  </ion-list>
+
+  <!-- Botón de cancelar -->
+  <ion-item>
+    <ion-button (click)="cancel()" expand="block" color="danger" shape="round">
+      Cancelar
+    </ion-button>
+  </ion-item>
+</ion-content>
