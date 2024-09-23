@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-09-2024 a las 22:43:33
+-- Tiempo de generación: 23-09-2024 a las 03:21:33
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -277,7 +277,8 @@ CREATE TABLE `matches` (
   `MATC_DATE` date NOT NULL COMMENT 'FECHA-ENFRENTAMIENTO',
   `MATC_HOUR` time NOT NULL COMMENT 'HORA-ENFRENTAMIENTO',
   `SPG_CODE_ONE` int(11) NOT NULL COMMENT 'CODIGO-FORANEO-SPG',
-  `SPG_CODE_TWO` int(11) NOT NULL COMMENT 'CODIGO-FORANEO-SPG'
+  `SPG_CODE_TWO` int(11) NOT NULL COMMENT 'CODIGO-FORANEO-SPG',
+  `MATC_STATUS` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -294,10 +295,10 @@ CREATE TABLE `matches` (
 -- Volcado de datos para la tabla `matches`
 --
 
-INSERT INTO `matches` (`MATC_CODE`, `CANC_CODE`, `MATC_DATE`, `MATC_HOUR`, `SPG_CODE_ONE`, `SPG_CODE_TWO`) VALUES
-(1, 1, '2024-09-21', '15:16:14', 1, 2),
-(2, 1, '2024-09-21', '15:16:14', 8, 9),
-(4, 2, '2021-05-08', '02:02:00', 9, 2);
+INSERT INTO `matches` (`MATC_CODE`, `CANC_CODE`, `MATC_DATE`, `MATC_HOUR`, `SPG_CODE_ONE`, `SPG_CODE_TWO`, `MATC_STATUS`) VALUES
+(1, 1, '2024-09-21', '15:16:14', 1, 2, 'finalizado'),
+(2, 1, '2024-09-21', '15:16:14', 8, 9, 'finalizado'),
+(4, 2, '2021-05-08', '02:02:00', 9, 2, 'proximo');
 
 -- --------------------------------------------------------
 
@@ -433,12 +434,12 @@ INSERT INTO `team_player` (`TEAP_CODE`, `ICLI_CODE`, `SPG_CODE`, `TEAP_SHIRT_NUM
 (12, 29, 1, 444),
 (13, 31, 1, 111),
 (14, 33, 1, 23),
-(15, 36, 1, 3),
-(16, 34, 1, 333),
-(17, 35, 1, 1111),
-(18, 37, 1, 123),
 (21, 39, 1, 222),
-(22, 38, 2, 88);
+(22, 38, 2, 88),
+(23, 34, 9, 55),
+(24, 40, 9, 2),
+(25, 35, 8, 2),
+(26, 37, 8, 66);
 
 -- --------------------------------------------------------
 
@@ -469,8 +470,9 @@ CREATE TABLE `user_admin` (
 --
 
 INSERT INTO `user_admin` (`USAD_CODE`, `USAD_USERNAME`, `USAD_EMAIL`, `USAD_PASSWORD`, `USAD_EMAIL_RECOVERY`, `USAD_ROLE`, `USAD_DATE_CREATED`, `ICLI_CODE`) VALUES
-(3, 'ccc', 'k@g.com', '$2y$10$A1aZhCm9K7IvC2tQTg03qeRVAk9H0Cobj2QSygSVY/X6xUMmx..zu', 'yyyyy', 'administrador', '2024-09-11', 4),
-(5, 'keev1', 'p@g.com', '$2y$10$cFOt.kq2vYVeLuDLdQlkUemA1jpNlwXcZTdwx/hKKexLcdtuVhgKm', 'kevinsan1835@gmail.com', 'lider', '2024-09-13', 6);
+(3, 'ccc', 'k@g.com', '$2y$10$A1aZhCm9K7IvC2tQTg03qeRVAk9H0Cobj2QSygSVY/X6xUMmx..zu', 'yyyyy', 'albitro', '2024-09-11', 4),
+(5, 'keev1', 'p@g.com', '$2y$10$cFOt.kq2vYVeLuDLdQlkUemA1jpNlwXcZTdwx/hKKexLcdtuVhgKm', 'kevinsan1835@gmail.com', 'lider', '2024-09-13', 6),
+(6, 'REW', 'b@g.com', '$2a$12$1UXfMMWCjVitPgpmx.Tzx.k66iD37ZThPnZ.9HFpi4eAjHiunrh8O', 'asd', 'admin', '2024-07-22', 40);
 
 -- --------------------------------------------------------
 
@@ -482,16 +484,16 @@ DROP TABLE IF EXISTS `vocalia_general`;
 CREATE TABLE `vocalia_general` (
   `VOGE_CODE` int(11) NOT NULL,
   `MATC_CODE` int(11) NOT NULL,
-  `VOGE_TOTAL_GOALS_TEAM_ONE` int(11) NOT NULL COMMENT 'TOTAL GOLES DEL PARTIDO',
-  `VOGE_TOTAL_GOALS_TEAM_TWO` int(11) NOT NULL,
-  `VOGE_TOTAL_YELLOW_CARD` int(11) NOT NULL COMMENT 'TOTAL AMARILLAS DEL PARTIDO',
-  `VOGE_TOTAL_RED_CARD` int(11) NOT NULL COMMENT 'TOTAL ROJAS DEL PARTIDO',
-  `VOGE_TOTAL_CHANGES` int(11) NOT NULL COMMENT 'TOTAL CAMBIOS DEL PARTIDO',
-  `VOGE_REFEREE_REPORT` varchar(200) NOT NULL COMMENT 'REPORTE DEL ALBITRO',
-  `VOGE_VOCAL_REPORT` varchar(200) NOT NULL COMMENT 'REPORTE DEL VOCAL',
-  `VOGE_TEAM_WINNER` varchar(200) NOT NULL COMMENT 'EQUPO GANADOR',
-  `VOGE_TEAM_LOSER` varchar(200) NOT NULL COMMENT 'EQUIPO PERDEDOR',
-  `VOGE_TEAM_DRAW` varchar(50) NOT NULL COMMENT 'SI EMPATO, NO EMPATO'
+  `VOGE_TOTAL_GOALS_TEAM_ONE` int(11) DEFAULT NULL COMMENT 'TOTAL GOLES DEL PARTIDO',
+  `VOGE_TOTAL_GOALS_TEAM_TWO` int(11) DEFAULT NULL,
+  `VOGE_TOTAL_YELLOW_CARD` int(11) DEFAULT NULL COMMENT 'TOTAL AMARILLAS DEL PARTIDO',
+  `VOGE_TOTAL_RED_CARD` int(11) DEFAULT NULL COMMENT 'TOTAL ROJAS DEL PARTIDO',
+  `VOGE_TOTAL_CHANGES` int(11) DEFAULT NULL COMMENT 'TOTAL CAMBIOS DEL PARTIDO',
+  `VOGE_REFEREE_REPORT` varchar(200) DEFAULT NULL COMMENT 'REPORTE DEL ALBITRO',
+  `VOGE_VOCAL_REPORT` varchar(200) DEFAULT NULL COMMENT 'REPORTE DEL VOCAL',
+  `VOGE_TEAM_WINNER` varchar(200) DEFAULT NULL COMMENT 'EQUPO GANADOR',
+  `VOGE_TEAM_LOSER` varchar(200) DEFAULT NULL COMMENT 'EQUIPO PERDEDOR',
+  `VOGE_TEAM_DRAW` varchar(50) DEFAULT NULL COMMENT 'SI EMPATO, NO EMPATO'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -506,7 +508,8 @@ CREATE TABLE `vocalia_general` (
 
 INSERT INTO `vocalia_general` (`VOGE_CODE`, `MATC_CODE`, `VOGE_TOTAL_GOALS_TEAM_ONE`, `VOGE_TOTAL_GOALS_TEAM_TWO`, `VOGE_TOTAL_YELLOW_CARD`, `VOGE_TOTAL_RED_CARD`, `VOGE_TOTAL_CHANGES`, `VOGE_REFEREE_REPORT`, `VOGE_VOCAL_REPORT`, `VOGE_TEAM_WINNER`, `VOGE_TEAM_LOSER`, `VOGE_TEAM_DRAW`) VALUES
 (2, 1, 1, 2, 3, 3, 3, 'Ninguno', 'Nada', 'tttttt', 'Barcelona', 'No'),
-(3, 2, 2, 2, 3, 2, 2, '2', '2', '2', '2', '2');
+(3, 2, 2, 2, 3, 2, 2, '2', '2', '2', '2', '2'),
+(4, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -541,7 +544,10 @@ CREATE TABLE `vocalia_sheet` (
 
 INSERT INTO `vocalia_sheet` (`VOSH_CODE`, `VOGE_CODE`, `TEAP_CODE`, `VOSH_GOALS`, `VOSH_YELLOW_CARD`, `VOSH_RED_CARD`, `TEAP_CODE_CHANGE`) VALUES
 (2, 2, 6, 1, '1', '1', NULL),
-(3, 2, 22, NULL, '0', '0', NULL);
+(3, 2, 22, NULL, '0', '0', NULL),
+(4, 4, 22, NULL, NULL, NULL, NULL),
+(5, 4, 23, NULL, NULL, NULL, NULL),
+(6, 4, 24, NULL, NULL, NULL, NULL);
 
 --
 -- Índices para tablas volcadas
@@ -733,25 +739,25 @@ ALTER TABLE `standings_groups`
 -- AUTO_INCREMENT de la tabla `team_player`
 --
 ALTER TABLE `team_player`
-  MODIFY `TEAP_CODE` int(11) NOT NULL AUTO_INCREMENT COMMENT 'CODGIO', AUTO_INCREMENT=23;
+  MODIFY `TEAP_CODE` int(11) NOT NULL AUTO_INCREMENT COMMENT 'CODGIO', AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT de la tabla `user_admin`
 --
 ALTER TABLE `user_admin`
-  MODIFY `USAD_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `USAD_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `vocalia_general`
 --
 ALTER TABLE `vocalia_general`
-  MODIFY `VOGE_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `VOGE_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `vocalia_sheet`
 --
 ALTER TABLE `vocalia_sheet`
-  MODIFY `VOSH_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `VOSH_CODE` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Restricciones para tablas volcadas

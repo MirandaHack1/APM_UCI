@@ -29,6 +29,7 @@
       <ion-label>
         <h2>{{ match.team_one }} vs {{ match.team_two }}</h2>
         <p>{{ match.date }} - {{ match.hour }}</p>
+        <ion-button color="primary" *ngIf="selectedSegment === 'proximos'  && rol === 'albitro'" (click)="startMach(match.codigo)" >Ingresar</ion-button>
 
         <!-- Mostrar solo si está en la sección de finalizados -->
         <div *ngIf="selectedSegment === 'finalizados'">
