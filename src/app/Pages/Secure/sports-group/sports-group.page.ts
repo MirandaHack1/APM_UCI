@@ -51,7 +51,7 @@ export class SportsGroupPage implements OnInit {
         this.group = res.datos;
         
       } else {
-        this.servicio.showToast(res.mensaje);
+        // this.servicio.showToast(res.mensaje);
       }
     });
   }

@@ -87,7 +87,7 @@ deleteDate(codigo: string) {
       this.servicio.showToast(res.mensaje);
       this.loadDates();
     } else {
-      this.servicio.showToast(res.mensaje);
+      this.servicio.showToast(res.mensaje, true);
     }
   });
 }

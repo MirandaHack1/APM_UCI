@@ -27,7 +27,7 @@ export class BusineessHeadquartersPage implements OnInit {
         if (res.estado === true) {
           this.sedes = res.datos;
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje, true);
         }
       },
       (error) => {
@@ -46,7 +46,7 @@ export class BusineessHeadquartersPage implements OnInit {
       if (res.estado === true) {
         this.sedes = res.datos;
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }
@@ -85,7 +85,7 @@ export class BusineessHeadquartersPage implements OnInit {
         }
       );
     } else {
-      this.authService.showToast('Código del Empresa no encontrado');
+      this.authService.showToast('Código del Empresa no encontrado', true);
     }
   }
 

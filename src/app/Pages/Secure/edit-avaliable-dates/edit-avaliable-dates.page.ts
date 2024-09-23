@@ -89,7 +89,7 @@ export class EditAvaliableDatesPage implements OnInit {
          
         }
         else{
-          this.servicio.showToast(res.mensaje);
+          this.servicio.showToast(res.mensaje, true);
         }
       })
     
@@ -98,6 +98,16 @@ export class EditAvaliableDatesPage implements OnInit {
 
   //este es pra insertar fechas
   insertAvaliableDates(){
+    if (
+      !this.txt_type ||
+      !this.txt_sportGroupName ||
+      !this.txt_date ||
+      !this.txt_timeFrom ||
+      !this.txt_timeTo
+    ) {
+      this.servicio.showToast('Error: Completar todos los campos', true);
+      return;
+    }
     let datos={
       "accion": "insertAvaliableDates",
       
@@ -113,11 +123,13 @@ export class EditAvaliableDatesPage implements OnInit {
         this.navCtrl.back();
       }
       else{
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     })
 
   }
+
+
   updateAvaliableDates(){
     let datos={
       "accion": "updateAvaliableDates",
@@ -134,7 +146,7 @@ export class EditAvaliableDatesPage implements OnInit {
         this.navCtrl.back();
       }
       else{
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     })
 
