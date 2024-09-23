@@ -47,7 +47,7 @@ export class EditBusinessInformationPage implements OnInit {
       };
       reader.readAsDataURL(file);
     } else {
-      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).');
+      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).', true);
     }
   }
 
@@ -62,7 +62,7 @@ export class EditBusinessInformationPage implements OnInit {
       };
       reader.readAsDataURL(file);
     } else {
-      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).');
+      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).',true);
     }
   }
 
@@ -83,12 +83,12 @@ export class EditBusinessInformationPage implements OnInit {
       if (result.estado) {
         return result.archivo_url; // URL del logo en el servidor
       } else {
-        this.servicio.showToast('Error al subir el logo');
+        this.servicio.showToast('Error al subir el logo', true);
         return ''; // Retorna vacío en caso de error
       }
     } catch (error) {
       console.error('Error al subir el logo:', error);
-      this.servicio.showToast('Error al subir el logo');
+      this.servicio.showToast('Error al subir el logo', true);
       return ''; // Retorna vacío en caso de error
     }
   }
@@ -110,12 +110,12 @@ export class EditBusinessInformationPage implements OnInit {
       if (result.estado) {
         return result.archivo_url; // URL de la imagen en el servidor
       } else {
-        this.servicio.showToast('Error al subir la imagen');
+        this.servicio.showToast('Error al subir la imagen', true);
         return ''; // Retorna vacío en caso de error
       }
     } catch (error) {
       console.error('Error al subir la imagen:', error);
-      this.servicio.showToast('Error al subir la imagen');
+      this.servicio.showToast('Error al subir la imagen', true);
       return ''; // Retorna vacío en caso de error
     }
   }
@@ -141,7 +141,7 @@ export class EditBusinessInformationPage implements OnInit {
                 this.imagennn=  'http://127.0.0.1/APM_UCI/Ws_APM_BACK/'+this.imageUrl
                 //console.log(this.imageUrl);
             } else {
-                this.servicio.showToast('No se encontró la empresa');
+                this.servicio.showToast('No se encontró la empresa', true);
             }
         },
         (error) => {
@@ -183,13 +183,13 @@ async guardar() {
         this.servicio.showToast(res.mensaje);
         this.navCtrl.back();
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     }, (error) => {
       console.error('Error en la solicitud:', error);
     });
   } else {
-    this.servicio.showToast('Por favor complete todos los campos.');
+    this.servicio.showToast('Por favor complete todos los campos.', true);
   }
 }
 
