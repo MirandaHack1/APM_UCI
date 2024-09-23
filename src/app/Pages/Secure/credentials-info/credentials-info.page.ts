@@ -53,7 +53,7 @@ export class CredentialsInfoPage implements OnInit {
         this.txt_emailr= this.info.emailr;
       }
       else{
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     })
 
