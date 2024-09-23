@@ -168,6 +168,7 @@ export class HomePage implements OnInit {
           role: 'cancel',
           handler: () => {
             // El usuario eligió no cerrar sesión
+            history.pushState(null, '');
           }
         },
         {
