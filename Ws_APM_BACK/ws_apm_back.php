@@ -303,6 +303,7 @@ if ($post['accion'] == "loadCredentials") {
                 'username' => $row['USAD_USERNAME'],
                 'email' => $row['USAD_EMAIL'],
                 'emailr' => $row['USAD_EMAIL_RECOVERY'],
+                
             );
         }
         $respuesta = json_encode(array('estado' => true, 'person' => $datos));
@@ -2620,7 +2621,8 @@ if ($post['accion'] == "LoadTeams") {
     $match_code = $mysqli->real_escape_string($post['match_code']);
 
     $query = "
-        SELECT team_one.SPG_TEAM_NAME AS team_one_name, team_two.SPG_TEAM_NAME AS team_two_name
+        SELECT team_one.SPG_TEAM_NAME AS team_one_name, team_one.SPG_CODE AS team_one_code,
+               team_two.SPG_TEAM_NAME AS team_two_name, team_two.SPG_CODE AS team_two_code
         FROM matches m
         INNER JOIN sports_groups team_one ON m.SPG_CODE_ONE = team_one.SPG_CODE
         INNER JOIN sports_groups team_two ON m.SPG_CODE_TWO = team_two.SPG_CODE
@@ -2632,12 +2634,16 @@ if ($post['accion'] == "LoadTeams") {
         echo json_encode(array(
             'estado' => true,
             'team_one_name' => $row['team_one_name'],
-            'team_two_name' => $row['team_two_name']
+            'team_one_code' => $row['team_one_code'],
+            'team_two_name' => $row['team_two_name'],
+            'team_two_code' => $row['team_two_code']
         ));
     } else {
         echo json_encode(array('estado' => false, 'mensaje' => "No se encontraron equipos"));
     }
 }
+
+
 if ($post['accion'] == 'LoadPlayersByTeam') {
     $match_code = $mysqli->real_escape_string($post['match_code']);
     $team = $post['team'] == 'team1' ? 'SPG_CODE_ONE' : 'SPG_CODE_TWO'; // Determinar equipo basado en selección
@@ -2670,7 +2676,8 @@ if ($post['accion'] == 'LoadPlayersByTeam') {
                 'voge_code' => $row['VOGE_CODE'],
                 'shirt_number' => $row['TEAP_SHIRT_NUMBER'],
                 'first_name' => $row['ICLI_FIRST_NAME'],
-                'last_name' => $row['ICLI_LAST_NAME']
+                'last_name' => $row['ICLI_LAST_NAME'],
+                'teap_code' => $row['TEAP_CODE']
             );
         }
         echo json_encode(array('estado' => true, 'datos' => $datos));
@@ -2689,7 +2696,7 @@ if ($post['accion'] == "startMach") {
     if (mysqli_num_rows($result) == 0) {
         // No existe vocalia general para este partido, insertar uno vacío
         $insert_vocalia_general = sprintf(
-            "INSERT INTO vocalia_general (MATC_CODE, VOGE_TOTAL_GOALS_TEAM_ONE, VOGE_TOTAL_GOALS_TEAM_TWO, VOGE_TOTAL_YELLOW_CARD, VOGE_TOTAL_RED_CARD, VOGE_TOTAL_CHANGES, VOGE_REFEREE_REPORT, VOGE_VOCAL_REPORT, VOGE_TEAM_WINNER, VOGE_TEAM_LOSER, VOGE_TEAM_DRAW) VALUES ('%s', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+            "INSERT INTO vocalia_general (MATC_CODE, VOGE_TOTAL_GOALS_TEAM_ONE, VOGE_TOTAL_GOALS_TEAM_TWO, VOGE_TOTAL_YELLOW_CARD, VOGE_TOTAL_RED_CARD, VOGE_TOTAL_CHANGES, VOGE_REFEREE_REPORT, VOGE_VOCAL_REPORT, VOGE_TEAM_WINNER, VOGE_TEAM_LOSER, VOGE_TEAM_DRAW) VALUES ('%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0')",
             $codigo_match
         );
         mysqli_query($mysqli, $insert_vocalia_general);
@@ -2721,7 +2728,7 @@ if ($post['accion'] == "startMach") {
         if (mysqli_num_rows($check_result) == 0) {
             // No existe, insertar un registro vacío
             $insert_vocalia_sheet = sprintf(
-                "INSERT INTO vocalia_sheet (VOGE_CODE, TEAP_CODE, VOSH_GOALS, VOSH_YELLOW_CARD, VOSH_RED_CARD, TEAP_CODE_CHANGE) VALUES ('%s', '%s', NULL, NULL, NULL, NULL)",
+                "INSERT INTO vocalia_sheet (VOGE_CODE, TEAP_CODE, VOSH_GOALS, VOSH_YELLOW_CARD, VOSH_RED_CARD, TEAP_CODE_CHANGE) VALUES ('%s', '%s', '0', '0', '0', NULL)",
                 $voge_code, $teap_code
             );
             mysqli_query($mysqli, $insert_vocalia_sheet);
@@ -2733,3 +2740,142 @@ if ($post['accion'] == "startMach") {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if ($post['accion'] == "LoadPlayerVocalia") {
+    $code_vosh = $mysqli->real_escape_string($post['code_vosh']);
+
+    $query = "
+        SELECT v.VOSH_GOALS AS goals, v.VOSH_YELLOW_CARD AS yellow_cards, 
+               v.VOSH_RED_CARD AS red_cards, v.TEAP_CODE_CHANGE AS code_change_player,
+               CONCAT(ic.ICLI_FIRST_NAME, ' ', ic.ICLI_LAST_NAME) AS change_player_name
+        FROM vocalia_sheet v
+        LEFT JOIN team_player tp ON v.TEAP_CODE_CHANGE = tp.TEAP_CODE
+        LEFT JOIN info_client ic ON tp.ICLI_CODE = ic.ICLI_CODE
+        WHERE v.VOSH_CODE = '$code_vosh'
+    ";
+
+    $result = mysqli_query($mysqli, $query);
+    if ($row = mysqli_fetch_assoc($result)) {
+        echo json_encode(array(
+            'estado' => true,
+            'datos' => array(  // Wrap the returned data in 'datos'
+                'goals' => $row['goals'] ?? 0,  // Default to 0 if null
+                'yellow_cards' => $row['yellow_cards'] ?? 0,
+                'red_cards' => $row['red_cards'] ?? 0,
+                'code_change_player' => $row['code_change_player'] ?? null,
+                'change_player_name' => $row['change_player_name'] ?? null
+            )
+        ));
+    } else {
+        echo json_encode(array('estado' => false, 'mensaje' => "No se encontró el jugador"));
+    }
+}
+
+
+if ($post['accion'] == "searchTeamPlayers") {
+    $team_one_code = mysqli_real_escape_string($mysqli, $post['team_one_code']);
+    $team_two_code = mysqli_real_escape_string($mysqli, $post['team_two_code']);
+    $teap_code = mysqli_real_escape_string($mysqli, $post['teap_code']);
+    $searchTerm = mysqli_real_escape_string($mysqli, $post['result']);
+    
+    // Primero, obtenemos el SPG_CODE del jugador principal usando el teap_code
+    $sentencia_equipo_principal = sprintf(
+        "SELECT SPG_CODE FROM team_player WHERE TEAP_CODE = '%s'",
+        $teap_code
+    );
+    
+    $resultado_equipo = mysqli_query($mysqli, $sentencia_equipo_principal);
+    
+    if ($resultado_equipo && mysqli_num_rows($resultado_equipo) > 0) {
+        $row_equipo = mysqli_fetch_assoc($resultado_equipo);
+        $equipo_principal_code = $row_equipo['SPG_CODE'];
+        
+        // Validamos que el equipo sea team_one_code o team_two_code
+        if ($equipo_principal_code == $team_one_code || $equipo_principal_code == $team_two_code) {
+            // Ahora realizamos la búsqueda de los jugadores del equipo correspondiente excluyendo al jugador principal
+            if (empty($searchTerm)) {
+                // Si no hay término de búsqueda, cargamos todos los jugadores excepto el jugador principal
+                $sentencia = sprintf(
+                    "SELECT t.TEAP_CODE, t.TEAP_SHIRT_NUMBER, c.ICLI_FIRST_NAME, c.ICLI_LAST_NAME, c.ICLI_CARD
+                     FROM team_player t
+                     JOIN info_client c ON t.ICLI_CODE = c.ICLI_CODE
+                     WHERE t.SPG_CODE = '%s'
+                     AND t.TEAP_CODE != '%s'",
+                    $equipo_principal_code, $teap_code // Excluir el teap_code del jugador principal
+                );
+            } else {
+                // Si hay un término de búsqueda, filtramos por nombre, apellido o cédula, excluyendo al jugador principal
+                $sentencia = sprintf(
+                    "SELECT t.TEAP_CODE, t.TEAP_SHIRT_NUMBER, c.ICLI_FIRST_NAME, c.ICLI_LAST_NAME, c.ICLI_CARD
+                     FROM team_player t
+                     JOIN info_client c ON t.ICLI_CODE = c.ICLI_CODE
+                     WHERE t.SPG_CODE = '%s'
+                     AND t.TEAP_CODE != '%s'
+                     AND (c.ICLI_FIRST_NAME LIKE '%%%s%%' 
+                     OR c.ICLI_LAST_NAME LIKE '%%%s%%' 
+                     OR c.ICLI_CARD LIKE '%%%s%%')",
+                    $equipo_principal_code, $teap_code, $searchTerm, $searchTerm, $searchTerm // Excluir teap_code del jugador principal
+                );
+            }
+
+            $result = mysqli_query($mysqli, $sentencia);
+
+            if (mysqli_num_rows($result) > 0) {
+                $datos = array();
+                while ($row = mysqli_fetch_array($result)) {
+                    $datos[] = array(
+                        'nombre' => $row['ICLI_FIRST_NAME'] . ' ' . $row['ICLI_LAST_NAME'],
+                        'numeroCamiseta' => $row['TEAP_SHIRT_NUMBER'],
+                        'codigo' => $row['TEAP_CODE']
+                    );
+                }
+                $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
+            } else {
+                $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron jugadores.'));
+            }
+        } else {
+            $respuesta = json_encode(array('estado' => false, 'mensaje' => 'El jugador principal no pertenece a los equipos indicados.'));
+        }
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se pudo determinar el equipo del jugador principal.'));
+    }
+
+    echo $respuesta;
+}
+//SavePlayerVocalia
+if ($post['accion'] == "SavePlayerVocalia") {
+    $code_vosh = $mysqli->real_escape_string($post['code_vosh']);
+    $goals = $mysqli->real_escape_string($post['goals']);
+    $yellow_cards = $mysqli->real_escape_string($post['yellow_cards']);
+    $red_cards = $mysqli->real_escape_string($post['red_cards']);
+    
+    // Verifica si code_change_player está vacío y asigna NULL si es necesario
+    $code_change_player = !empty($post['code_change_player']) ? $mysqli->real_escape_string($post['code_change_player']) : 'NULL';
+
+    // Ajusta la consulta SQL para manejar el caso de NULL
+    $query = sprintf(
+        "UPDATE vocalia_sheet SET VOSH_GOALS='%s', VOSH_YELLOW_CARD='%s', VOSH_RED_CARD='%s', TEAP_CODE_CHANGE=%s WHERE VOSH_CODE='%s'",
+        $goals, $yellow_cards, $red_cards, $code_change_player, $code_vosh
+    );
+
+    if (mysqli_query($mysqli, $query)) {
+        echo json_encode(array('estado' => true, 'mensaje' => 'Datos guardados correctamente.'));
+    } else {
+        echo json_encode(array('estado' => false, 'mensaje' => 'Error al guardar los datos.'));
+    }
+}
