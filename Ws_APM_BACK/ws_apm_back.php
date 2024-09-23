@@ -442,12 +442,11 @@ if ($post['accion'] == 'editarusuario') {
     $codigo = $post['codigo'];
 
 
-    $update_client_query = "UPDATE user_admin SET USAD_EMAIl= '$email', USAD_EMAIL_RECOVERY='$emailrecuperacion',USAD_ROLE = '$rol' WHERE USAD_CODE = '$codigo'";
-
-
-
-    // Prepara la consulta SQL para actualizar el usuario
-    $update_client_query = "UPDATE user_admin SET USAD_ROLE = '$rol' WHERE USAD_CODE = '$codigo'";
+    $update_client_query = "UPDATE user_admin 
+                        SET
+                            USAD_EMAIL_RECOVERY='$emailrecuperacion', 
+                            USAD_ROLE = '$rol' 
+                        WHERE USAD_CODE = '$codigo'";
 
     // Ejecuta la consulta SQL
     if (mysqli_query($mysqli, $update_client_query)) {
