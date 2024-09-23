@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/Services/auth/auth.service';
 
 @Component({
@@ -39,7 +39,7 @@ export class PasswordRecoveryPage implements OnInit {
         // Navegar a la página de verificación de token
         this.navCtrl.navigateForward('check-token');
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }
@@ -56,8 +56,12 @@ export class PasswordRecoveryPage implements OnInit {
       if (res.estado === true) {
         this.servicio.showToast('Se ha enviado un token de recuperación a su correo.');
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
+  }
+
+  back() {
+    this.navCtrl.back();
   }
 }

@@ -28,7 +28,7 @@ export class CheckTokenPage implements OnInit {
       this.navCtrl.navigateForward('change-password');
     } else {
       // Token inválido
-      this.servicio.showToast('Token inválido o expirado.');
+      this.servicio.showToast('Token inválido o expirado.', true);
     }
   }
 }

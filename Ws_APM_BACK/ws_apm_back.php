@@ -17,9 +17,14 @@ $post = json_decode(file_get_contents("php://input"), true);
 $respuesta = "";
 
 
+/******************************************************************************************************************************************************************************************************************** */
+                                                                                            //FUNCIONALIDAD DEL SISTEMA 
+/******************************************************************************************************************************************************************************************************************** */
 
-/***********************************************************************/
-/*******************************FUNCION PARA INICIO DE SESESION-USER ADMIN********************************/
+/******************************************************************************************************************************************************************************************************************** */
+                                                                                            //FUNCIONALIDAD DEL INICIO DE SESION
+/******************************************************************************************************************************************************************************************************************** */
+// INGRESO AL SISTEMA LOGIN
 if ($post['accion'] == "loggin") {
     // Consulta el usuario por correo electrónico
     $sentencia = sprintf("SELECT * FROM user_admin WHERE USAD_EMAIL='%s'", $post['USAD_EMAIL']);
@@ -56,8 +61,9 @@ if ($post['accion'] == "loggin") {
 
     echo $respuesta;
 }
-
-/***********************************************************************/
+/******************************************************************************************************************************************************************************************************************** */
+                                                                                            //FUNCIONALIDAD PARA RECUPERACION DE CORREO
+/******************************************************************************************************************************************************************************************************************** */
 // verificar que el email de recuperacion exista
 if ($post['accion'] == "checkEmail") {
     $token = bin2hex(random_bytes(16));
@@ -119,10 +125,110 @@ if ($post['accion'] == "sendTokenEmail") {
 
     echo $respuesta;
 }
-
+/******************************************************************************************************************************************************************************************************************** */
+                                                                                            //FUNCIONALIDAD REGISTRAR CLIENTES
+/******************************************************************************************************************************************************************************************************************** */
 //REGISTRAR EL USUARIO 
-if ($post['accion'] == "userRegister") {
+// if ($post['accion'] == "userRegister") {
 
+//     $insert_client_query = sprintf(
+//         "INSERT INTO info_client (ICLI_FIRST_NAME, ICLI_LAST_NAME, ICLI_CARD, ICLI_PHONE_NUMBER, ICLI_ADDRESS, ICLI_CITY, ICLI_PROVINCE, ICLI_CAREER, ICLI_SEMESTER, ICLI_AGE, ICLI_GENDER, ICLI_WEIGHT, ICLI_HEIGHT, ICLI_INSTITUTIONAL_EMAIL, ICLI_DATE_OF_BIRTH, BUSH_CODE) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+//         $post['firstName'],
+//         $post['lastName'],
+//         $post['cardNumber'],
+//         $post['phoneNumber'],
+//         $post['address'],
+//         $post['city'],
+//         $post['province'],
+//         $post['career'],
+//         $post['semester'],
+//         $post['age'],
+//         $post['gender'],
+//         $post['weight'],
+//         $post['height'],
+//         $post['institutionalEmail'],
+//         $post['dateOfBirth'],
+//         $post['sede']
+//     );
+
+//     if (mysqli_query($mysqli, $insert_client_query)) {
+//         $icli_code = mysqli_insert_id($mysqli);
+
+//         // Encriptar la contraseña antes de insertarla
+//         $password_hashed = password_hash($post['password_user'], PASSWORD_BCRYPT);
+
+//         $insert_user_query = sprintf(
+//             "INSERT INTO user_admin (USAD_USERNAME, USAD_EMAIL, USAD_PASSWORD, USAD_EMAIL_RECOVERY, USAD_ROLE, USAD_DATE_CREATED, ICLI_CODE) VALUES ('%s', '%s', '%s', '%s', 'estudiante', NOW(), '%s')",
+//             $post['user_name'],
+//             $post['email_user'],
+//             $password_hashed,  // Guardar la contraseña encriptada
+//             $post['email_user_re'],
+//             $icli_code
+//         );
+
+//         if (mysqli_query($mysqli, $insert_user_query)) {
+//             $respuesta = json_encode(array('estado' => true, "mensaje" => "Registro exitoso"));
+//         } else {
+//             $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar usuario"));
+//         }
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al insertar cliente"));
+//     }
+
+//     echo $respuesta;
+// }
+
+// REGISTRAR EL USUARIO 
+if ($post['accion'] == "userRegister") {
+    // Verificar si la cédula ya existe
+    $check_id_query = sprintf(
+        "SELECT COUNT(*) FROM info_client WHERE ICLI_CARD = '%s'",
+        $post['cardNumber']
+    );
+    $id_exists = mysqli_fetch_row(mysqli_query($mysqli, $check_id_query))[0] > 0;
+
+    // Verificar si el correo ya existe (usuario)
+    $check_email_user_query = sprintf(
+        "SELECT COUNT(*) FROM user_admin WHERE USAD_EMAIL = '%s'",
+        $post['email_user']
+    );
+    $email_user_exists = mysqli_fetch_row(mysqli_query($mysqli, $check_email_user_query))[0] > 0;
+
+    // Verificar si el correo institucional ya existe
+    $check_institutional_email_query = sprintf(
+        "SELECT COUNT(*) FROM info_client WHERE ICLI_INSTITUTIONAL_EMAIL = '%s'",
+        $post['institutionalEmail']
+    );
+    $institutional_email_exists = mysqli_fetch_row(mysqli_query($mysqli, $check_institutional_email_query))[0] > 0;
+
+    // Verificar si el nombre de usuario ya existe
+    $check_username_query = sprintf(
+        "SELECT COUNT(*) FROM user_admin WHERE USAD_USERNAME = '%s'",
+        $post['user_name']
+    );
+    $username_exists = mysqli_fetch_row(mysqli_query($mysqli, $check_username_query))[0] > 0;
+
+    // Comprobar si existe cédula, correos o nombre de usuario
+    if ($id_exists || $email_user_exists || $institutional_email_exists || $username_exists) {
+        $mensaje = "";
+        if ($id_exists) {
+            $mensaje .= "La cédula ya existe. ";
+        }
+        if ($email_user_exists) {
+            $mensaje .= "El correo electrónico ya existe. ";
+        }
+        if ($institutional_email_exists) {
+            $mensaje .= "El correo institucional ya existe. ";
+        }
+        if ($username_exists) {
+            $mensaje .= "El nombre de usuario ya existe.";
+        }
+        $respuesta = json_encode(array('estado' => false, "mensaje" => $mensaje));
+        echo $respuesta;
+        return; // Salir de la función si hay duplicados
+    }
+
+    // Si no existe, proceder a insertar el cliente
     $insert_client_query = sprintf(
         "INSERT INTO info_client (ICLI_FIRST_NAME, ICLI_LAST_NAME, ICLI_CARD, ICLI_PHONE_NUMBER, ICLI_ADDRESS, ICLI_CITY, ICLI_PROVINCE, ICLI_CAREER, ICLI_SEMESTER, ICLI_AGE, ICLI_GENDER, ICLI_WEIGHT, ICLI_HEIGHT, ICLI_INSTITUTIONAL_EMAIL, ICLI_DATE_OF_BIRTH, BUSH_CODE) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
         $post['firstName'],
@@ -169,6 +275,16 @@ if ($post['accion'] == "userRegister") {
 
     echo $respuesta;
 }
+
+
+/******************************************************************************************************************************************************************************************************************** */
+                                                                                            //FUNCIONALIDAD REGISTRAR CLIENTES
+/******************************************************************************************************************************************************************************************************************** */
+
+
+
+
+
 
 //ACTUALIZAR LA CLAVE POR MEDIO DE CONFIRMAR EL TOKEN
 if ($post['accion'] == "updatePassword") {
@@ -345,27 +461,76 @@ if ($post['accion'] == 'editarusuario') {
 
 
 //insertcredentials
+// if ($post['accion'] == "insertcredentials") {
+//     $password_hashed = password_hash($post['password'], PASSWORD_BCRYPT);
+
+
+//     $update_query = sprintf(
+//         "UPDATE user_admin SET USAD_USERNAME='%s', USAD_EMAIL='%s',USAD_PASSWORD='%s', USAD_EMAIL_RECOVERY='%s' WHERE USAD_CODE='%s'",
+//         $post['username'],
+//         $post['email'],
+//         $password_hashed,
+//         $post['emailr'],
+//         $post['cod']
+//     );
+
+//     if (mysqli_query($mysqli, $update_query)) {
+//         $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar los datos"));
+//     }
+
+//     echo $respuesta;
+// }
 if ($post['accion'] == "insertcredentials") {
-    $password_hashed = password_hash($post['password'], PASSWORD_BCRYPT);
-
-
-    $update_query = sprintf(
-        "UPDATE user_admin SET USAD_USERNAME='%s', USAD_EMAIL='%s',USAD_PASSWORD='%s', USAD_EMAIL_RECOVERY='%s' WHERE USAD_CODE='%s'",
-        $post['username'],
+    // Validar que el correo, el correo de recuperación y el nombre de usuario no existan
+    $check_query = sprintf(
+        "SELECT * FROM user_admin WHERE (USAD_EMAIL='%s' OR USAD_EMAIL_RECOVERY='%s' OR USAD_USERNAME='%s') AND USAD_CODE != '%s'",
         $post['email'],
-        $password_hashed,
         $post['emailr'],
+        $post['username'],
         $post['cod']
     );
 
-    if (mysqli_query($mysqli, $update_query)) {
-        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+    $result = mysqli_query($mysqli, $check_query);
+    $mensaje_error = array();
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            if ($row['USAD_EMAIL'] == $post['email']) {
+                $mensaje_error[] = "El correo electrónico ya existe.";
+            }
+            if ($row['USAD_EMAIL_RECOVERY'] == $post['emailr']) {
+                $mensaje_error[] = "El correo de recuperación ya existe.";
+            }
+            if ($row['USAD_USERNAME'] == $post['username']) {
+                $mensaje_error[] = "El nombre de usuario ya existe.";
+            }
+        }
+        $respuesta = json_encode(array('estado' => false, "mensaje" => implode(" ", $mensaje_error)));
     } else {
-        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar los datos"));
+        // Si no existen, proceder a actualizar
+        $password_hashed = password_hash($post['password'], PASSWORD_BCRYPT);
+
+        $update_query = sprintf(
+            "UPDATE user_admin SET USAD_USERNAME='%s', USAD_EMAIL='%s', USAD_PASSWORD='%s', USAD_EMAIL_RECOVERY='%s' WHERE USAD_CODE='%s'",
+            $post['username'],
+            $post['email'],
+            $password_hashed,
+            $post['emailr'],
+            $post['cod']
+        );
+
+        if (mysqli_query($mysqli, $update_query)) {
+            $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+        } else {
+            $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar los datos"));
+        }
     }
 
     echo $respuesta;
 }
+
 //loadinfo
 if ($post['accion'] == "loadinfo") {
     $sentencia = sprintf("SELECT * FROM info_client WHERE ICLI_CODE = '%s'", $post['codigo']);
@@ -1301,7 +1466,7 @@ if ($post['accion'] == "insertar_sede") {
 // }
 
 
-if ($post['accion'] == "empresasdatos") { 
+if ($post['accion'] == "empresasdatos") {
     $codigo = $post['codigo']; // Asegúrate de que el parámetro se llama 'codigo'
     $sentencia = sprintf("SELECT * FROM business_information WHERE BUIF_CODE = '%s'", mysqli_real_escape_string($mysqli, $codigo));
     $result = mysqli_query($mysqli, $sentencia);
@@ -1616,7 +1781,7 @@ if ($post['accion'] == "loadDates") {
         "SELECT *
         FROM available_dates av
         INNER JOIN sports_groups sp ON av.SPG_CODE = sp.SPG_CODE
-        WHERE sp.ICLI_TEAM_LEADER_ID = '%s' and sp.SPG_CODE='%s' ", 
+        WHERE sp.ICLI_TEAM_LEADER_ID = '%s' and sp.SPG_CODE='%s' ",
         $post['codigo'],
         $post['codigo2'],
 
@@ -1648,7 +1813,7 @@ if ($post['accion'] == "loadSportGroupName") {
     $sentencia = sprintf(
         "SELECT SPG_CODE, SPG_TEAM_NAME
          FROM sports_groups 
-         WHERE SPG_CODE = '%s'", 
+         WHERE SPG_CODE = '%s'",
         $post['codigo']
     );
 
@@ -1674,10 +1839,10 @@ if ($post['accion'] == "loadSportGroupName") {
 
 if ($post['accion'] == "loadAvaliableDates") {
     $sentencia = sprintf(
-        "SELECT * FROM available_dates where AVD_CODE= '%s'", 
+        "SELECT * FROM available_dates where AVD_CODE= '%s'",
         $post['codigo']
     );
-    
+
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
@@ -1689,7 +1854,7 @@ if ($post['accion'] == "loadAvaliableDates") {
                 'date' => $row['AVD_AVAILABLE_DATE'],
                 'timeFrom' => $row['AVD_AVAILABLE_HOUR_SINCE'],
                 'timeTo' => $row['AVD_AVAILABLE_HOUR_UNITL'],
-                
+
             );
         }
         $respuesta = json_encode(array('estado' => true, 'data' => $datos));
@@ -1707,7 +1872,7 @@ if ($post['accion'] == "insertAvaliableDates") {
         $post['type'],
         $post['sportGroupName']
     );
-    
+
     $result = mysqli_query($mysqli, $check_query);
     $row = mysqli_fetch_assoc($result);
     $total = $row['total'];
@@ -1748,7 +1913,7 @@ if ($post['accion'] == "updateAvaliableDates") {
         $post['sportGroupName'],
         $post['codigo']  // Excluir el registro que se está actualizando
     );
-    
+
     $result = mysqli_query($mysqli, $check_query);
     $row = mysqli_fetch_assoc($result);
     $total = $row['total'];
@@ -1811,7 +1976,7 @@ if ($post['accion'] == "cargagroupstage") {
                 WHERE gs.GRS_CODE = '%s'",
         mysqli_real_escape_string($mysqli, $post['cod'])
     );
-    
+
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
@@ -1819,10 +1984,10 @@ if ($post['accion'] == "cargagroupstage") {
         while ($row = mysqli_fetch_array($result)) {
             $datos[] = array(
                 //'GRUP_CODE' => $row['GRP_CODE'], 
-                'grup_code' => $row['GRUP_CODE'],     
-                'nombregrupo' => $row['GRUP_NAME'] , 
-                'spg_cod' => $row['SPG_CODE'],     
-                'nombreequipo' => $row['SPG_TEAM_NAME']   
+                'grup_code' => $row['GRUP_CODE'],
+                'nombregrupo' => $row['GRUP_NAME'],
+                'spg_cod' => $row['SPG_CODE'],
+                'nombreequipo' => $row['SPG_TEAM_NAME']
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
@@ -1887,7 +2052,10 @@ if ($post['accion'] == "loadSearchPlayers") {
              JOIN info_client c ON t.ICLI_CODE = c.ICLI_CODE
              WHERE t.SPG_CODE = '%s' 
              AND (c.ICLI_FIRST_NAME LIKE '%%%s%%' OR c.ICLI_LAST_NAME LIKE '%%%s%%' OR c.ICLI_CARD LIKE '%%%s%%')",
-            $codigo, $searchTerm, $searchTerm, $searchTerm
+            $codigo,
+            $searchTerm,
+            $searchTerm,
+            $searchTerm
         );
     }
 
@@ -1899,9 +2067,9 @@ if ($post['accion'] == "loadSearchPlayers") {
             $datos[] = array(
                 'nombre' => $row['ICLI_FIRST_NAME'] . ' ' . $row['ICLI_LAST_NAME'],
                 'cedula' => $row['ICLI_CARD'],
-                'teap_code' => $row['TEAP_CODE'] ,
+                'teap_code' => $row['TEAP_CODE'],
                 'teap_shirt_number' => $row['TEAP_SHIRT_NUMBER']
-               
+
             );
         }
         $respuesta = json_encode(array('estado' => true, 'datos' => $datos));
@@ -1931,18 +2099,19 @@ if ($post['accion'] == "deletePlayer") {
 
 if ($post['accion'] == "searchPlayers") {
     $search = $mysqli->real_escape_string($post['result']);
-    
+
     $sentencia = sprintf(
         "SELECT ic.ICLI_CODE, ic.ICLI_FIRST_NAME, ic.ICLI_LAST_NAME, ic.ICLI_CARD
          FROM info_client ic
          LEFT JOIN team_player tp ON ic.ICLI_CODE = tp.ICLI_CODE
          WHERE tp.ICLI_CODE IS NULL
          AND (ic.ICLI_FIRST_NAME LIKE '%%%s%%' OR ic.ICLI_CARD LIKE '%%%s%%')",
-         $search, $search
+        $search,
+        $search
     );
-    
+
     $result = mysqli_query($mysqli, $sentencia);
-    
+
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $datos[] = array(
@@ -1967,7 +2136,7 @@ if ($post['accion'] == "insertPlayer") {
         "SELECT COUNT(*) as total_players FROM team_player WHERE SPG_CODE = '%s'",
         $SPG_CODE
     );
-    
+
     $count_result = mysqli_query($mysqli, $count_query);
     $count_row = mysqli_fetch_assoc($count_result);
 
@@ -1981,10 +2150,10 @@ if ($post['accion'] == "insertPlayer") {
             $SPG_CODE,
             $TEAP_SHIRT_NUMBER
         );
-        
+
         $result = mysqli_query($mysqli, $check_query);
         $row = mysqli_fetch_assoc($result);
-        
+
         if ($row['count'] > 0) {
             // Si el número de camiseta ya existe, se manda el mensaje de error
             echo json_encode(array('estado' => false, 'mensaje' => "El número de camiseta ya existe, por favor elige otro."));
@@ -1996,7 +2165,7 @@ if ($post['accion'] == "insertPlayer") {
                 $SPG_CODE,
                 $TEAP_SHIRT_NUMBER
             );
-            
+
             if (mysqli_query($mysqli, $sentencia)) {
                 echo json_encode(array('estado' => true, 'mensaje' => "Jugador insertado correctamente"));
             } else {
@@ -2013,17 +2182,17 @@ if ($post['accion'] == "updatePlayer") {
     $SPG_CODE = $mysqli->real_escape_string($post['group_code']);
     $TEAP_SHIRT_NUMBER = $mysqli->real_escape_string($post['shirt_number']);
     $TEAP_CODE = $mysqli->real_escape_string($post['teap_code']);
-    
+
     // Obtener el número de camiseta actual del jugador
     $current_number_query = sprintf(
         "SELECT TEAP_SHIRT_NUMBER FROM team_player WHERE TEAP_CODE = '%s'",
         $TEAP_CODE
     );
-    
+
     $result = mysqli_query($mysqli, $current_number_query);
     $row = mysqli_fetch_assoc($result);
     $current_shirt_number = $row['TEAP_SHIRT_NUMBER'];
-    
+
     // Verificar si el nuevo número es diferente al actual
     if ($TEAP_SHIRT_NUMBER != $current_shirt_number) {
         // Si el número es diferente, verificar si ya está registrado en el mismo grupo
@@ -2032,17 +2201,17 @@ if ($post['accion'] == "updatePlayer") {
             $SPG_CODE,
             $TEAP_SHIRT_NUMBER
         );
-        
+
         $check_result = mysqli_query($mysqli, $check_query);
         $check_row = mysqli_fetch_assoc($check_result);
-        
+
         if ($check_row['count'] > 0) {
             // Si el número ya está registrado en el grupo, mostrar mensaje de error
             echo json_encode(array('estado' => false, 'mensaje' => "El número de camiseta ya está registrado, por favor elige otro."));
             return;
         }
     }
-    
+
     // Si el número es el mismo o no está registrado, se procede con la actualización
     $update_query = sprintf(
         "UPDATE team_player SET ICLI_CODE = '%s', SPG_CODE = '%s', TEAP_SHIRT_NUMBER = '%s' WHERE TEAP_CODE = '%s'",
@@ -2051,7 +2220,7 @@ if ($post['accion'] == "updatePlayer") {
         $TEAP_SHIRT_NUMBER,
         $TEAP_CODE
     );
-    
+
     if (mysqli_query($mysqli, $update_query)) {
         echo json_encode(array('estado' => true, 'mensaje' => "Jugador actualizado correctamente"));
     } else {
@@ -2262,7 +2431,7 @@ if ($post['accion'] == "cargaMatch") {
          WHERE m.MATC_CODE = '%s'",
         mysqli_real_escape_string($mysqli, $post['cod'])
     );
-    
+
     $result = mysqli_query($mysqli, $sentencia);
 
     if (mysqli_num_rows($result) > 0) {
@@ -2290,11 +2459,11 @@ if ($post['accion'] == "cargaMatch") {
 
 if ($post['accion'] == "AgregarMatch") {
     // Obtener los datos del POST
-    $canchaCode = $post['cancCode'];  
-    $fecha = $post['matchDate'];                
-    $hora = $post['matchHour']; 
-    $teamOneCode = $post['spgCodeOne'];  
-    $teamTwoCode = $post['spgCodeTwo'];  
+    $canchaCode = $post['cancCode'];
+    $fecha = $post['matchDate'];
+    $hora = $post['matchHour'];
+    $teamOneCode = $post['spgCodeOne'];
+    $teamTwoCode = $post['spgCodeTwo'];
 
     // Insertar el nuevo partido en la tabla `matches`
     $sentencia = sprintf(
@@ -2320,12 +2489,12 @@ if ($post['accion'] == "AgregarMatch") {
 }
 if ($post['accion'] == "ActualizarMatch") {
     // Obtener los datos del POST
-    $matchCode = $post['id_partido'];       
-    $canchaCode = $post['cancCode'];  
-    $fecha = $post['matchDate'];                
-    $hora = $post['matchHour']; 
-    $teamOneCode = $post['spgCodeOne'];  
-    $teamTwoCode = $post['spgCodeTwo']; 
+    $matchCode = $post['id_partido'];
+    $canchaCode = $post['cancCode'];
+    $fecha = $post['matchDate'];
+    $hora = $post['matchHour'];
+    $teamOneCode = $post['spgCodeOne'];
+    $teamTwoCode = $post['spgCodeTwo'];
 
     // Actualizar los detalles del partido
     $sentencia = sprintf(
@@ -2526,7 +2695,7 @@ if ($post['accion'] == "loadInfoMatchDetail") {
 
     if ($post['accion'] == "loadInfoMatchDetail") {
         $codigoPartido = $post['codigo'];
-    
+
         // Obtener detalles generales del partido
         $query = sprintf("SELECT 
                             m.MATC_DATE AS match_date,
@@ -2549,12 +2718,12 @@ if ($post['accion'] == "loadInfoMatchDetail") {
                           JOIN sports_groups sg2 ON m.SPG_CODE_TWO = sg2.SPG_CODE
                           JOIN vocalia_general vg ON vg.MATC_CODE = m.MATC_CODE
                           WHERE m.MATC_CODE = '%s'", $codigoPartido);
-    
+
         $result = mysqli_query($mysqli, $query);
-    
+
         if (mysqli_num_rows($result) > 0) {
             $matchData = mysqli_fetch_array($result);
-    
+
             // Obtener jugadores del equipo 1 utilizando el SPG_CODE del equipo 1
             $teamOnePlayers = array();
             $queryPlayersOne = sprintf("SELECT ic.ICLI_FIRST_NAME, ic.ICLI_LAST_NAME, vs.VOSH_GOALS, vs.VOSH_YELLOW_CARD, vs.VOSH_RED_CARD
@@ -2562,7 +2731,7 @@ if ($post['accion'] == "loadInfoMatchDetail") {
                                         JOIN team_player tp ON vs.TEAP_CODE = tp.TEAP_CODE
                                         JOIN info_client ic ON tp.ICLI_CODE = ic.ICLI_CODE
                                         WHERE tp.SPG_CODE = '%s'", $matchData['team_one_code']);  // Cambiado a team_one_code
-    
+
             $resultPlayersOne = mysqli_query($mysqli, $queryPlayersOne);
             while ($rowPlayer = mysqli_fetch_array($resultPlayersOne)) {
                 $teamOnePlayers[] = array(
@@ -2572,7 +2741,7 @@ if ($post['accion'] == "loadInfoMatchDetail") {
                     'red_cards' => $rowPlayer['VOSH_RED_CARD']
                 );
             }
-    
+
             // Obtener jugadores del equipo 2 utilizando el SPG_CODE del equipo 2
             $teamTwoPlayers = array();
             $queryPlayersTwo = sprintf("SELECT ic.ICLI_FIRST_NAME, ic.ICLI_LAST_NAME, vs.VOSH_GOALS, vs.VOSH_YELLOW_CARD, vs.VOSH_RED_CARD
@@ -2580,7 +2749,7 @@ if ($post['accion'] == "loadInfoMatchDetail") {
                                         JOIN team_player tp ON vs.TEAP_CODE = tp.TEAP_CODE
                                         JOIN info_client ic ON tp.ICLI_CODE = ic.ICLI_CODE
                                         WHERE tp.SPG_CODE = '%s'", $matchData['team_two_code']);  // Cambiado a team_two_code
-    
+
             $resultPlayersTwo = mysqli_query($mysqli, $queryPlayersTwo);
             while ($rowPlayer = mysqli_fetch_array($resultPlayersTwo)) {
                 $teamTwoPlayers[] = array(
@@ -2590,17 +2759,17 @@ if ($post['accion'] == "loadInfoMatchDetail") {
                     'red_cards' => $rowPlayer['VOSH_RED_CARD']
                 );
             }
-    
+
             // Agregar los jugadores al arreglo de datos del partido
             $matchData['team_one_players'] = $teamOnePlayers;
             $matchData['team_two_players'] = $teamTwoPlayers;
-    
+
             // Devolver la respuesta como JSON
             $respuesta = json_encode(array('estado' => true, 'datos' => [$matchData]));
         } else {
             $respuesta = json_encode(array('estado' => false, 'mensaje' => 'No se encontraron detalles del partido.'));
         }
-    
+
         echo $respuesta;
     }
 }
@@ -2736,5 +2905,20 @@ if ($post['accion'] == "startMach") {
     echo $respuesta;
 }
 
+///////////////////////////////////////////////////////////
 
+if ($post['accion'] == "actualizarModoOscuro") {
+    $USAD_CODE = $post['USAD_CODE'];
+    $DARK_MODE = $post['DARK_MODE'];
+
+    $update_query = sprintf(
+        "UPDATE user_admin SET DARK_MODE = '$DARK_MODE' WHERE USAD_CODE = '$USAD_CODE'"
+    );
+    if (mysqli_query($mysqli, $update_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Modo oscuro actualizado"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar el modo oscuro"));
+    }
+    echo $respuesta;
+}
 

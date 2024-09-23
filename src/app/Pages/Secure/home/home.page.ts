@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { Component, OnInit, HostListener } from '@angular/core';
+import { NavController, Platform, AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personCircle, personCircleOutline, sunny, sunnyOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/Services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,13 @@ export class HomePage implements OnInit {
   menuVisible: boolean = false;
   id_persona: string = '';
 
-  constructor(public servicio: AuthService, public navCtrl: NavController) {
+  constructor(
+    public servicio: AuthService,
+    public navCtrl: NavController,
+    private platform: Platform,
+    private alertCtrl: AlertController,
+    private router: Router // Importar Router
+  ) {
     this.servicio.getSession('USAD_ROLE').then((res: any) => {
       this.rol = res;
     });
@@ -25,8 +32,8 @@ export class HomePage implements OnInit {
     });
 
     this.servicio.getSession('DARK_MODE').then((res: any) => {
-      this.paletteToggle = res === 'on'; // Establecer el estado de la paleta
-      this.toggleDarkPalette(this.paletteToggle); // Aplicar la paleta correspondiente
+      this.paletteToggle = res === 'on';
+      this.toggleDarkPalette(this.paletteToggle);
     });
 
     addIcons({ personCircle, personCircleOutline, sunny, sunnyOutline });
@@ -35,25 +42,21 @@ export class HomePage implements OnInit {
   ngOnInit() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     this.initializeDarkPalette(prefersDark.matches);
-
-    // Escuchar cambios en el esquema de color preferido del sistema
     prefersDark.addEventListener('change', (mediaQuery) =>
       this.initializeDarkPalette(mediaQuery.matches)
     );
   }
 
-  // Inicializar la paleta oscura/clara al cargar la página
   initializeDarkPalette(isDark: boolean) {
     this.paletteToggle = isDark;
     this.toggleDarkPalette(isDark);
   }
 
-  // Cambiar el modo oscuro y guardar la preferencia en la base de datos
   toggleChange(ev: any) {
     const isDarkMode = ev.detail.checked ? 'on' : 'off';
     let datos = {
       accion: 'actualizarModoOscuro',
-      USAD_CODE: this.id_persona, // ID del usuario logueado
+      USAD_CODE: this.id_persona,
       DARK_MODE: isDarkMode
     };
     this.servicio.postData(datos).subscribe((res: any) => {
@@ -66,12 +69,10 @@ export class HomePage implements OnInit {
     this.toggleDarkPalette(ev.detail.checked);
   }
 
-  // Alternar la paleta de colores
   toggleDarkPalette(shouldAdd: boolean) {
     document.documentElement.classList.toggle('ion-palette-dark', shouldAdd);
   }
 
-  // Aquí no se modificó nada más fuera del modo oscuro
   toggleMenu() {
     this.menuVisible = !this.menuVisible;
   }
@@ -131,5 +132,57 @@ export class HomePage implements OnInit {
 
   headquarters() {
     this.navCtrl.navigateForward('busineess-headquarters');
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  async handleBeforeUnload(event: any) {
+    const alert = await this.alertCtrl.create({
+      header: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas cerrar sesión?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+            event.preventDefault(); // Cancelar la acción de cerrar
+          }
+        },
+        {
+          text: 'Sí',
+          handler: () => {
+            this.cerrarSession(); // Llama al método de cerrar sesión
+          }
+        }
+      ]
+    });
+    await alert.present();
+    event.returnValue = ''; // Este valor es necesario para que el navegador muestre el cuadro de diálogo
+  }
+  async confirmarCerrarSesion() {
+    const alert = await this.alertCtrl.create({
+      header: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas cerrar sesión?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+            // El usuario eligió no cerrar sesión
+          }
+        },
+        {
+          text: 'Sí',
+          handler: () => {
+            this.cerrarSession(); // Llama al método de cerrar sesión
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+  
+  cerrarSession() {
+    this.servicio.closeSession('USAD_CODE');
+    this.navCtrl.navigateRoot('login', { replaceUrl: true });
   }
 }
