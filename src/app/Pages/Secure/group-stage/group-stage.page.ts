@@ -34,7 +34,7 @@ export class GroupStagePage implements OnInit {
           this.grupos = res.datos;
           this.agrupadosPorGrupo = this.agruparPorGrupo(this.grupos);
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje,true);
         }
       },
       (error) => {
@@ -93,7 +93,7 @@ export class GroupStagePage implements OnInit {
           this.grupos = res.datos;
           this.agrupadosPorGrupo = this.agruparPorGrupo(this.grupos);
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje,true);
         }
       },
       (error) => {
@@ -136,7 +136,7 @@ eliminar(GRS_CODE: string) {
           this.authService.showToast('Equipo eliminado correctamente');
           this.obtenerGrupos(); // Refrescamos los datos tras eliminar
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje, true);
         }
       },
       (error) => {
@@ -144,7 +144,7 @@ eliminar(GRS_CODE: string) {
       }
     );
   } else {
-    this.authService.showToast('Código del equipo no encontrado');
+    this.authService.showToast('Código del equipo no encontrado', true);
   }
 }
 

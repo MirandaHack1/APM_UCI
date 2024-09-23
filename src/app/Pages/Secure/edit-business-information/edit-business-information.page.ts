@@ -36,6 +36,18 @@ export class EditBusinessInformationPage implements OnInit {
 
   ngOnInit() {}
 
+  // VALIDA NUMERO DE TELEFONO ECUAOTRIANO
+  validatePhoneNumber(phoneNumber: string): boolean {
+    const regex = /^0[2-9]\d{8}$/; // Validación para número de teléfono ecuatoriano
+    if (!regex.test(phoneNumber)) {
+      this.servicio.showToast('Error: Número de teléfono incorrecto',true);
+      return false;
+    } else {
+      this.servicio.showToast('Número de teléfono válido'); // Mensaje de éxito
+    }
+    return true;
+  }
+
   // SELECCIONA EL LOGO DE LA EMPRESA
   seleccionarLogo(event: any) {
     const file = event.target.files[0];
@@ -47,7 +59,10 @@ export class EditBusinessInformationPage implements OnInit {
       };
       reader.readAsDataURL(file);
     } else {
-      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).');
+      this.servicio.showToast(
+        'Por favor, selecciona una imagen válida (PNG o JPEG).',
+        true
+      );
     }
   }
 
@@ -62,7 +77,10 @@ export class EditBusinessInformationPage implements OnInit {
       };
       reader.readAsDataURL(file);
     } else {
-      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).');
+      this.servicio.showToast(
+        'Por favor, selecciona una imagen válida (PNG o JPEG).',
+        true
+      );
     }
   }
 
@@ -75,20 +93,23 @@ export class EditBusinessInformationPage implements OnInit {
     formData.append('logo', this.logo);
 
     try {
-      const response = await fetch('http://localhost/APM_UCI/Ws_APM_BACK/upload.php', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        'http://localhost/APM_UCI/Ws_APM_BACK/upload.php',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
       const result = await response.json();
       if (result.estado) {
         return result.archivo_url; // URL del logo en el servidor
       } else {
-        this.servicio.showToast('Error al subir el logo');
+        this.servicio.showToast('Error al subir el logo', true);
         return ''; // Retorna vacío en caso de error
       }
     } catch (error) {
       console.error('Error al subir el logo:', error);
-      this.servicio.showToast('Error al subir el logo');
+      this.servicio.showToast('Error al subir el logo', true);
       return ''; // Retorna vacío en caso de error
     }
   }
@@ -102,102 +123,109 @@ export class EditBusinessInformationPage implements OnInit {
     formData.append('imagen', this.image);
 
     try {
-      const response = await fetch('http://localhost/APM_UCI/Ws_APM_BACK/upload.php', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        'http://localhost/APM_UCI/Ws_APM_BACK/upload.php',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
       const result = await response.json();
       if (result.estado) {
         return result.archivo_url; // URL de la imagen en el servidor
       } else {
-        this.servicio.showToast('Error al subir la imagen');
+        this.servicio.showToast('Error al subir la imagen', true);
         return ''; // Retorna vacío en caso de error
       }
     } catch (error) {
       console.error('Error al subir la imagen:', error);
-      this.servicio.showToast('Error al subir la imagen');
+      this.servicio.showToast('Error al subir la imagen', true);
       return ''; // Retorna vacío en caso de error
     }
   }
 
-
   obtenerEmpresa() {
     let datos = {
-        accion: 'empresasdatos',
-        codigo: this.codigo,
+      accion: 'empresasdatos',
+      codigo: this.codigo,
     };
     this.servicio.postData(datos).subscribe(
+      (res: any) => {
+        if (res.estado === true) {
+          let empresa = res.datos[0];
+          this.nombre = empresa.nombre;
+          this.logoUrl = empresa.logo.replace(/\\/g, '');
+          this.mision = empresa.mision;
+          this.vision = empresa.vision;
+          this.imageUrl = empresa.image.replace(/\\/g, '');
+          this.estado = empresa.estado;
+          this.contacto = empresa.contacto;
+          this.logooo = 'http://127.0.0.1/APM_UCI/Ws_APM_BACK/' + this.logoUrl;
+          this.imagennn =
+            'http://127.0.0.1/APM_UCI/Ws_APM_BACK/' + this.imageUrl;
+          //console.log(this.imageUrl);
+        } else {
+          this.servicio.showToast('No se encontró la empresa', true);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  // MÉTODO PARA GUARDAR O ACTUALIZAR LOS DATOS
+  async guardar() {
+    if (
+      this.nombre &&
+      this.mision &&
+      this.vision &&
+      this.estado &&
+      this.contacto
+    ) {
+      const logoUrl = await this.subirLogo(); // Subir logo y obtener URL
+      const imageUrl = await this.subirImagen(); // Subir imagen y obtener URL
+
+      // Validar número de teléfono
+      if (!this.validatePhoneNumber(this.contacto)) {
+        return; // Detener si el número de teléfono no es válido
+      }
+
+      let datos = {
+        accion: this.codigo ? 'actualizarEmpresa' : 'insertarEmpresa',
+        nombre: this.nombre,
+        logo: logoUrl, // URL del logo
+        mision: this.mision,
+        image: imageUrl, // URL de la imagen
+        vision: this.vision,
+        estado: this.estado,
+        contacto: this.contacto,
+        codigo: this.codigo,
+        // usuarioInsertar: 'usuario_actual' // Si decides incluirlo más tarde
+      };
+      console.log(datos);
+
+      // Enviar datos al servicio
+      this.servicio.postData(datos).subscribe(
         (res: any) => {
-            if (res.estado === true) {
-                let empresa = res.datos[0];
-                this.nombre = empresa.nombre;
-                this.logoUrl = empresa.logo.replace(/\\/g, '');
-                this.mision = empresa.mision;
-                this.vision = empresa.vision;
-                this.imageUrl = empresa.image.replace(/\\/g, '');
-                this.estado = empresa.estado;
-                this.contacto = empresa.contacto;
-                this.logooo=  'http://127.0.0.1/APM_UCI/Ws_APM_BACK/'+this.logoUrl
-                this.imagennn=  'http://127.0.0.1/APM_UCI/Ws_APM_BACK/'+this.imageUrl
-                //console.log(this.imageUrl);
-            } else {
-                this.servicio.showToast('No se encontró la empresa');
-            }
+          if (res.estado === true) {
+            this.servicio.showToast(res.mensaje);
+            this.navCtrl.back();
+          } else {
+            this.servicio.showToast(res.mensaje, true);
+          }
         },
         (error) => {
-            console.error('Error en la solicitud:', error);
+          console.error('Error en la solicitud:', error);
         }
-    );
-}
-
-
- // MÉTODO PARA GUARDAR O ACTUALIZAR LOS DATOS
-async guardar() {
-  if (
-    this.nombre &&
-    this.mision &&
-    this.vision &&
-    this.estado &&
-    this.contacto
-  ) {
-    const logoUrl = await this.subirLogo(); // Subir logo y obtener URL
-    const imageUrl = await this.subirImagen(); // Subir imagen y obtener URL
-
-    let datos = {
-      accion: this.codigo ? 'actualizarEmpresa' : 'insertarEmpresa',
-      nombre: this.nombre,
-      logo: logoUrl, // URL del logo
-      mision: this.mision,
-      image: imageUrl, // URL de la imagen
-      vision: this.vision,
-      estado: this.estado,
-      contacto: this.contacto,
-      codigo: this.codigo,
-      // usuarioInsertar: 'usuario_actual' // Si decides incluirlo más tarde
-    };
-    console.log(datos);
-
-    // Enviar datos al servicio
-    this.servicio.postData(datos).subscribe((res: any) => {
-      if (res.estado === true) {
-        this.servicio.showToast(res.mensaje);
-        this.navCtrl.back();
-      } else {
-        this.servicio.showToast(res.mensaje);
-      }
-    }, (error) => {
-      console.error('Error en la solicitud:', error);
-    });
-  } else {
-    this.servicio.showToast('Por favor complete todos los campos.');
+      );
+    } else {
+      this.servicio.showToast('Por favor complete todos los campos.', true);
+    }
   }
-}
-
 
   // REGRESAR AL FORMULARIO EMPRESA
   back() {
     this.navCtrl.back();
   }
-  
 }
-

@@ -67,7 +67,7 @@ export class EditHeadquartersPage implements OnInit {
         console.log('Cliente ID:', this.empresa);
         // console.log('Producto ID:', this.od_prod_id);
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }
@@ -83,7 +83,7 @@ export class EditHeadquartersPage implements OnInit {
         if (res.estado === true) {
           this.businessInfo = res.datos;
         } else {
-          this.servicio.showToast(res.mensaje);
+          this.servicio.showToast(res.mensaje, true);
         }
       },
       (error) => {
@@ -121,11 +121,11 @@ export class EditHeadquartersPage implements OnInit {
           this.servicio.showToast(res.mensaje);
           this.navCtrl.back();
         } else {
-          this.servicio.showToast(res.mensaje);
+          this.servicio.showToast(res.mensaje, true);
         }
       });
     } else {
-      this.servicio.showToast('Por favor complete todos los campos.');
+      this.servicio.showToast('Por favor complete todos los campos.', true);
     }
   }
 
@@ -139,7 +139,7 @@ export class EditHeadquartersPage implements OnInit {
         this.businessInfo = res.datos; // Guarda los datos de las sedes
         //this.servicio.showToast(res.mensaje);
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }

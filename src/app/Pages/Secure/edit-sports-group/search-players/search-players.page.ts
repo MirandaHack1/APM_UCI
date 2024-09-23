@@ -43,7 +43,7 @@ export class SearchPlayersPage implements OnInit {
       if (res.estado == true) {
         this.persons = res.datos;
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }

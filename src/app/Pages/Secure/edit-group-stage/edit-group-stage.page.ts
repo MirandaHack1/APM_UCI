@@ -73,7 +73,7 @@ export class EditGroupStagePage implements OnInit {
         this.txt_team= teams.nombreequipo;
         console.log(this.spgCode);
       } else {
-        this.authService.showToast('No hay equipos disponibles.');
+        this.authService.showToast('No hay equipos disponibles.', true);
       }
     });
   }
@@ -128,7 +128,7 @@ export class EditGroupStagePage implements OnInit {
         this.authService.showToast(this.cod ? 'Estado de Grupo actualizado correctamente' : 'Estado de Grupo guardado correctamente');
         this.navCtrl.back(); // Regresa a la página anterior
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }
@@ -137,7 +137,7 @@ export class EditGroupStagePage implements OnInit {
     if (this.grupCode && this.spgCode && this.Genero) {
       this.saveData();
     } else {
-      this.authService.showToast('Por favor, selecciona todos los campos.');
+      this.authService.showToast('Por favor, selecciona todos los campos.', true);
     }
   }
 

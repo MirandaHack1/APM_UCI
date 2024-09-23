@@ -133,7 +133,7 @@ export class EditMatchesPage implements OnInit {
         this.authService.showToast(this.cod ? 'Partido actualizado correctamente' : 'Partido guardado correctamente');
         this.navCtrl.back();
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }

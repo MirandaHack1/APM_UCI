@@ -43,7 +43,7 @@ export class EditCourtPage implements OnInit {
         this.direccion = this.cancha.direccion;
         this.estado = this.cancha.estado;
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }
@@ -66,11 +66,11 @@ export class EditCourtPage implements OnInit {
           this.servicio.showToast(res.mensaje);
           this.navCtrl.back();
         } else {
-          this.servicio.showToast(res.mensaje);
+          this.servicio.showToast(res.mensaje, true);
         }
       });
     } else {
-      this.servicio.showToast('Por favor complete todos los campos.');
+      this.servicio.showToast('Por favor complete todos los campos.', true);
     }
   }
 

@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button (click)="back()"></ion-back-button>
+      <ion-back-button (click)="back()" defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-title>Editar Información personal</ion-title>
   </ion-toolbar>
@@ -21,12 +21,12 @@
 
   <ion-item>
     <ion-label position="stacked" class="bold-label">Cédula:</ion-label>
-    <ion-input type="number" [(ngModel)]="txt_card"></ion-input>
+    <ion-input type="text" [(ngModel)]="txt_card" (ionBlur)="validateID(txt_card)"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked" class="bold-label">Teléfono:</ion-label>
-    <ion-input type="number" [(ngModel)]="txt_phoneNumber"></ion-input>
+    <ion-input type="text" [(ngModel)]="txt_phoneNumber"  (ionInput)="validatePhoneNumber(txt_phoneNumber)"></ion-input>
   </ion-item>
 
   <ion-item>
@@ -34,20 +34,115 @@
     <ion-input type="text" [(ngModel)]="txt_address"></ion-input>
   </ion-item>
 
-  <ion-item>
+   <!-- <ion-item>
     <ion-label position="stacked" class="bold-label">Ciudad:</ion-label>
     <ion-input type="text" [(ngModel)]="txt_city"></ion-input>
-  </ion-item>
+  </ion-item>  -->
 
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Ciudad:</ion-label>
+    <ion-select [(ngModel)]="txt_city">
+      <ion-select-option value="Quito">Quito</ion-select-option>
+      <ion-select-option value="Guayaquil">Guayaquil</ion-select-option>
+      <ion-select-option value="Cuenca">Cuenca</ion-select-option>
+      <ion-select-option value="Manta">Manta</ion-select-option>
+      <ion-select-option value="Durán">Durán</ion-select-option>
+      <ion-select-option value="Machala">Machala</ion-select-option>
+      <ion-select-option value="Loja">Loja</ion-select-option>
+      <ion-select-option value="Ambato">Ambato</ion-select-option>
+      <ion-select-option value="Esmeraldas">Esmeraldas</ion-select-option>
+      <ion-select-option value="Santo Domingo">Santo Domingo</ion-select-option>
+      <ion-select-option value="Naranjito">Naranjito</ion-select-option>
+      <ion-select-option value="Babahoyo">Babahoyo</ion-select-option>
+      <ion-select-option value="El Coca">El Coca</ion-select-option>
+      <ion-select-option value="Azogues">Azogues</ion-select-option>
+      <ion-select-option value="Riobamba">Riobamba</ion-select-option>
+      <ion-select-option value="Cayambe">Cayambe</ion-select-option>
+      <ion-select-option value="La Libertad">La Libertad</ion-select-option>
+      <ion-select-option value="Puerto Viejo">Puerto Viejo</ion-select-option>
+      <ion-select-option value="Salinas">Salinas</ion-select-option>
+      <ion-select-option value="Ibarra">Ibarra</ion-select-option>
+      <ion-select-option value="Quevedo">Quevedo</ion-select-option>
+      <ion-select-option value="Sierra">Sierra</ion-select-option>
+      <ion-select-option value="Sangolquí">Sangolquí</ion-select-option>
+      <ion-select-option value="Cumbayá">Cumbayá</ion-select-option>
+      <ion-select-option value="Baba">Baba</ion-select-option>
+      <ion-select-option value="Balsas">Balsas</ion-select-option>
+      <ion-select-option value="Chone">Chone</ion-select-option>
+      <ion-select-option value="Catamayo">Catamayo</ion-select-option>
+      <ion-select-option value="Sambo">Sambo</ion-select-option>
+      <ion-select-option value="Daule">Daule</ion-select-option>
+    </ion-select>
+  </ion-item>
+  
+<!-- 
   <ion-item>
     <ion-label position="stacked" class="bold-label">Provincia:</ion-label>
     <ion-input type="text" [(ngModel)]="txt_province"></ion-input>
-  </ion-item>
+  </ion-item> -->
 
   <ion-item>
+    <ion-label position="stacked" class="bold-label">Provincia:</ion-label>
+    <ion-select [(ngModel)]="txt_province">
+      <ion-select-option value="Azuay">Azuay</ion-select-option>
+      <ion-select-option value="Bolívar">Bolívar</ion-select-option>
+      <ion-select-option value="Cañar">Cañar</ion-select-option>
+      <ion-select-option value="Carchi">Carchi</ion-select-option>
+      <ion-select-option value="Chimborazo">Chimborazo</ion-select-option>
+      <ion-select-option value="Cotopaxi">Cotopaxi</ion-select-option>
+      <ion-select-option value="El Oro">El Oro</ion-select-option>
+      <ion-select-option value="Esmeraldas">Esmeraldas</ion-select-option>
+      <ion-select-option value="Galápagos">Galápagos</ion-select-option>
+      <ion-select-option value="Guayas">Guayas</ion-select-option>
+      <ion-select-option value="Imbabura">Imbabura</ion-select-option>
+      <ion-select-option value="Loja">Loja</ion-select-option>
+      <ion-select-option value="Los Ríos">Los Ríos</ion-select-option>
+      <ion-select-option value="Manabí">Manabí</ion-select-option>
+      <ion-select-option value="Morona Santiago">Morona Santiago</ion-select-option>
+      <ion-select-option value="Napo">Napo</ion-select-option>
+      <ion-select-option value="Pastaza">Pastaza</ion-select-option>
+      <ion-select-option value="Pichincha">Pichincha</ion-select-option>
+      <ion-select-option value="Santa Elena">Santa Elena</ion-select-option>
+      <ion-select-option value="Santo Domingo de los Tsáchilas">Santo Domingo de los Tsáchilas</ion-select-option>
+      <ion-select-option value="Sucumbíos">Sucumbíos</ion-select-option>
+      <ion-select-option value="Tungurahua">Tungurahua</ion-select-option>
+      <ion-select-option value="Zamora-Chinchipe">Zamora-Chinchipe</ion-select-option>
+    </ion-select>
+  </ion-item> 
+  
+
+
+  <!-- <ion-item>
     <ion-label position="stacked" class="bold-label">Carrera:</ion-label>
     <ion-input type="text" [(ngModel)]="txt_career"></ion-input>
+  </ion-item> -->
+ <ion-item>
+    <ion-label position="stacked" class="bold-label">Carrera:</ion-label>
+    <ion-select [(ngModel)]="txt_career">
+      <ion-select-option value="Administración de Empresas">Administración de Empresas</ion-select-option>
+      <ion-select-option value="Contabilidad y Auditoría">Contabilidad y Auditoría</ion-select-option>
+      <ion-select-option value="Ingeniería Comercial">Ingeniería Comercial</ion-select-option>
+      <ion-select-option value="Medicina">Medicina</ion-select-option>
+      <ion-select-option value="Enfermería">Enfermería</ion-select-option>
+      <ion-select-option value="Odontología">Odontología</ion-select-option>
+      <ion-select-option value="Psicología">Psicología</ion-select-option>
+      <ion-select-option value="Ingeniería en Sistemas">Ingeniería en Sistemas</ion-select-option>
+      <ion-select-option value="Ingeniería Civil">Ingeniería Civil</ion-select-option>
+      <ion-select-option value="Ingeniería Electrónica">Ingeniería Electrónica</ion-select-option>
+      <ion-select-option value="Ingeniería Ambiental">Ingeniería Ambiental</ion-select-option>
+      <ion-select-option value="Derecho">Derecho</ion-select-option>
+      <ion-select-option value="Trabajo Social">Trabajo Social</ion-select-option>
+      <ion-select-option value="Comunicación Social">Comunicación Social</ion-select-option>
+      <ion-select-option value="Pedagogía">Pedagogía</ion-select-option>
+      <ion-select-option value="Educación Inicial">Educación Inicial</ion-select-option>
+      <ion-select-option value="Educación Básica">Educación Básica</ion-select-option>
+      <ion-select-option value="Ingeniería Agronómica">Ingeniería Agronómica</ion-select-option>
+      <ion-select-option value="Zootecnia">Zootecnia</ion-select-option>
+      <ion-select-option value="Ingeniería en Software">Ingeniería en Software</ion-select-option>
+    </ion-select>
   </ion-item>
+
+
 
   <ion-item>
     <ion-label position="stacked" class="bold-label">Semestre:</ion-label>
@@ -88,7 +183,7 @@
 
   <ion-item>
     <ion-label position="stacked" class="bold-label">Email Institucional:</ion-label>
-    <ion-input type="email" [(ngModel)]="txt_institutionalEmail"></ion-input>
+    <ion-input type="email" [(ngModel)]="txt_institutionalEmail" (ionBlur)="validateEmail(txt_institutionalEmail)"></ion-input>
   </ion-item>
 
   <ion-item>
@@ -96,12 +191,12 @@
     <ion-datetime display-format="DD/MM/YYYY" [(ngModel)]="txt_dateOfBirth"></ion-datetime>
   </ion-item>
   
-  <ion-item>
+
     <ion-button (click)="saveInfo()" expand="block" color="success" shape="round">
       Guardar
     </ion-button>
-    <ion-button (click)="back()" expand="block" color="danger" shape="round">
+    <!-- <ion-button (click)="back()" expand="block" color="danger" shape="round">
       Cancelar
-    </ion-button>
-  </ion-item>
+    </ion-button> -->
+
 </ion-content>
