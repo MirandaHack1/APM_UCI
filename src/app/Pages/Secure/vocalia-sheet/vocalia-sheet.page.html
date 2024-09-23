@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Anotaciones</ion-title>
+    <ion-title>Reporte Final del Partido</ion-title>
     <ion-buttons slot="start">
       <ion-button (click)="back()">Atrás</ion-button>
     </ion-buttons>
@@ -8,15 +8,16 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <!-- Sección de búsqueda de jugadores -->
   <ion-searchbar placeholder="Buscar jugador" [(ngModel)]="txt_search" (ionInput)="LoadsearchTeam()"></ion-searchbar>
 
   <!-- Opciones de equipos -->
   <ion-segment [(ngModel)]="selectedTeam" (ionChange)="LoadsearchTeam()">
     <ion-segment-button value="team1">
-      <ion-label>Nombre del equipo 1</ion-label>
+      <ion-label>{{ team_one_name }}</ion-label>
     </ion-segment-button>
     <ion-segment-button value="team2">
-      <ion-label>Nombre del equipo 2</ion-label>
+      <ion-label>{{ team_two_name }}</ion-label>
     </ion-segment-button>
   </ion-segment>
 
@@ -35,6 +36,31 @@
   <ion-item *ngIf="players.length === 0">
     <ion-label>No se encontraron jugadores.</ion-label>
   </ion-item>
+
+  <!-- Sección de reporte del árbitro -->
+  <ion-card>
+    <ion-card-header>
+      <ion-label>Observaciones Álbitro: </ion-label>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+       
+        <ion-textarea [(ngModel)]="txt_albitro" placeholder="Escriba las observaciones aquí..."></ion-textarea>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Sección de reporte del vocal -->
+  <ion-card>
+    <ion-card-header>
+      <ion-label> Observaciones Observaciones:</ion-label>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-textarea [(ngModel)]="txt_vocal" placeholder="Escriba las observaciones aquí..."></ion-textarea>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
 
 <ion-footer>

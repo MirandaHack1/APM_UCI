@@ -7,7 +7,11 @@ const routes: Routes = [
   {
     path: '',
     component: EditVocaliaSheetPage
+  },  {
+    path: 'search-vocalia-sheet',
+    loadChildren: () => import('./search-vocalia-sheet/search-vocalia-sheet.module').then( m => m.SearchVocaliaSheetPageModule)
   }
+
 ];
 
 @NgModule({

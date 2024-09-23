@@ -330,9 +330,14 @@ const routes: Routes = [
       import(
         './Pages/Secure/edit-sport-group-players/search-group-players/search-group-players.module'
       ).then((m) => m.SearchGroupPlayersPageModule),
-  },  {
+  },
+  {
     path: 'info-matches-detail',
     loadChildren: () => import('./Pages/Secure/info-matches-detail/info-matches-detail.module').then( m => m.InfoMatchesDetailPageModule)
+  },
+  {
+    path: 'search-vocalia-sheet',
+    loadChildren: () => import('./Pages/Secure/edit-vocalia-sheet/search-vocalia-sheet/search-vocalia-sheet.module').then( m => m.SearchVocaliaSheetPageModule)
   }
 
 ];
