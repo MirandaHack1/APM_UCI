@@ -16,6 +16,7 @@
     <ion-button *ngIf="rol === 'jugador'" expand="full">Mis Partidos</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="court()">Canchas</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="headquarters()">Sedes</ion-button>
+    
   </ion-content>
 </ion-menu>
 
@@ -65,6 +66,10 @@
           <ion-tab-button (click)="matches()">
             <ion-icon name="football"></ion-icon>
             <ion-label>Partidos</ion-label>
+          </ion-tab-button>
+          <ion-tab-button (click)="reports()">
+            <ion-icon name="football"></ion-icon>
+            <ion-label>Reportes</ion-label>
           </ion-tab-button>
           <ion-tab-button *ngIf="rol === 'lider'" expand="full" (click)="sportGroup()">
             <ion-icon name="people-outline"></ion-icon>

@@ -133,6 +133,11 @@ export class HomePage implements OnInit {
   headquarters() {
     this.navCtrl.navigateForward('busineess-headquarters');
   }
+  reports(){
+
+    this.navCtrl.navigateForward('reports');
+  }
+  
 
   @HostListener('window:beforeunload', ['$event'])
   async handleBeforeUnload(event: any) {

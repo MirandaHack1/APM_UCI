@@ -338,7 +338,11 @@ const routes: Routes = [
   {
     path: 'search-vocalia-sheet',
     loadChildren: () => import('./Pages/Secure/edit-vocalia-sheet/search-vocalia-sheet/search-vocalia-sheet.module').then( m => m.SearchVocaliaSheetPageModule)
+  },  {
+    path: 'reports',
+    loadChildren: () => import('./Pages/Secure/reports/reports.module').then( m => m.ReportsPageModule)
   }
+
 
 ];
 
