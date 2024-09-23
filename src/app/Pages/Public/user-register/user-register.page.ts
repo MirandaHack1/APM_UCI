@@ -87,10 +87,10 @@ export class UserRegisterPage implements OnInit {
   validatePhoneNumber(phoneNumber: string): boolean {
     const regex = /^0[2-9]\d{8}$/; // Validación para número de teléfono ecuatoriano
     if (!regex.test(phoneNumber)) {
-      this.servicio.showToast('Error: Número de teléfono incorrecto');
+      this.servicio.showToast('Error: Número de teléfono incorrecto', true);
       return false;
     } else {
-      this.servicio.showToast('Número de teléfono válido', true); // Mensaje de éxito
+      this.servicio.showToast('Número de teléfono válido'); // Mensaje de éxito
     }
     return true;
   }
