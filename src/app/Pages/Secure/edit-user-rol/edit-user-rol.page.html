@@ -18,11 +18,11 @@
     </ion-item>
     <ion-item>
       <ion-label position="floating">Email</ion-label>
-      <ion-input type="text" [(ngModel)]="email" name="email" required></ion-input>
+      <ion-input type="text" [(ngModel)]="email" name="email" readonly></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Email de Recuperacion</ion-label>
-      <ion-input type="text" [(ngModel)]="emailrecuperacion" name="emailrecuperacion" required></ion-input>
+      <ion-input type="text" [(ngModel)]="emailrecuperacion" name="emailrecuperacion"  (ionBlur)="validateEmail2(emailrecuperacion)"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Rol</ion-label>
@@ -35,7 +35,7 @@
     </ion-item>
   </form>
   <!-- <ion-item> -->
-    <ion-button (click)="guardarCambios()" expand="block" color="success" shape="round">
+    <ion-button (click)="guardarCambios()" expand="block" color="primary" shape="round">
       Guardar
     </ion-button>
     <!-- <ion-button (click)="cancelar()" expand="block" color="danger" shape="round">
