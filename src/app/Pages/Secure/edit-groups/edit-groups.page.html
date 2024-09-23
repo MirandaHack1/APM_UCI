@@ -1,5 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelar()">
+        Atrás
+      </ion-button>
+    </ion-buttons>
     <ion-title>Editar Grupo</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -14,12 +19,12 @@
   <ion-item>
     <ion-input [(ngModel)]="nombreGrupo" placeholder="Nombre del Grupo"></ion-input>
   </ion-item>
-  <ion-item>
+  <!-- <ion-item> -->
     <ion-button (click)="guardarGrupo()" expand="block" color="success" shape="round">
       Guardar
     </ion-button>
-    <ion-button (click)="cancelar()" expand="block" color="danger" shape="round">
+    <!-- <ion-button (click)="cancelar()" expand="block" color="danger" shape="round">
       Cancelar
-    </ion-button>
-  </ion-item>
+    </ion-button> -->
+  <!-- </ion-item> -->
 </ion-content>

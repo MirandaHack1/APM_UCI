@@ -39,7 +39,7 @@ export class EditGroupsPage implements OnInit {
         this.grupo = res.datos[0];
         this.nombreGrupo = this.grupo.nombreGrupo;
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }
@@ -56,7 +56,7 @@ export class EditGroupsPage implements OnInit {
         this.authService.showToast(this.idGrupo ? 'Grupo actualizado correctamente' : 'Grupo guardado correctamente');
         this.navCtrl.back(); // Regresa a la página anterior
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }
