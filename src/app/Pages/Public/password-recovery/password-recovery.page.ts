@@ -60,4 +60,8 @@ export class PasswordRecoveryPage implements OnInit {
       }
     });
   }
+
+  back() {
+    this.navCtrl.back();
+  }
 }
