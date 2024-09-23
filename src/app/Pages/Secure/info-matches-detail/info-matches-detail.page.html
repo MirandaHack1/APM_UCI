@@ -25,8 +25,8 @@
       <p><strong>Reporte del Árbitro:</strong> {{ matchData.referee_report }}</p>
       <p><strong>Reporte del Vocal:</strong> {{ matchData.vocal_report }}</p>
       <br>
-      <p *ngIf="matchData.team_winner"><strong >Equipo Ganador:</strong> {{ matchData.team_loser }}</p>
-      <p *ngIf="matchData.team_loser"><strong>Equipo Perdedor:</strong> {{ matchData.team_winner }}</p>
+      <!-- <p *ngIf="matchData.team_winner"><strong >Equipo Ganador:</strong> {{ matchData.team_winner }}</p>
+      <p *ngIf="matchData.team_loser"><strong>Equipo Perdedor:</strong> {{ matchData.team_loser }}</p> -->
       <p *ngIf="matchData.team_draw"><strong>Empate:</strong> {{ matchData.team_draw }}</p>
       
     </ion-card-content>

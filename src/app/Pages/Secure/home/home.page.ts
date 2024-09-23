@@ -133,6 +133,9 @@ export class HomePage implements OnInit {
   headquarters() {
     this.navCtrl.navigateForward('busineess-headquarters');
   }
+  clasificaciones() {
+    this.navCtrl.navigateForward('standings-groups');
+  }
 
   @HostListener('window:beforeunload', ['$event'])
   async handleBeforeUnload(event: any) {

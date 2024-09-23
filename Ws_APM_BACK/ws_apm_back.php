@@ -3574,7 +3574,24 @@ WHERE
     } else {
        // echo "Error al actualizar registro en standings_groups: " . $mysqli->error . "\n";
     }
+// Preparar el UPDATE para standings_groups del equipo dos
+$update_standings_query_two = "
+UPDATE standings_groups
+SET
+    STAG_PLAYED_MATCH = STAG_PLAYED_MATCH + 1,
+    STAG_GOAL_DIFFERENCE = '$total_goal_difference_team_two',
+    STAG_POINTS = '$winning_team_points_two',
+    STAG_TYPE_PHASE = 'Fase de Grupos'
+WHERE
+    STAG_CODE = '$stag_code_two'
+";
 
+// Ejecutar el UPDATE
+if ($mysqli->query($update_standings_query_two) === TRUE) {
+    //  echo "Registro actualizado correctamente en standings_groups para el equipo dos.\n";
+} else {
+    // echo "Error al actualizar registro en standings_groups: " . $mysqli->error . "\n";
+}
     // Preparar el UPDATE para cambiar el estado del partido
 $update_match_status_query = "
 UPDATE matches 
@@ -3597,7 +3614,46 @@ header('Content-Type: application/json');
 // Devolver respuesta JSON
 echo $respuesta;
     
-
-    
-    
 }
+
+
+if ($post['accion'] == "standingsgroups") {
+    $sentencia = "SELECT 
+            g.GRUP_NAME,gs.GRS_TYPE_GANDER, 
+            sg.STAG_POINTS AS SPG_POINTS, 
+            sg.STAG_GOAL_DIFFERENCE AS SPG_GOAL_DIFFERENCE, 
+            sg.STAG_PLAYED_MATCH AS SPG_STAG_PLAYED_MATCH, 
+            spg.SPG_TEAM_NAME AS SPG_TEAM_NAME
+        FROM groupstage gs
+        INNER JOIN standings_groups sg ON gs.GRS_CODE = sg.GRS_CODE
+        INNER JOIN sports_groups spg ON gs.SPG_CODE=spg.SPG_CODE
+        INNER JOIN vocalia_general vg ON sg.VOGE_CODE = vg.VOGE_CODE
+        INNER JOIN groups g ON gs.GRUP_CODE = g.GRUP_CODE
+       
+        AND sg.STAG_POINTS IS NOT NULL
+        ORDER BY g.GRUP_NAME, sg.STAG_POINTS DESC";
+
+    $result = mysqli_query($mysqli, $sentencia);
+
+    if ($result) {
+        if (mysqli_num_rows($result) > 0) {
+            $datos = array();
+            while ($row = mysqli_fetch_assoc($result)) {
+                $datos[] = array(
+                    'GRUP_NAME' => $row['GRUP_NAME'],
+                    'SPG_TEAM_NAME' => $row['SPG_TEAM_NAME'],
+                    'SPG_POINTS' => $row['SPG_POINTS'],
+                    'SPG_STAG_PLAYED_MATCH' => $row['SPG_STAG_PLAYED_MATCH'],
+                    'SPG_GOAL_DIFFERENCE' => $row['SPG_GOAL_DIFFERENCE'],
+                    'GRS_TYPE_GANDER' => $row['GRS_TYPE_GANDER']
+                );
+            }
+            echo json_encode(array('estado' => true, 'datos' => $datos));
+        } else {
+            echo json_encode(array('estado' => false, 'mensaje' => 'No se encontraron resultados.'));
+        }
+    } else {
+        echo json_encode(array('estado' => false, 'mensaje' => 'Error en la consulta: ' . mysqli_error($mysqli)));
+    }
+}
+
