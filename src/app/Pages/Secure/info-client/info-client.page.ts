@@ -88,7 +88,7 @@ export class InfoClientPage implements OnInit {
         this.txt_dateOfBirth = info.dateOfBirth;
         this.sede = info.sede;
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }
@@ -101,7 +101,7 @@ export class InfoClientPage implements OnInit {
         this.businessInfo = res.datos;  // Guarda los datos de las sedes
         //this.servicio.showToast(res.mensaje);
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }
