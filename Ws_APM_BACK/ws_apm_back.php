@@ -567,7 +567,95 @@ if ($post['accion'] == "loadinfo") {
     echo $respuesta;
 }
 //UPDATE DE LA INFORMACION PERSONAL DEL USUARIO
+// if ($post['accion'] == "updateinfo") {
+
+//     // Preparar la consulta SQL para actualizar la información del cliente
+//     $update_client_query = sprintf(
+//         "UPDATE info_client SET 
+//             ICLI_FIRST_NAME = '%s',
+//             ICLI_LAST_NAME = '%s',
+//             ICLI_CARD = '%s',
+//             ICLI_PHONE_NUMBER = '%s',
+//             ICLI_ADDRESS = '%s',
+//             ICLI_CITY = '%s',
+//             ICLI_PROVINCE = '%s',
+//             ICLI_CAREER = '%s',
+//             ICLI_SEMESTER = '%s',
+//             ICLI_AGE = '%d',
+//             ICLI_GENDER = '%s',
+//             ICLI_WEIGHT = '%d',
+//             ICLI_HEIGHT = '%d',
+//             ICLI_INSTITUTIONAL_EMAIL = '%s',
+//             ICLI_DATE_OF_BIRTH = '%s',
+//             BUSH_CODE = '%s'
+//         WHERE ICLI_CODE = '%s'",
+//         $post['firstName'],
+//         $post['lastName'],
+//         $post['cardNumber'],
+//         $post['phoneNumber'],
+//         $post['address'],
+//         $post['city'],
+//         $post['province'],
+//         $post['career'],
+//         $post['semester'],
+//         $post['age'],
+//         $post['gender'],
+//         $post['weight'],
+//         $post['height'],
+//         $post['institutionalEmail'],
+//         $post['dateOfBirth'],
+//         $post['sede'],
+//         $post['codigo']
+//     );
+
+//     if (mysqli_query($mysqli, $update_client_query)) {
+//         $respuesta = json_encode(array('estado' => true, "mensaje" => "Información actualizada exitosamente"));
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar la información del cliente: " . mysqli_error($mysqli)));
+//     }
+
+//     echo $respuesta;
+// }
+
 if ($post['accion'] == "updateinfo") {
+    // Verificar si la cédula ya existe
+    $cedula_check_query = sprintf(
+        "SELECT ICLI_CODE FROM info_client WHERE ICLI_CARD = '%s' AND ICLI_CODE != '%s'",
+        $post['cardNumber'],
+        $post['codigo']
+    );
+    $cedula_result = mysqli_query($mysqli, $cedula_check_query);
+    
+    if (mysqli_num_rows($cedula_result) > 0) {
+        echo json_encode(array('estado' => false, "mensaje" => "La cédula ya se encuentra en la base de datos."));
+        exit;
+    }
+
+    // Verificar si el teléfono ya existe
+    $phone_check_query = sprintf(
+        "SELECT ICLI_CODE FROM info_client WHERE ICLI_PHONE_NUMBER = '%s' AND ICLI_CODE != '%s'",
+        $post['phoneNumber'],
+        $post['codigo']
+    );
+    $phone_result = mysqli_query($mysqli, $phone_check_query);
+    
+    if (mysqli_num_rows($phone_result) > 0) {
+        echo json_encode(array('estado' => false, "mensaje" => "El teléfono ya se encuentra en la base de datos."));
+        exit;
+    }
+
+    // Verificar si el correo institucional ya existe
+    $email_check_query = sprintf(
+        "SELECT ICLI_CODE FROM info_client WHERE ICLI_INSTITUTIONAL_EMAIL = '%s' AND ICLI_CODE != '%s'",
+        $post['institutionalEmail'],
+        $post['codigo']
+    );
+    $email_result = mysqli_query($mysqli, $email_check_query);
+    
+    if (mysqli_num_rows($email_result) > 0) {
+        echo json_encode(array('estado' => false, "mensaje" => "El correo institucional ya se encuentra en la base de datos."));
+        exit;
+    }
 
     // Preparar la consulta SQL para actualizar la información del cliente
     $update_client_query = sprintf(
@@ -616,6 +704,8 @@ if ($post['accion'] == "updateinfo") {
 
     echo $respuesta;
 }
+
+
 
 /************************************ */
 // CODIGO DE FORMULARIO DE INFORMAICON DE EMPRESA
