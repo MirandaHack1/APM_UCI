@@ -44,6 +44,7 @@ import { AuthService } from 'src/app/Services/auth/auth.service';
     let datos = {
       "accion": "LoadTeams",
       "match_code": this.cod_match
+      
     };
 
     this.servicio.postData(datos).subscribe((res: any) => {
@@ -52,6 +53,8 @@ import { AuthService } from 'src/app/Services/auth/auth.service';
         this.team_one_code = res.team_one_code;  // Guardar código del equipo uno
         this.team_two_name = res.team_two_name;
         this.team_two_code = res.team_two_code;
+        console.log(this.team_one_code);
+        console.log(this.team_two_code);
         this.servicio.createSession('team_one_code', this.team_one_code);
         this.servicio.createSession('team_two_code', this.team_two_code);
 
@@ -127,14 +130,20 @@ import { AuthService } from 'src/app/Services/auth/auth.service';
   finalizarPartido() {
     let datos = {
       accion: 'FinishMatch',
-      match_code: this.cod_match
+      match_code: this.cod_match,
+      obs_albitro: this.txt_albitro,
+      obs_vocal: this.txt_vocal,
+      team_one_code: this.team_one_code,
+      team_two_code: this.team_two_code
+
     };
 
     this.servicio.postData(datos).subscribe((res: any) => {
       if (res.estado == true) {
+        this.servicio.showToast("Partido Finalizado")
         this.navCtrl.navigateRoot('home');
       } else {
-        console.log('Error al finalizar el partido');
+        //console.log('Error al finalizar el partido');
       }
     });
    
