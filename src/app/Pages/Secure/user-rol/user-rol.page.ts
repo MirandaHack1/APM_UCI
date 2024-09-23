@@ -52,7 +52,7 @@ export class UserRolPage implements OnInit {
       if (res.estado === true) {
         this.usuarios = res.datos;
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }

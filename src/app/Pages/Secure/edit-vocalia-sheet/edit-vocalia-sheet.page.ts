@@ -117,7 +117,7 @@ export class EditVocaliaSheetPage implements OnInit {
         this.servicio.showToast(res.mensaje);
         this.navCtrl.back();
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
 

@@ -96,7 +96,7 @@ export class EditSportGroupPlayersPage implements OnInit {
         this.servicio.showToast(res.mensaje);
         this.back();
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
 
@@ -115,7 +115,7 @@ export class EditSportGroupPlayersPage implements OnInit {
         this.servicio.showToast(res.mensaje);
         this.back();
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
 

@@ -104,11 +104,11 @@ deletePlayer(codigo: string) {
           this.servicio.showToast(res.mensaje);
         }
       } catch (error) {
-        this.servicio.showToast("No se puede eliminar, tiene registros relacionados.");
+        this.servicio.showToast("No se puede eliminar, tiene registros relacionados.", true);
       }
     },
     (error) => {
-      this.servicio.showToast("No se puede eliminar, tiene registros relacionados.");
+      this.servicio.showToast("No se puede eliminar, tiene registros relacionados.", true);
     }
   );
 }
