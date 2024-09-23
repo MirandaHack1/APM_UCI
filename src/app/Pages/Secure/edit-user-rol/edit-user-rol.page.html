@@ -1,5 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="cancelar()" defaultHref=""></ion-back-button>
+    </ion-buttons>
     <ion-title>Editar Rol</ion-title>
   </ion-toolbar>
   
@@ -31,12 +34,12 @@
       </ion-select>
     </ion-item>
   </form>
-  <ion-item>
+  <!-- <ion-item> -->
     <ion-button (click)="guardarCambios()" expand="block" color="success" shape="round">
       Guardar
     </ion-button>
-    <ion-button (click)="cancelar()" expand="block" color="danger" shape="round">
+    <!-- <ion-button (click)="cancelar()" expand="block" color="danger" shape="round">
       Cancelar
-    </ion-button>
-  </ion-item>
+    </ion-button> -->
+  <!-- </ion-item> -->
 </ion-content>

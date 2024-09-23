@@ -45,7 +45,7 @@ export class EditUserRolPage implements OnInit {
         this.emailrecuperacion=this.usuario.emailrecuperacion;
         this.rol = this.usuario.rol;       
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }
@@ -68,7 +68,7 @@ export class EditUserRolPage implements OnInit {
         this.authService.showToast('Usuario actualizado correctamente');
         this.navCtrl.back();
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }
