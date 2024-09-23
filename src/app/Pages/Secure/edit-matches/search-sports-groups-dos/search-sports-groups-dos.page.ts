@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/Services/auth/auth.service';
-
+ToastController
 @Component({
   selector: 'app-search-sports-groups-dos',
   templateUrl: './search-sports-groups-dos.page.html',
@@ -15,7 +15,8 @@ export class SearchSportsGroupsDosPage implements OnInit {
   matchDate: string = ""; // Recibir la fecha seleccionada
   constructor(
     public modalCtrl: ModalController,
-    public authService: AuthService
+    public authService: AuthService,
+    public toastController: ToastController
   ) {
     this.authService.getSession('SPG_GENDER_TEAM').then((res: any) => {
       this.Genero = res;
@@ -31,7 +32,7 @@ export class SearchSportsGroupsDosPage implements OnInit {
   // Búsqueda de equipos por grupo
   
 
-  searchTeams() {
+  async searchTeams() {
     const dateOnly = this.matchDate.split('T')[0];
     const datos = {
       accion: "searchTeamsdos",
@@ -39,9 +40,24 @@ export class SearchSportsGroupsDosPage implements OnInit {
       team_gender: this.Genero,
       match_date: dateOnly // Incluir la fecha seleccionada
     };
-    this.authService.postData(datos).subscribe((res: any) => {
+    
+    this.authService.postData(datos).subscribe(async (res: any) => {
       if (res.estado === true) {
         this.groupedTeams = this.agruparEquiposPorGrupo(res.datos);
+        
+        // Mostrar un toast si se encuentran equipos en partido
+        const equiposEnPartido = this.groupedTeams.some(group => 
+          group.equipos.some((team: { en_partido: any; }) => team.en_partido)
+        );
+        if (equiposEnPartido) {
+          const toast = await this.toastController.create({
+            message: 'ERROR:Equipos en partido en la fecha seleccionada.',
+            duration: 3000,
+            color: 'danger',  // Color de advertencia
+            position: 'top'
+          });
+          toast.present();
+        }
       } else {
         this.authService.showToast('No se encontraron equipos con ese nombre.');
         this.groupedTeams = [];

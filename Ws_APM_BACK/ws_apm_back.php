@@ -724,11 +724,11 @@ if ($post['accion'] == 'EliminarRegla') {
     );
 
     $result = mysqli_query($mysqli, $sentencia);
-
+    $error = mysqli_error($mysqli);
     if ($result) {
         $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Regla eliminado correctamente'));
     } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al eliminar Regla: ' . mysqli_error($mysqli)));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al eliminar Regla: ' , "error" => $error));
     }
 
     echo $respuesta;
@@ -832,11 +832,11 @@ if ($post['accion'] == 'EliminarGrupo') {
     );
 
     $result = mysqli_query($mysqli, $sentencia);
-
+    $error = mysqli_error($mysqli);
     if ($result) {
         $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Grupo eliminado correctamente'));
     } else {
-        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al eliminar Grupo: ' . mysqli_error($mysqli)));
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al eliminar Grupo: ' , "error" => $error));
     }
 
     echo $respuesta;
@@ -2218,7 +2218,7 @@ if ($post['accion'] == "ConMatches") {
                  INNER JOIN court cr ON m.CANC_CODE = cr.CANC_CODE
                  INNER JOIN groupstage gs ON gs.SPG_CODE = eq1.SPG_CODE OR gs.SPG_CODE = eq2.SPG_CODE
                  INNER JOIN groups grs ON grs.GRUP_CODE=gs.GRUP_CODE
-                 WHERE 1=1";
+                 WHERE 1=1 AND MATC_STATUS='proximo'";
 
     // Filtrar por nombre de equipo si se ingresa
     if ($nombreEquipo != '') {
@@ -2295,13 +2295,14 @@ if ($post['accion'] == "AgregarMatch") {
 
     // Insertar el nuevo partido en la tabla `matches`
     $sentencia = sprintf(
-        "INSERT INTO matches(CANC_CODE,MATC_DATE,MATC_HOUR,SPG_CODE_ONE,SPG_CODE_TWO) 
-         VALUES ('%s', '%s', '%s', '%s', '%s')",
+        "INSERT INTO matches(CANC_CODE,MATC_DATE,MATC_HOUR,SPG_CODE_ONE,SPG_CODE_TWO,MATC_STATUS) 
+         VALUES ('%s', '%s', '%s', '%s', '%s','proximo')",
        mysqli_real_escape_string($mysqli, $canchaCode),
        mysqli_real_escape_string($mysqli, $fecha),
        mysqli_real_escape_string($mysqli, $hora),
        mysqli_real_escape_string($mysqli, $teamOneCode),
        mysqli_real_escape_string($mysqli, $teamTwoCode),
+
     );
 
     $result = mysqli_query($mysqli, $sentencia);
@@ -2326,7 +2327,7 @@ if ($post['accion'] == "ActualizarMatch") {
     // Actualizar los detalles del partido
     $sentencia = sprintf(
         "UPDATE matches 
-         SET  CANC_CODE='%s', MATC_DATE='%s', MATC_HOUR='%s',SPG_CODE_ONE='%s', SPG_CODE_TWO='%s' 
+         SET  CANC_CODE='%s', MATC_DATE='%s', MATC_HOUR='%s',SPG_CODE_ONE='%s', SPG_CODE_TWO='%s',MATC_STATUS='proximo' 
          WHERE MATC_CODE='%s'",
         mysqli_real_escape_string($mysqli, $canchaCode),
         mysqli_real_escape_string($mysqli, $fecha),
@@ -2732,4 +2733,6 @@ if ($post['accion'] == "startMach") {
     echo $respuesta;
 }
 
+
+///////////////////////////////////////////////////////////
 

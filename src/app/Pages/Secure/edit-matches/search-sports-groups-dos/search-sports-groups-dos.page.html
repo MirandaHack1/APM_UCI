@@ -34,14 +34,17 @@
               <ion-label>
                 <h3>{{ team.nombre }}</h3> <!-- Nombre del equipo -->
               </ion-label>
-      
+
               <!-- Verificar si el equipo está en un partido -->
               <ion-badge *ngIf="team.en_partido" color="danger">
                 En partido
               </ion-badge>
-      
+
               <ion-buttons slot="end">
-                <ion-button (click)="addTeam(team.codigo, team.nombre)">
+                <!-- Desactivar el botón si el equipo está en partido -->
+                <ion-button 
+                  [disabled]="team.en_partido"
+                  (click)="addTeam(team.codigo, team.nombre)">
                   <ion-icon name="add-circle"></ion-icon>
                   Seleccionar
                 </ion-button>
@@ -50,8 +53,6 @@
           </ion-list>
         </div>
       </ion-accordion>
-      
-      
     </ion-accordion-group>
   </ion-list>
 

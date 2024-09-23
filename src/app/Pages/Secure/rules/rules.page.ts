@@ -59,15 +59,19 @@ export class RulesPage implements OnInit {
         codigorules: codigorules
       };
       this.authService.postData(datos).subscribe((res: any) => {
+        try {
         if (res.estado === true) {
           this.authService.showToast('Regla eliminada correctamente');
           this.obtenerReglas(); 
         } else {
           this.authService.showToast(res.mensaje);
         }
+      } catch (error) {
+        this.authService.showToast("No se puede eliminar, tiene registros relacionados.");
+      }
       },
       (error) => {
-        console.error('Error en la solicitud:', error);
+        this.authService.showToast("No se puede eliminar, tiene registros relacionados.");
       });
     } else {
       this.authService.showToast('ID de la regla no encontrado');
