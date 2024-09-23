@@ -1538,8 +1538,10 @@ if ($post['accion'] == "loadGroupData") {
                 'group_name' => $datos['SPG_TEAM_NAME'],
                 'creation_date' => $datos['SPG_CREATION_DATE'],
                 'rule_code' => $datos['rule_code'],
-                'signature' => $datos['SPG_SIGNATURE'],
-                'logo' => $datos['SPG_LOGO'],
+                // 'signature' => $datos['SPG_SIGNATURE'],
+                'signature' => str_replace('\\', '', $datos['SPG_SIGNATURE']), // Reemplazar \ por / en la URL de la imagen
+                // 'logo' => $datos['SPG_LOGO'],
+                'logo' => str_replace('\\', '', $datos['SPG_LOGO']), // Reemplazar \ por / en la URL del logo
                 'observations' => $datos['SPG_OBSERVATIONS'],
                 'gender_team' => $datos['SPG_GENDER_TEAM'],
                 'sport_name' => $datos['sport_name'],
@@ -2735,19 +2737,4 @@ if ($post['accion'] == "startMach") {
 }
 
 
-///////////////////////////////////////////////////////////
 
-if ($post['accion'] == "actualizarModoOscuro") {
-    $USAD_CODE = $post['USAD_CODE'];
-    $DARK_MODE = $post['DARK_MODE'];
-
-    $update_query = sprintf(
-        "UPDATE user_admin SET DARK_MODE = '$DARK_MODE' WHERE USAD_CODE = '$USAD_CODE'"
-    );
-    if (mysqli_query($mysqli, $update_query)) {
-        $respuesta = json_encode(array('estado' => true, "mensaje" => "Modo oscuro actualizado"));
-    } else {
-        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar el modo oscuro"));
-    }
-    echo $respuesta;
-}

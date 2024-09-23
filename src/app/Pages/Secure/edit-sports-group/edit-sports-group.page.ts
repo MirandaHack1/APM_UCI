@@ -23,11 +23,13 @@ export class EditSportsGroupPage implements OnInit {
   sports: any = [];
   cod: string = "";
   cod_group: string = "";
-  
   leaderCode: string = "";
   grandmotherCode: string = "";
   petCode: string = "";
-  
+  logo: File | null = null;
+  image: File | null = null; 
+  logoUrl: string = ''; // Para previsualización del logo
+  imageUrl: string = ''; // Para previsualización de la imagen
   constructor(
     public navCtrl: NavController,
     public servicio: AuthService,
@@ -103,52 +105,7 @@ export class EditSportsGroupPage implements OnInit {
     return await modal.present();
   }
   
-
-  saveData() {
-    let datos = {
-      "accion": "insertGroup",
-
-     
-      "group_name": this.txt_nameGroup,
-      "rule_code": this.txt_sportName,
-      "godmother_code": this.grandmotherCode,
-      "pet_code": this.petCode,
-      "leader_code": this.cod,
-
-      "signature": this.txt_firma,
-      "logo": this.txt_logo,
-      "observations": this.txt_observations,
-      "creation_date": this.txt_date,
-      "gender_team": this.txt_sport_gender,
-
-      "state_match": "Equipo no clasificado"
-
-      
-      
-
-    };
-
-    this.servicio.postData(datos).subscribe((res: any) => {
-      if (res.estado === true) {
-        this.servicio.showToast(res.mensaje);
-        this.back();
-      } else {
-        this.servicio.showToast(res.mensaje);
-      }
-    });
-   
-  }
-
-  verify(){
-    if(this.cod_group){
-      this.updateData();
-    }
-    else{
-      this.saveData();
-    }
-
-
-  }
+  
 
   loadGroup() {
     let datos = {
@@ -161,8 +118,8 @@ export class EditSportsGroupPage implements OnInit {
         const info = res.info;
         this.txt_nameGroup = info.group_name;
         this.txt_date = info.creation_date;
-        this.txt_firma = info.signature;
-        this.txt_logo = info.logo;
+        this.imageUrl = info.signature.replace(/\\/g, '');
+        this.logoUrl = info.logo.replace(/\\/g, '');
         this.txt_observations = info.observations;
         this.txt_sport_gender = info.gender_team;
         this.txt_sportName = info.rule_code;
@@ -170,38 +127,141 @@ export class EditSportsGroupPage implements OnInit {
         this.grandmotherCode = info.godmother_code;
         this.txt_pet = info.pet_name;
         this.petCode = info.pet_code;
+
+        this.txt_logo=  'http://127.0.0.1/APM_UCI/Ws_APM_BACK/'+this.logoUrl
+        this.txt_firma=  'http://127.0.0.1/APM_UCI/Ws_APM_BACK/'+this.imageUrl
       } else {
        // this.servicio.showToast(res.mensaje);
       }
     });
   }
-  updateData(){
-    let datos = {
-      "accion": "updateGroup",
-      "group_name": this.txt_nameGroup,
-      "rule_code": this.txt_sportName,
-      "godmother_code": this.grandmotherCode,
-      "pet_code": this.petCode,
-      "leader_code": this.cod,
-      "signature": this.txt_firma,
-      "logo": this.txt_logo,
-      "observations": this.txt_observations,
-      "creation_date": this.txt_date,
-      "gender_team": this.txt_sport_gender,
-      "SPG_CODE": this.cod_group
-    };
-
-    this.servicio.postData(datos).subscribe((res: any) => {
-      if (res.estado === true) {
-        this.servicio.showToast(res.mensaje);
-        this.back();
-      } else {
-        this.servicio.showToast(res.mensaje);
-      }
-    });
-
-  }
   
 
+  async guardar() {
+    if (
+      this.txt_nameGroup &&
+      this.txt_sportName &&
+      this.txt_observations &&
+      this.txt_date &&
+      this.txt_sport_gender
+    ) {
+      const logoUrl = await this.subirLogo(); // Subir logo y obtener URL
+      const imageUrl = await this.subirImagen(); // Subir imagen y obtener URL
+  
+      let datos = {
+        accion: this.cod_group ? 'updateGroup' : 'insertGroup',
+        SPG_CODE: this.cod_group,
+        group_name: this.txt_nameGroup,
+        rule_code: this.txt_sportName,
+        godmother_code: this.grandmotherCode,
+        pet_code: this.petCode,
+        leader_code: this.cod,
+        signature: imageUrl,
+        logo: logoUrl,
+        observations: this.txt_observations,
+        creation_date: this.txt_date,
+        gender_team: this.txt_sport_gender
+
+      };
+  
+      // Enviar datos al servicio
+      this.servicio.postData(datos).subscribe((res: any) => {
+        if (res.estado === true) {
+          this.servicio.showToast(res.mensaje);
+          this.navCtrl.back();
+        } else {
+          this.servicio.showToast(res.mensaje);
+        }
+      }, (error) => {
+        console.error('Error en la solicitud:', error);
+      });
+    } else {
+      this.servicio.showToast('Por favor complete todos los campos.');
+    }
+  }
+
+  // SELECCIONA EL LOGO DE LA EMPRESA
+  seleccionarLogo(event: any) {
+    const file = event.target.files[0];
+    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+      this.logo = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.logoUrl = reader.result as string; // Muestra la previsualización
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).');
+    }
+  }
+
+  // SELECCIONA UNA IMAGEN GENERAL DE LA EMPRESA
+  seleccionarImagen(event: any) {
+    const file = event.target.files[0];
+    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+      this.image = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageUrl = reader.result as string; // Muestra la previsualización
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).');
+    }
+  }
+  
+ // SUBIR LOGO
+ async subirLogo(): Promise<string> {
+  if (!this.logo) {
+    return this.logoUrl; // No hay logo para subir
+  }
+  const formData = new FormData();
+  formData.append('logo', this.logo);
+
+  try {
+    const response = await fetch('http://localhost/APM_UCI/Ws_APM_BACK/upload.php', {
+      method: 'POST',
+      body: formData,
+    });
+    const result = await response.json();
+    if (result.estado) {
+      return result.archivo_url; // URL del logo en el servidor
+    } else {
+      this.servicio.showToast('Error al subir el logo');
+      return ''; // Retorna vacío en caso de error
+    }
+  } catch (error) {
+    console.error('Error al subir el logo:', error);
+    this.servicio.showToast('Error al subir el logo');
+    return ''; // Retorna vacío en caso de error
+  }
+}
+
+// SUBIR IMAGEN
+async subirImagen(): Promise<string> {
+  if (!this.image) {
+    return this.imageUrl; // No hay imagen para subir
+  }
+  const formData = new FormData();
+  formData.append('imagen', this.image);
+
+  try {
+    const response = await fetch('http://localhost/APM_UCI/Ws_APM_BACK/upload.php', {
+      method: 'POST',
+      body: formData,
+    });
+    const result = await response.json();
+    if (result.estado) {
+      return result.archivo_url; // URL de la imagen en el servidor
+    } else {
+      this.servicio.showToast('Error al subir la imagen');
+      return ''; // Retorna vacío en caso de error
+    }
+  } catch (error) {
+    console.error('Error al subir la imagen:', error);
+    this.servicio.showToast('Error al subir la imagen');
+    return ''; // Retorna vacío en caso de error
+  }
+}
   
 }
