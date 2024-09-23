@@ -40,6 +40,7 @@ if ($post['accion'] == "loggin") {
                 'USAD_EMAIL_RECOVERY' => $row['USAD_EMAIL_RECOVERY'],
                 'USAD_ROLE' => $row['USAD_ROLE'],
                 'USAD_DATE_CREATED' => $row['USAD_DATE_CREATED'],
+                'DARK_MODE'=> $row['DARK_MODE'],
                 'ICLI_CODE' => $row['ICLI_CODE']
             );
 
@@ -2736,3 +2737,17 @@ if ($post['accion'] == "startMach") {
 
 ///////////////////////////////////////////////////////////
 
+if ($post['accion'] == "actualizarModoOscuro") {
+    $USAD_CODE = $post['USAD_CODE'];
+    $DARK_MODE = $post['DARK_MODE'];
+
+    $update_query = sprintf(
+        "UPDATE user_admin SET DARK_MODE = '$DARK_MODE' WHERE USAD_CODE = '$USAD_CODE'"
+    );
+    if (mysqli_query($mysqli, $update_query)) {
+        $respuesta = json_encode(array('estado' => true, "mensaje" => "Modo oscuro actualizado"));
+    } else {
+        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar el modo oscuro"));
+    }
+    echo $respuesta;
+}

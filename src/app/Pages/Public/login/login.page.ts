@@ -34,6 +34,7 @@ export class LoginPage implements OnInit {
         this.servicio.createSession('USAD_USERNAME',res.user_admin[0].USAD_USERNAME);
         this.servicio.createSession('USAD_ROLE',res.user_admin[0].USAD_ROLE);
         this.servicio.createSession('ICLI_CODE', res.user_admin[0].ICLI_CODE );
+        this.servicio.createSession('DARK_MODE', res.user_admin[0].DARK_MODE); 
         this.servicio.showToast(res.mensaje);
         this.navCtrl.navigateRoot(['/home']);
       } else {

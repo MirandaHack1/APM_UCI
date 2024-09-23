@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/Services/auth/auth.service';
-ToastController
 @Component({
   selector: 'app-search-sports-groups-dos',
   templateUrl: './search-sports-groups-dos.page.html',
