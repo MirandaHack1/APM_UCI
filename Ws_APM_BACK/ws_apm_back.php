@@ -2449,26 +2449,25 @@ if ($post['accion'] == "LoadsearchMatches") {
     $searchFilter = $search ? "AND (team_one.SPG_TEAM_NAME LIKE '%$search%' OR team_two.SPG_TEAM_NAME LIKE '%$search%')" : "";
 
     if ($option == 'proximos') {
-        // Cargar los próximos partidos (sin registros en vocalía_general)
+        // Cargar los partidos próximos (usando el campo MATC_STATUS)
         $query = "
             SELECT m.MATC_CODE, m.MATC_DATE, m.MATC_HOUR, team_one.SPG_TEAM_NAME AS team_one, team_two.SPG_TEAM_NAME AS team_two
             FROM matches m
             INNER JOIN sports_groups team_one ON m.SPG_CODE_ONE = team_one.SPG_CODE
             INNER JOIN sports_groups team_two ON m.SPG_CODE_TWO = team_two.SPG_CODE
-            LEFT JOIN vocalia_general vg ON vg.MATC_CODE = m.MATC_CODE
-            WHERE vg.VOGE_CODE IS NULL $searchFilter
+            WHERE m.MATC_STATUS = 'proximo' $searchFilter
             ORDER BY m.MATC_DATE, m.MATC_HOUR
         ";
     } elseif ($option == 'finalizados') {
-        // Cargar los partidos finalizados (con registros en vocalía_general)
+        // Cargar los partidos finalizados (usando el campo MATC_STATUS)
         $query = "
             SELECT m.MATC_CODE, m.MATC_DATE, m.MATC_HOUR, team_one.SPG_TEAM_NAME AS team_one, team_two.SPG_TEAM_NAME AS team_two, 
                    vg.VOGE_TOTAL_GOALS_TEAM_ONE, vg.VOGE_TOTAL_GOALS_TEAM_TWO
             FROM matches m
             INNER JOIN sports_groups team_one ON m.SPG_CODE_ONE = team_one.SPG_CODE
             INNER JOIN sports_groups team_two ON m.SPG_CODE_TWO = team_two.SPG_CODE
-            INNER JOIN vocalia_general vg ON vg.MATC_CODE = m.MATC_CODE
-            WHERE 1=1 $searchFilter
+            LEFT JOIN vocalia_general vg ON vg.MATC_CODE = m.MATC_CODE
+            WHERE m.MATC_STATUS = 'finalizado' $searchFilter
             ORDER BY m.MATC_DATE, m.MATC_HOUR
         ";
     }
@@ -2601,3 +2600,136 @@ if ($post['accion'] == "loadInfoMatchDetail") {
         echo $respuesta;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if ($post['accion'] == "LoadTeams") {
+    $match_code = $mysqli->real_escape_string($post['match_code']);
+
+    $query = "
+        SELECT team_one.SPG_TEAM_NAME AS team_one_name, team_two.SPG_TEAM_NAME AS team_two_name
+        FROM matches m
+        INNER JOIN sports_groups team_one ON m.SPG_CODE_ONE = team_one.SPG_CODE
+        INNER JOIN sports_groups team_two ON m.SPG_CODE_TWO = team_two.SPG_CODE
+        WHERE m.MATC_CODE = '$match_code'
+    ";
+
+    $result = mysqli_query($mysqli, $query);
+    if ($row = mysqli_fetch_assoc($result)) {
+        echo json_encode(array(
+            'estado' => true,
+            'team_one_name' => $row['team_one_name'],
+            'team_two_name' => $row['team_two_name']
+        ));
+    } else {
+        echo json_encode(array('estado' => false, 'mensaje' => "No se encontraron equipos"));
+    }
+}
+if ($post['accion'] == 'LoadPlayersByTeam') {
+    $match_code = $mysqli->real_escape_string($post['match_code']);
+    $team = $post['team'] == 'team1' ? 'SPG_CODE_ONE' : 'SPG_CODE_TWO'; // Determinar equipo basado en selección
+    $search = $mysqli->real_escape_string($post['search']);
+
+    // Filtrar jugadores por nombre si se ingresó texto de búsqueda
+    $searchFilter = $search ? "AND (ic.ICLI_FIRST_NAME LIKE '%$search%' OR ic.ICLI_LAST_NAME LIKE '%$search%')" : "";
+
+    // Consultar los jugadores del equipo seleccionado junto con sus estadísticas en el partido
+    $query = "
+        SELECT tp.TEAP_CODE, tp.TEAP_SHIRT_NUMBER, ic.ICLI_FIRST_NAME, ic.ICLI_LAST_NAME, 
+               vs.VOSH_CODE, vs.VOGE_CODE
+        FROM team_player tp
+        INNER JOIN info_client ic ON tp.ICLI_CODE = ic.ICLI_CODE
+        LEFT JOIN vocalia_sheet vs ON tp.TEAP_CODE = vs.TEAP_CODE AND vs.VOGE_CODE = (
+            SELECT vg.VOGE_CODE FROM vocalia_general vg WHERE vg.MATC_CODE = '$match_code'
+        )
+        WHERE tp.SPG_CODE = (
+            SELECT m.$team FROM matches m WHERE m.MATC_CODE = '$match_code'
+        ) $searchFilter
+        ORDER BY tp.TEAP_SHIRT_NUMBER ASC
+    ";
+
+    $result = mysqli_query($mysqli, $query);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $datos[] = array(
+                'vosh_code' => $row['VOSH_CODE'],
+                'voge_code' => $row['VOGE_CODE'],
+                'shirt_number' => $row['TEAP_SHIRT_NUMBER'],
+                'first_name' => $row['ICLI_FIRST_NAME'],
+                'last_name' => $row['ICLI_LAST_NAME']
+            );
+        }
+        echo json_encode(array('estado' => true, 'datos' => $datos));
+    } else {
+        echo json_encode(array('estado' => false, 'mensaje' => "No se encontraron jugadores."));
+    }
+}
+
+if ($post['accion'] == "startMach") {
+    $codigo_match = $post['codigo'];
+
+    // Verificar si ya existe una entrada en vocalia_general para este partido
+    $check_vocalia_general = sprintf("SELECT * FROM vocalia_general WHERE MATC_CODE='%s'", $codigo_match);
+    $result = mysqli_query($mysqli, $check_vocalia_general);
+
+    if (mysqli_num_rows($result) == 0) {
+        // No existe vocalia general para este partido, insertar uno vacío
+        $insert_vocalia_general = sprintf(
+            "INSERT INTO vocalia_general (MATC_CODE, VOGE_TOTAL_GOALS_TEAM_ONE, VOGE_TOTAL_GOALS_TEAM_TWO, VOGE_TOTAL_YELLOW_CARD, VOGE_TOTAL_RED_CARD, VOGE_TOTAL_CHANGES, VOGE_REFEREE_REPORT, VOGE_VOCAL_REPORT, VOGE_TEAM_WINNER, VOGE_TEAM_LOSER, VOGE_TEAM_DRAW) VALUES ('%s', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+            $codigo_match
+        );
+        mysqli_query($mysqli, $insert_vocalia_general);
+    }
+
+    // Obtener jugadores de ambos equipos del partido (de la tabla team_player)
+    $get_players = sprintf(
+        "SELECT TEAP_CODE FROM team_player WHERE SPG_CODE IN (SELECT SPG_CODE_ONE FROM matches WHERE MATC_CODE='%s' UNION SELECT SPG_CODE_TWO FROM matches WHERE MATC_CODE='%s')",
+        $codigo_match, $codigo_match
+    );
+    $players_result = mysqli_query($mysqli, $get_players);
+
+    // Obtener VOGE_CODE del vocalia_general recién insertado o existente
+    $voge_code_result = mysqli_query($mysqli, sprintf("SELECT VOGE_CODE FROM vocalia_general WHERE MATC_CODE='%s'", $codigo_match));
+    $voge_code_row = mysqli_fetch_assoc($voge_code_result);
+    $voge_code = $voge_code_row['VOGE_CODE'];
+
+    // Insertar registro vacío para cada jugador si no existe
+    while ($player = mysqli_fetch_assoc($players_result)) {
+        $teap_code = $player['TEAP_CODE'];
+
+        // Verificar si ya existe un registro en vocalia_sheet para este jugador
+        $check_vocalia_sheet = sprintf(
+            "SELECT * FROM vocalia_sheet WHERE VOGE_CODE='%s' AND TEAP_CODE='%s'",
+            $voge_code, $teap_code
+        );
+        $check_result = mysqli_query($mysqli, $check_vocalia_sheet);
+
+        if (mysqli_num_rows($check_result) == 0) {
+            // No existe, insertar un registro vacío
+            $insert_vocalia_sheet = sprintf(
+                "INSERT INTO vocalia_sheet (VOGE_CODE, TEAP_CODE, VOSH_GOALS, VOSH_YELLOW_CARD, VOSH_RED_CARD, TEAP_CODE_CHANGE) VALUES ('%s', '%s', NULL, NULL, NULL, NULL)",
+                $voge_code, $teap_code
+            );
+            mysqli_query($mysqli, $insert_vocalia_sheet);
+        }
+    }
+
+    $respuesta = json_encode(array('estado' => true, "mensaje" => "Partido iniciado y registros creados."));
+    echo $respuesta;
+}
+
+

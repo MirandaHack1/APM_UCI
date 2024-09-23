@@ -57,4 +57,22 @@ export class InfoMatchesGeneralPage implements OnInit {
     this.navCtrl.navigateRoot(['info-matches-detail']);
 
   }
+  startMach(code: string){
+    //hacer un insert de match
+    let datos = {
+      "accion": "startMach",
+      "codigo": code
+    };
+    this.servicio.postData(datos).subscribe((res: any) => {
+      if (res.estado == true) {
+       // this.servicio.showToast(res.mensaje);
+      } else {
+       // this.servicio.showToast(res.mensaje);
+      }
+    });
+
+    this.servicio.createSession('MATCH_CODE', code);
+    this.navCtrl.navigateRoot(['vocalia-sheet']);
+
+  }
 }
