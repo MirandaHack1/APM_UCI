@@ -3122,7 +3122,7 @@ if ($post['accion'] == "FinishMatch") {
     $match_code = $mysqli->real_escape_string($post['match_code']);
     $team_one_code = $mysqli->real_escape_string($post['team_one_code']);
     $team_two_code= $mysqli->real_escape_string($post['team_two_code']);
-    
+
 
     $obs_albitro = $mysqli->real_escape_string($post['obs_albitro']);
     $obs_vocal = $mysqli->real_escape_string($post['obs_vocal']);
@@ -3137,7 +3137,7 @@ if ($post['accion'] == "FinishMatch") {
     } else {
         $vogue_code = null;
     }
-  //  echo ("Código vogue: " . $vogue_code . "\n");
+    //  echo ("Código vogue: " . $vogue_code . "\n");
 
     // Consulta para obtener los nombres de los equipos
     $team_names_query = "SELECT SPG_TEAM_NAME FROM sports_groups WHERE SPG_CODE IN ('$team_one_code', '$team_two_code')";
@@ -3154,10 +3154,10 @@ if ($post['accion'] == "FinishMatch") {
     $team_one_name = isset($team_names[0]) ? $team_names[0] : null;
     $team_two_name = isset($team_names[1]) ? $team_names[1] : null;
 
-  //  echo ("Código: " . $team_one_code . "\n");
-  // echo ("Equipo uno: " . $team_one_name . "\n");
-  //  echo ("Código: " . $team_two_code . "\n");
-  //  echo ("Equipo dos: " . $team_two_name . "\n");
+    //  echo ("Código: " . $team_one_code . "\n");
+    // echo ("Equipo uno: " . $team_one_name . "\n");
+    //  echo ("Código: " . $team_two_code . "\n");
+    //  echo ("Equipo dos: " . $team_two_name . "\n");
 
     // Consulta para obtener los datos de vocalía para team_one_code
     $vocalia_query_one = "
@@ -3195,10 +3195,10 @@ if ($post['accion'] == "FinishMatch") {
     }
 
     // Mostrar los resultados para team_one_code
-   // echo ("Total Goles (Equipo Uno): " . $total_goals_one . "\n");
-  //  echo ("Total Tarjetas Amarillas (Equipo Uno): " . $total_yellow_cards_one . "\n");
-  //  echo ("Total Tarjetas Rojas (Equipo Uno): " . $total_red_cards_one . "\n");
-  //  echo ("Total Cambios de TEAP_CODE (Equipo Uno): " . $total_teap_code_change_one . "\n");
+    // echo ("Total Goles (Equipo Uno): " . $total_goals_one . "\n");
+    //  echo ("Total Tarjetas Amarillas (Equipo Uno): " . $total_yellow_cards_one . "\n");
+    //  echo ("Total Tarjetas Rojas (Equipo Uno): " . $total_red_cards_one . "\n");
+    //  echo ("Total Cambios de TEAP_CODE (Equipo Uno): " . $total_teap_code_change_one . "\n");
 
     // Consulta para obtener los datos de vocalía para team_two_code
     $vocalia_query_two = "
@@ -3236,19 +3236,19 @@ if ($post['accion'] == "FinishMatch") {
     }
 
     // Mostrar los resultados para team_two_code
-   // echo ("Total Goles (Equipo Dos): " . $total_goals_two . "\n");
-   // echo ("Total Tarjetas Amarillas (Equipo Dos): " . $total_yellow_cards_two . "\n");
-  //  echo ("Total Tarjetas Rojas (Equipo Dos): " . $total_red_cards_two . "\n");
-  // echo ("Total Cambios de TEAP_CODE (Equipo Dos): " . $total_teap_code_change_two . "\n");
+    // echo ("Total Goles (Equipo Dos): " . $total_goals_two . "\n");
+    // echo ("Total Tarjetas Amarillas (Equipo Dos): " . $total_yellow_cards_two . "\n");
+    //  echo ("Total Tarjetas Rojas (Equipo Dos): " . $total_red_cards_two . "\n");
+    // echo ("Total Cambios de TEAP_CODE (Equipo Dos): " . $total_teap_code_change_two . "\n");
 
     $total_rojas = $total_red_cards_one + $total_red_cards_two;
     $total_amarillas = $total_yellow_cards_one + $total_yellow_cards_two;
     $total_cambios = $total_teap_code_change_one + $total_teap_code_change_two;
 
     // Mostrar los totales
-   // echo ("Total Rojas: " . $total_rojas . "\n");
-  //  echo ("Total Amarillas: " . $total_amarillas . "\n");
-   // echo ("Total Cambios: " . $total_cambios . "\n");
+    // echo ("Total Rojas: " . $total_rojas . "\n");
+    //  echo ("Total Amarillas: " . $total_amarillas . "\n");
+    // echo ("Total Cambios: " . $total_cambios . "\n");
 
     // Determinar el equipo ganador y perdedor
     $winning_team = null;
@@ -3270,8 +3270,8 @@ if ($post['accion'] == "FinishMatch") {
     }
 
     // Mostrar resultados de ganador y perdedor
-   // echo ("Equipo Ganador: " . $winning_team . "\n");
-   // echo ("Equipo Perdedor: " . $losing_team . "\n");
+    // echo ("Equipo Ganador: " . $winning_team . "\n");
+    // echo ("Equipo Perdedor: " . $losing_team . "\n");
     //echo ("Estado de empate: " . $draw . "\n");
 
 
@@ -3295,9 +3295,9 @@ if ($post['accion'] == "FinishMatch") {
 
     // Ejecutar el UPDATE
     if ($mysqli->query($update_query) === TRUE) {
-       // echo "Registro actualizado correctamente.\n";
+        // echo "Registro actualizado correctamente.\n";
     } else {
-       // echo "Error al actualizar registro: " . $mysqli->error . "\n";
+        // echo "Error al actualizar registro: " . $mysqli->error . "\n";
     }
 
 
@@ -3315,10 +3315,10 @@ if ($post['accion'] == "FinishMatch") {
     if ($matches_count_result && $matches_count_result->num_rows > 0) {
         $matches_count_row = $matches_count_result->fetch_assoc();
         $team_one_matches_count = (int)$matches_count_row['match_count']; // Guardar en variable
-      //  echo ("Cantidad de partidos para el equipo uno: " . $team_one_matches_count . "\n");
+        //  echo ("Cantidad de partidos para el equipo uno: " . $team_one_matches_count . "\n");
     } else {
         $team_one_matches_count = 0; // Si no hay registros
-       // echo ("No se encontraron registros de partidos para el equipo uno.\n");
+        // echo ("No se encontraron registros de partidos para el equipo uno.\n");
     }
 
     // Contar registros en la tabla matches para $team_two_code
@@ -3333,10 +3333,10 @@ if ($post['accion'] == "FinishMatch") {
     if ($matches_count_result_two && $matches_count_result_two->num_rows > 0) {
         $matches_count_row_two = $matches_count_result_two->fetch_assoc();
         $team_two_matches_count = (int)$matches_count_row_two['match_count']; // Guardar en variable
-      //  echo ("Cantidad de partidos para el equipo dos: " . $team_two_matches_count . "\n");
+        //  echo ("Cantidad de partidos para el equipo dos: " . $team_two_matches_count . "\n");
     } else {
         $team_two_matches_count = 0; // Si no hay registros
-       // echo ("No se encontraron registros de partidos para el equipo dos.\n");
+        // echo ("No se encontraron registros de partidos para el equipo dos.\n");
     }
 
 
@@ -3380,17 +3380,17 @@ WHERE
         $stag_type_phase = $standings_row['STAG_TYPE_PHASE'];
 
         // Mostrar resultados de standings
-      //  echo ("STAG_CODE  (Equipo uno):" . $stag_code . "\n");
-       // echo ("VOGE_CODE (Equipo uno): " . $voge_code_standings . "\n");
-       // echo ("GRS_CODE (Equipo uno): " . $grs_code . "\n");
-       // echo ("STAG_PLAYED_MATCH (Equipo uno):" . $stag_played_match . "\n");
-      //  echo ("STAG_GOAL_DIFFERENCE (Equipo uno): " . $stag_goal_difference . "\n");
+        //  echo ("STAG_CODE  (Equipo uno):" . $stag_code . "\n");
+        // echo ("VOGE_CODE (Equipo uno): " . $voge_code_standings . "\n");
+        // echo ("GRS_CODE (Equipo uno): " . $grs_code . "\n");
+        // echo ("STAG_PLAYED_MATCH (Equipo uno):" . $stag_played_match . "\n");
+        //  echo ("STAG_GOAL_DIFFERENCE (Equipo uno): " . $stag_goal_difference . "\n");
 
 
-       // echo ("STAG_POINTS  (Equipo uno):" . $stag_points . "\n");
-       // echo ("STAG_TYPE_PHASE (Equipo uno):" . $stag_type_phase . "\n");
+        // echo ("STAG_POINTS  (Equipo uno):" . $stag_points . "\n");
+        // echo ("STAG_TYPE_PHASE (Equipo uno):" . $stag_type_phase . "\n");
     } else {
-       // echo "No se encontraron datos en standings_groups para el equipo uno.\n";
+        // echo "No se encontraron datos en standings_groups para el equipo uno.\n";
     }
     $total_goal_difference_team_one = $stag_goal_difference + $total_goals_one - $total_goals_two;
     //winning team one points
@@ -3446,15 +3446,15 @@ WHERE
 
 
         // Mostrar resultados de standings para team_two_code
-       // echo ("STAG_CODE (Equipo Dos): " . $stag_code_two . "\n");
-      //  echo ("VOGE_CODE (Equipo Dos): " . $voge_code_standings_two . "\n");
-      //  echo ("GRS_CODE (Equipo Dos): " . $grs_code_two . "\n");
-     //   echo ("STAG_PLAYED_MATCH (Equipo Dos): " . $stag_played_match_two . "\n");
-      //  echo ("STAG_GOAL_DIFFERENCE (Equipo Dos): " . $stag_goal_difference_two . "\n");
-      //  echo ("STAG_POINTS (Equipo Dos): " . $stag_points_two . "\n");
-      //  echo ("STAG_TYPE_PHASE (Equipo Dos): " . $stag_type_phase_two . "\n");
+        // echo ("STAG_CODE (Equipo Dos): " . $stag_code_two . "\n");
+        //  echo ("VOGE_CODE (Equipo Dos): " . $voge_code_standings_two . "\n");
+        //  echo ("GRS_CODE (Equipo Dos): " . $grs_code_two . "\n");
+        //   echo ("STAG_PLAYED_MATCH (Equipo Dos): " . $stag_played_match_two . "\n");
+        //  echo ("STAG_GOAL_DIFFERENCE (Equipo Dos): " . $stag_goal_difference_two . "\n");
+        //  echo ("STAG_POINTS (Equipo Dos): " . $stag_points_two . "\n");
+        //  echo ("STAG_TYPE_PHASE (Equipo Dos): " . $stag_type_phase_two . "\n");
     } else {
-      //  echo "No se encontraron datos en standings_groups para el equipo dos.\n";
+        //  echo "No se encontraron datos en standings_groups para el equipo dos.\n";
     }
     $total_goal_difference_team_two = $stag_goal_difference_two + $total_goals_two - $total_goals_one;
     //winning team two points
@@ -3480,13 +3480,36 @@ WHERE
 
     // Ejecutar el UPDATE
     if ($mysqli->query($update_standings_query_one) === TRUE) {
-      //  echo "Registro actualizado correctamente en standings_groups para el equipo uno.\n";
+        //  echo "Registro actualizado correctamente en standings_groups para el equipo uno.\n";
     } else {
-       // echo "Error al actualizar registro en standings_groups: " . $mysqli->error . "\n";
+        // echo "Error al actualizar registro en standings_groups: " . $mysqli->error . "\n";
     }
 
+    // Preparar el UPDATE para standings_groups del equipo dos
+    $update_standings_query_two = "
+UPDATE standings_groups
+SET
+    STAG_PLAYED_MATCH = STAG_PLAYED_MATCH + 1,
+    STAG_GOAL_DIFFERENCE = '$total_goal_difference_team_two',
+    STAG_POINTS = '$winning_team_points_two',
+    STAG_TYPE_PHASE = 'Fase de Grupos'
+WHERE
+    STAG_CODE = '$stag_code_two'
+";
+    // Ejecutar el UPDATE
+    if ($mysqli->query($update_standings_query_two) === TRUE) {
+        //  echo "Registro actualizado correctamente en standings_groups para el equipo dos.\n";
+    } else {
+        // echo "Error al actualizar registro en standings_groups: " . $mysqli->error . "\n";
+    }
+
+    
+
+
+
+
     // Preparar el UPDATE para cambiar el estado del partido
-$update_match_status_query = "
+    $update_match_status_query = "
 UPDATE matches 
 SET 
     MATC_STATUS = 'finalizado' 
@@ -3494,20 +3517,16 @@ WHERE
     MATC_CODE = '$match_code'
 ";
 
-// Ejecutar el UPDATE
-if ($mysqli->query($update_match_status_query) === TRUE) {
-    $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Estado actualizado correctamente en matches.'));
-} else {
-    $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar estado en matches: ' . $mysqli->error));
-}
+    // Ejecutar el UPDATE
+    if ($mysqli->query($update_match_status_query) === TRUE) {
+        $respuesta = json_encode(array('estado' => true, 'mensaje' => 'Estado actualizado correctamente en matches.'));
+    } else {
+        $respuesta = json_encode(array('estado' => false, 'mensaje' => 'Error al actualizar estado en matches: ' . $mysqli->error));
+    }
 
-// Establecer cabecera de tipo de contenido
-header('Content-Type: application/json');
+    // Establecer cabecera de tipo de contenido
+    header('Content-Type: application/json');
 
-// Devolver respuesta JSON
-echo $respuesta;
-    
-
-    
-    
+    // Devolver respuesta JSON
+    echo $respuesta;
 }
