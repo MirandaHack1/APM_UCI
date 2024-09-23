@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-//toast
+// Toast
 import { ToastController } from '@ionic/angular';
 import { Preferences } from '@capacitor/preferences';
 
@@ -11,6 +11,7 @@ export class AuthService {
   serve: string = 'http://localhost/APM_UCI/Ws_APM_BACK/ws_apm_back.php';
 
   constructor(public http: HttpClient, public toastCtrl: ToastController) {}
+
   postData(body: any) {
     let head = new HttpHeaders({
       'Content-Type': 'application/json, charset:utf8',
@@ -20,25 +21,29 @@ export class AuthService {
     };
     return this.http.post(this.serve, JSON.stringify(body), options);
   }
-  async showToast(mensaje: string) {
+
+  async showToast(mensaje: string, isError: boolean = false) {
     const toast = await this.toastCtrl.create({
       message: mensaje,
       duration: 2000,
       position: 'top',
+      color: isError ? 'danger' : 'success', // Color rojo para error, verde para éxito
     });
     toast.present();
   }
+
   async createSession(id: string, valor: string) {
     await Preferences.set({
       key: id,
-      value: valor
+      value: valor,
     });
   }
-  
+
   async getSession(id: string) {
     const item = await Preferences.get({ key: id });
     return item.value;
   }
+
   async closeSession(id: string) {
     await Preferences.clear();
   }
@@ -49,24 +54,21 @@ export class AuthService {
       value: token,
     });
   }
-  
+
   async getToken() {
     const { value } = await Preferences.get({ key: 'recovery_token' });
     return value;
   }
+
   async saveUserCode(userCode: string) {
     await Preferences.set({
       key: 'usad_code',
       value: userCode,
     });
   }
-  
+
   async getUserCode() {
     const { value } = await Preferences.get({ key: 'usad_code' });
     return value;
   }
-  
-
-
-
-  }
+}

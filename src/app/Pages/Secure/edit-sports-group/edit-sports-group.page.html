@@ -18,11 +18,27 @@
     <ion-label position="stacked" class="bold-label">Nombre del grupo:</ion-label>
     <ion-input type="text" [(ngModel)]="txt_nameGroup" ></ion-input>
   </ion-item>
-
+<!-- 
   <ion-item>
     <ion-label position="stacked" class="bold-label">Logo:</ion-label>
     <ion-input type="text" [(ngModel)]="txt_logo" ></ion-input>
-  </ion-item>
+  </ion-item> -->
+
+    <!-- Campo para mostrar el logo -->
+    <ion-item *ngIf="logoUrl" style="text-align: center;">
+      <ion-label>Logo:</ion-label>
+      <ion-img 
+        [src]="cod_group ? txt_logo.replace('localhost', 'http://127.0.0.1') : 
+              logoUrl.replace('localhost', 'http://127.0.0.1')"
+        style="max-width: 100px; max-height: 100px; display: inline-block;">
+      </ion-img>
+    </ion-item>
+  
+    <!-- Campo para subir el logo -->
+    <ion-item>
+      <ion-label position="stacked" class="bold-label">Subir Logo:</ion-label>
+      <input type="file" (change)="seleccionarLogo($event)" accept=".png, .jpg, .jpeg"/>
+    </ion-item>
 
   <ion-item>
     <ion-label position="stacked" class="bold-label">Deporte:</ion-label>
@@ -80,10 +96,25 @@
       <ion-select-option value="Femenino">Femenino</ion-select-option>
     </ion-select>
   </ion-item>
-
+<!-- 
   <ion-item>
     <ion-label position="stacked" class="bold-label">firma:</ion-label>
     <ion-input type="text" [(ngModel)]="txt_firma"></ion-input>
+  </ion-item> -->
+  <!-- Otros campos -->
+  <ion-item *ngIf="imageUrl" style="text-align: center;">
+    <ion-label>Firma:</ion-label>
+    <ion-img 
+      [src]="cod_group ? txt_firma.replace('localhost', 'http://127.0.0.1') : 
+            imageUrl.replace('localhost', 'http://127.0.0.1')"
+      style="max-width: 100px; max-height: 100px; display: inline-block;">
+    </ion-img>
+  </ion-item>
+
+  <!-- Campo para subir la imagen -->
+  <ion-item>
+    <ion-label position="stacked" class="bold-label">Subir Imagen:</ion-label>
+    <input type="file" (change)="seleccionarImagen($event)" accept=".png, .jpg, .jpeg"/>
   </ion-item>
 
   <ion-item>
@@ -94,7 +125,7 @@
   
   
   <ion-item>
-    <ion-button (click)="verify()" expand="block"  shape="round">
+    <ion-button (click)="guardar()" expand="block"  shape="round">
       Guardar
     </ion-button>
     <ion-button (click)="back()" expand="block" color="danger" shape="round">

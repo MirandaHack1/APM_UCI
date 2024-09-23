@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
+import { home } from 'ionicons/icons';
 import { AuthService } from 'src/app/Services/auth/auth.service';
 
 @Component({
@@ -52,7 +53,7 @@ export class CredentialsInfoPage implements OnInit {
         this.txt_emailr= this.info.emailr;
       }
       else{
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     })
 
@@ -63,7 +64,7 @@ export class CredentialsInfoPage implements OnInit {
       
   }
   back(){
-    this.navCtrl.back();
+    this.navCtrl.navigateBack('home');
   }
 
 }

@@ -7,109 +7,159 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- CAMPOS PARA LLENAR DE INFORMACION AL CLIENTE -->
 <ion-content [fullscreen]="true">
   <ion-item>
     <ion-label position="stacked">Nombres:</ion-label>
-    <ion-input
-      placeholder="Ingrese su nombre:"
-      [(ngModel)]="firstName"
-      type="text"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su nombre:" [(ngModel)]="firstName" type="text"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Apellidos:</ion-label>
-    <ion-input
-      placeholder="Ingrese su apellido:"
-      [(ngModel)]="lastName"
-      type="text"
-      
-    ></ion-input>
+    <ion-input placeholder="Ingrese su apellido:" [(ngModel)]="lastName" type="text"></ion-input>
   </ion-item>
 
   <!-- <ion-item>
     <ion-label position="stacked">¿Es extranjero?</ion-label>
-    <ion-checkbox
-      [(ngModel)]="isForeigner"
-    ></ion-checkbox>
+    <ion-checkbox [(ngModel)]="isForeigner"></ion-checkbox>
   </ion-item> -->
-
-  <ion-item >
+  <ion-item>
+    <ion-label>¿Es extranjero?</ion-label>
+    <ion-checkbox slot="end" [(ngModel)]="isForeigner"></ion-checkbox>
+  </ion-item>
+  
+  
+  <ion-item>
     <ion-label position="stacked">Cédula:</ion-label>
-    <ion-input
-      placeholder="Ingrese su cédula:"
-      [(ngModel)]="cardNumber"
-      (ionBlur)="validateID(cardNumber)"
-      type="number"
-      inputmode="numeric"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su cédula:" [(ngModel)]="cardNumber" (ionBlur)="validateID(cardNumber)" type="text" inputmode="numeric"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Teléfono:</ion-label>
-    <ion-input
-      placeholder="Ingrese su teléfono"
-      [(ngModel)]="phoneNumber"
-      type="number"
-      (ionInput)="checkMaxLength($event)"
-      inputmode="numeric"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su teléfono" [(ngModel)]="phoneNumber" type="text" (ionInput)="checkMaxLength($event); validatePhoneNumber(phoneNumber)" inputmode="numeric"></ion-input>
   </ion-item>
-
+  
+  
   <ion-item>
     <ion-label position="stacked">Dirección:</ion-label>
-    <ion-input
-      placeholder="Ingrese su dirección:"
-      [(ngModel)]="address"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su dirección:" [(ngModel)]="address"></ion-input>
   </ion-item>
+
+  <!-- <ion-item>
+    <ion-label position="stacked">Ciudad:</ion-label>
+    <ion-input placeholder="Ingrese su ciudad:" [(ngModel)]="city" type="text"></ion-input>
+  </ion-item> -->
 
   <ion-item>
     <ion-label position="stacked">Ciudad:</ion-label>
-    <ion-input
-      placeholder="Ingrese su ciudad:"
-      [(ngModel)]="city"
-      type="text"
-    ></ion-input>
+    <ion-select [(ngModel)]="city">
+      <ion-select-option value="Quito">Quito</ion-select-option>
+      <ion-select-option value="Guayaquil">Guayaquil</ion-select-option>
+      <ion-select-option value="Cuenca">Cuenca</ion-select-option>
+      <ion-select-option value="Manta">Manta</ion-select-option>
+      <ion-select-option value="Durán">Durán</ion-select-option>
+      <ion-select-option value="Machala">Machala</ion-select-option>
+      <ion-select-option value="Loja">Loja</ion-select-option>
+      <ion-select-option value="Ambato">Ambato</ion-select-option>
+      <ion-select-option value="Esmeraldas">Esmeraldas</ion-select-option>
+      <ion-select-option value="Santo Domingo">Santo Domingo</ion-select-option>
+      <ion-select-option value="Naranjito">Naranjito</ion-select-option>
+      <ion-select-option value="Babahoyo">Babahoyo</ion-select-option>
+      <ion-select-option value="El Coca">El Coca</ion-select-option>
+      <ion-select-option value="Azogues">Azogues</ion-select-option>
+      <ion-select-option value="Riobamba">Riobamba</ion-select-option>
+      <ion-select-option value="Cayambe">Cayambe</ion-select-option>
+      <ion-select-option value="La Libertad">La Libertad</ion-select-option>
+      <ion-select-option value="Puerto Viejo">Puerto Viejo</ion-select-option>
+      <ion-select-option value="Salinas">Salinas</ion-select-option>
+      <ion-select-option value="Ibarra">Ibarra</ion-select-option>
+      <ion-select-option value="Quevedo">Quevedo</ion-select-option>
+      <ion-select-option value="Sierra">Sierra</ion-select-option>
+      <ion-select-option value="Sangolquí">Sangolquí</ion-select-option>
+      <ion-select-option value="Cumbayá">Cumbayá</ion-select-option>
+      <ion-select-option value="Baba">Baba</ion-select-option>
+      <ion-select-option value="Balsas">Balsas</ion-select-option>
+      <ion-select-option value="Chone">Chone</ion-select-option>
+      <ion-select-option value="Catamayo">Catamayo</ion-select-option>
+      <ion-select-option value="Sambo" >Sambo</ion-select-option>
+      <ion-select-option value="Daule">Daule</ion-select-option>
+    </ion-select>
   </ion-item>
+  
+  <!-- <ion-item>
+    <ion-label position="stacked">Provincia:</ion-label>
+    <ion-input placeholder="Ingrese su provincia:" [(ngModel)]="province" type="text"></ion-input>
+  </ion-item> -->
 
   <ion-item>
     <ion-label position="stacked">Provincia:</ion-label>
-    <ion-input
-      placeholder="Ingrese su provincia:"
-      [(ngModel)]="province"
-      type="text"
-    ></ion-input>
+    <ion-select [(ngModel)]="province">
+      <ion-select-option value="Azuay">Azuay</ion-select-option>
+      <ion-select-option value="Bolívar">Bolívar</ion-select-option>
+      <ion-select-option value="Cañar">Cañar</ion-select-option>
+      <ion-select-option value="Carchi">Carchi</ion-select-option>
+      <ion-select-option value="Chimborazo">Chimborazo</ion-select-option>
+      <ion-select-option value="Cotopaxi">Cotopaxi</ion-select-option>
+      <ion-select-option value="El Oro">El Oro</ion-select-option>
+      <ion-select-option value="Esmeraldas">Esmeraldas</ion-select-option>
+      <ion-select-option value="Galápagos">Galápagos</ion-select-option>
+      <ion-select-option value="Guayas">Guayas</ion-select-option>
+      <ion-select-option value="Imbabura">Imbabura</ion-select-option>
+      <ion-select-option value="Loja">Loja</ion-select-option>
+      <ion-select-option value="Los Ríos">Los Ríos</ion-select-option>
+      <ion-select-option value="Manabí">Manabí</ion-select-option>
+      <ion-select-option value="Morona Santiago">Morona Santiago</ion-select-option>
+      <ion-select-option value="Napo">Napo</ion-select-option>
+      <ion-select-option value="Pastaza">Pastaza</ion-select-option>
+      <ion-select-option value="Pichincha">Pichincha</ion-select-option>
+      <ion-select-option value="Santa Elena">Santa Elena</ion-select-option>
+      <ion-select-option value="Santo Domingo de los Tsáchilas">Santo Domingo de los Tsáchilas</ion-select-option>
+      <ion-select-option value="Sucumbíos">Sucumbíos</ion-select-option>
+      <ion-select-option value="Tungurahua">Tungurahua</ion-select-option>
+      <ion-select-option value="Zamora-Chinchipe">Zamora-Chinchipe</ion-select-option>
+    </ion-select>
   </ion-item>
+  
+
+  <!-- <ion-item>
+    <ion-label position="stacked">Carrera:</ion-label>
+    <ion-input placeholder="Ingrese su carrera:" [(ngModel)]="career" type="text"></ion-input>
+  </ion-item> -->
 
   <ion-item>
     <ion-label position="stacked">Carrera:</ion-label>
-    <ion-input
-      placeholder="Ingrese su carrera:"
-      [(ngModel)]="career"
-      type="text"
-    ></ion-input>
+    <ion-select [(ngModel)]="career">
+      <ion-select-option value="Administración de Empresas">Administración de Empresas</ion-select-option>
+      <ion-select-option value="Contabilidad y Auditoría">Contabilidad y Auditoría</ion-select-option>
+      <ion-select-option value="Ingeniería Comercial">Ingeniería Comercial</ion-select-option>
+      <ion-select-option value="Medicina">Medicina</ion-select-option>
+      <ion-select-option value="Enfermería">Enfermería</ion-select-option>
+      <ion-select-option value="Odontología">Odontología</ion-select-option>
+      <ion-select-option value="Psicología">Psicología</ion-select-option>
+      <ion-select-option value="Ingeniería en Sistemas">Ingeniería en Sistemas</ion-select-option>
+      <ion-select-option value="Ingeniería Civil">Ingeniería Civil</ion-select-option>
+      <ion-select-option value="Ingeniería Electrónica">Ingeniería Electrónica</ion-select-option>
+      <ion-select-option value="Ingeniería Ambiental">Ingeniería Ambiental</ion-select-option>
+      <ion-select-option value="Derecho">Derecho</ion-select-option>
+      <ion-select-option value="Trabajo Social">Trabajo Social</ion-select-option>
+      <ion-select-option value="Comunicación Social">Comunicación Social</ion-select-option>
+      <ion-select-option value="Pedagogía">Pedagogía</ion-select-option>
+      <ion-select-option value="Educación Inicial">Educación Inicial</ion-select-option>
+      <ion-select-option value="Educación Básica">Educación Básica</ion-select-option>
+      <ion-select-option value="Ingeniería Agronómica">Ingeniería Agronómica</ion-select-option>
+      <ion-select-option value="Zootecnia">Zootecnia</ion-select-option>
+      <ion-select-option value="Ingeniería en Software">Ingeniería en Software</ion-select-option>
+    </ion-select>
   </ion-item>
+  
 
   <ion-item>
     <ion-label position="stacked">Semestre:</ion-label>
-    <ion-input
-      placeholder="Ingrese su semestre:"
-      [(ngModel)]="semester"
-      type="number"
-      inputmode="numeric"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su semestre:" [(ngModel)]="semester" type="number" inputmode="numeric"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Edad:</ion-label>
-    <ion-input
-      placeholder="Ingrese su edad:"
-      [(ngModel)]="age"
-      type="number"
-      inputmode="numeric"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su edad:" [(ngModel)]="age" type="number" inputmode="numeric"></ion-input>
   </ion-item>
 
   <ion-item>
@@ -122,119 +172,86 @@
 
   <ion-item>
     <ion-label position="stacked">Peso (kg):</ion-label>
-    <ion-input
-      placeholder="Ingrese su peso:"
-      [(ngModel)]="weight"
-      type="number"
-      inputmode="decimal"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su peso:" [(ngModel)]="weight" type="number" inputmode="decimal"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Altura (cm):</ion-label>
-    <ion-input
-      placeholder="Ingrese su altura:"
-      [(ngModel)]="height"
-      type="number"
-      inputmode="decimal"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su altura:" [(ngModel)]="height" type="number" inputmode="decimal"></ion-input>
   </ion-item>
+
+  <!-- <ion-item>
+    <ion-label position="stacked">Correo Institucional:</ion-label>
+    <ion-input placeholder="Ingrese su correo institucional:" [(ngModel)]="institutionalEmail" type="email" (ionBlur)="validateEmail(institutionalEmail)"></ion-input>
+  </ion-item> -->
 
   <ion-item>
     <ion-label position="stacked">Correo Institucional:</ion-label>
-    <ion-input
-      placeholder="Ingrese su correo institucional:"
-      [(ngModel)]="institutionalEmail"
-      type="email"
-      (ionBlur)="validateEmail(institutionalEmail)"
-    ></ion-input>
+    <ion-input 
+      placeholder="Ingrese su correo institucional:" 
+      [(ngModel)]="institutionalEmail" 
+      type="email" 
+      (ionBlur)="validateEmail(institutionalEmail)">
+    </ion-input>
   </ion-item>
 
+  
   <ion-item>
     <ion-label position="stacked">Fecha de cumpleaños:</ion-label>
-    <ion-datetime
-      display-format="MM/DD/YYYY"
-      placeholder="Seleccione fecha de cumpleaños"
-      [(ngModel)]="dateOfBirth"
-      class="center-datetime"
-    ></ion-datetime>
+    <ion-datetime display-format="MM/DD/YYYY" placeholder="Seleccione fecha de cumpleaños" [(ngModel)]="dateOfBirth" class="center-datetime"></ion-datetime>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Sede:</ion-label>
     <ion-select [(ngModel)]="sede">
-      <ion-select-option *ngFor="let item of businessInfo" [value]="item.BUSH_CODE">
-        {{ item.BUIF_NAME }}
-      </ion-select-option>
+      <ion-select-option *ngFor="let item of businessInfo" [value]="item.BUSH_CODE">{{ item.BUIF_NAME }}</ion-select-option>
     </ion-select>
   </ion-item>
 
-  <!-- CAMPOS AL LLENAR DEL USER_ADMIN QUE SON PARA INICIAR SESION  -->
-
   <ion-item>
     <ion-label position="stacked">Nombre Usuario:</ion-label>
-    <ion-input
-      placeholder="Ingrese su Nombre Usuario:"
-      [(ngModel)]="user_name"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su Nombre Usuario:" [(ngModel)]="user_name"></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Correo:</ion-label>
-    <ion-input
-      placeholder="Ingrese su correo:"
-      [(ngModel)]="email_user"
-      type="email"
-      (ionBlur)="validateEmail(email_user)"
-    ></ion-input>
+    <ion-input placeholder="Ingrese su correo:" [(ngModel)]="email_user" type="email" (ionBlur)="validateEmail2(email_user)"></ion-input>
   </ion-item>
 
-  <ion-item>
+  <!-- <ion-item>
     <ion-label position="stacked">Contraseña:</ion-label>
-    <ion-input
-      [type]="showPassword ? 'text' : 'password'"
-      placeholder="Ingrese su Contraseña:"
-      [(ngModel)]="password_user"
-      
-      (focusout)="validatePassword()"
-    ></ion-input>
-    <ion-icon
-      name="{{ showPassword ? 'eye-off' : 'eye' }}"
-      slot="end"
-      (click)="togglePasswordVisibility()"
-    ></ion-icon>
+    <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="Ingrese su Contraseña:" [(ngModel)]="password_user" (focusout)="validatePassword()"></ion-input>
+    <ion-icon name="{{ showPassword ? 'eye-off' : 'eye' }}" slot="end" (click)="togglePasswordVisibility()"></ion-icon>
   </ion-item>
 
   <ion-item>
     <ion-label position="stacked">Ingrese de nuevo Contraseña:</ion-label>
-    <ion-input
-      [type]="showPassword ? 'text' : 'password'"
-      placeholder="Ingrese su Contraseña:"
-      [(ngModel)]="password_user2"
-      
-      (focusout)="validatePassword()"
-    ></ion-input>
-    <ion-icon
-      name="{{ showPassword ? 'eye-off' : 'eye' }}"
-      slot="end"
-      (click)="togglePasswordVisibility()"
-    ></ion-icon>
+    <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="Ingrese su Contraseña:" [(ngModel)]="password_user2" (focusout)="validatePassword()"></ion-input>
+    <ion-icon name="{{ showPassword ? 'eye-off' : 'eye' }}" slot="end" (click)="togglePasswordVisibility()"></ion-icon>
+  </ion-item> -->
+  
+  <ion-item>
+    <ion-label position="stacked">Contraseña:</ion-label>
+    <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="Ingrese su Contraseña:" [(ngModel)]="password_user" (focusout)="validatePassword()"></ion-input>
+    <ion-icon name="{{ showPassword ? 'eye-off' : 'eye' }}" slot="end" (click)="togglePasswordVisibility()"></ion-icon>
   </ion-item>
-  <ion-label>{{mensaje}}</ion-label>
+  
+  <ion-item>
+    <ion-label position="stacked">Ingrese de nuevo Contraseña:</ion-label>
+    <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="Ingrese su Contraseña:" [(ngModel)]="password_user2" (focusout)="validatePassword()"></ion-input>
+    <ion-icon name="{{ showPassword ? 'eye-off' : 'eye' }}" slot="end" (click)="togglePasswordVisibility()"></ion-icon>
+  </ion-item>
+  
+
+
+  <ion-label>{{ mensaje }}</ion-label>
 
   <ion-item>
-    <ion-label position="stacked">Correo Recuperacion:</ion-label>
-    <ion-input
-      placeholder="Ingrese su correo Recuperacion:"
-      [(ngModel)]="email_user_re"
-      type="email"
-      (ionBlur)="validateEmail(email_user_re)"
-    ></ion-input>
+    <ion-label position="stacked">Correo Recuperación:</ion-label>
+    <ion-input placeholder="Ingrese su correo Recuperación:" [(ngModel)]="email_user_re" type="email" (ionBlur)="validateEmail2(email_user_re)"></ion-input>
   </ion-item>
 
-  <ion-item>
-    <ion-button expand="block" color="success" (click)="userRegister()">
-      Registrar
-    </ion-button>
-  </ion-item>
+  <ion-button expand="block" color="success" (click)="userRegister()">
+    Registrar
+  </ion-button>
 </ion-content>

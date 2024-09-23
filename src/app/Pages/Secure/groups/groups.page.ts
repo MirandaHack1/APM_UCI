@@ -59,15 +59,19 @@ export class GroupsPage implements OnInit {
         GRUP_CODE: GRUP_CODE
       };
       this.authService.postData(datos).subscribe((res: any) => {
+        try {
         if (res.estado === true) {
           this.authService.showToast('Grupo eliminado correctamente');
           this.obtenerGrupos(); 
         } else {
           this.authService.showToast(res.mensaje);
-        }
+        } 
+      } catch (error) {
+        this.authService.showToast("No se puede eliminar, tiene equipos en este grupo.");
+      }
       },
       (error) => {
-        console.error('Error en la solicitud:', error);
+        this.authService.showToast("No se puede eliminar, tiene equipos en este grupo.");
       });
     } else {
       this.authService.showToast('ID del grupo no encontrado');

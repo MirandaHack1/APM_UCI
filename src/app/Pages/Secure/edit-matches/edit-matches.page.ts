@@ -15,7 +15,7 @@ import { SearchSportsGroupsDosPage } from './search-sports-groups-dos/search-spo
 export class EditMatchesPage implements OnInit {
 
   matchDate: string = "";   // Fecha del encuentro
-  matchHour: string = "";   // Hora del encuentro
+  matchHour: string = "00:00";   // Hora del encuentro
   cancCode: string = "";    // Código de cancha seleccionado
   spgCodeOne: string = "";  // Código de equipo 1 seleccionado
   spgCodeTwo: string = "";  // Código de equipo 2 seleccionado
