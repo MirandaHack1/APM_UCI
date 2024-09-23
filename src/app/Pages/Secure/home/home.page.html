@@ -15,7 +15,7 @@
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="matches()">Matches</ion-button>
 
     <!-- Mostrar el botón "Partidos" si el rol es administrador, jugador o estudiante -->
-    <ion-button *ngIf="rol === 'administrador' || rol === 'jugador' || rol === 'estudiante'" expand="full">Partidos</ion-button>
+    <ion-button *ngIf="rol === 'administrador' || rol === 'jugador' || rol === 'estudiante'" expand="full" (click)="matches2()">Partidos</ion-button>
     <!-- Mostrar el botón "Mis Partidos" solo si el rol es jugador -->
     <ion-button *ngIf="rol === 'jugador'" expand="full">Mis Partidos</ion-button>
     <ion-button *ngIf="rol === 'administrador'" expand="full" (click)="court()">Canchas</ion-button>

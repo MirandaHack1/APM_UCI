@@ -80,6 +80,9 @@ export class HomePage implements OnInit {
     this.navCtrl.navigateForward('group-stage');
   }
   matches() {
+    this.navCtrl.navigateForward('info-matches-general');
+  }
+  matches2(){
     this.navCtrl.navigateForward('matches');
   }
   sportGroup() {

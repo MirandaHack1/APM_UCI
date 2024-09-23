@@ -1,13 +1,44 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>vocalia-sheet</ion-title>
+    <ion-title>Anotaciones</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">Atrás</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">vocalia-sheet</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-searchbar placeholder="Buscar jugador" [(ngModel)]="txt_search" (ionInput)="LoadsearchTeam()"></ion-searchbar>
+
+  <!-- Opciones de equipos -->
+  <ion-segment [(ngModel)]="selectedTeam" (ionChange)="LoadsearchTeam()">
+    <ion-segment-button value="team1">
+      <ion-label>Nombre del equipo 1</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="team2">
+      <ion-label>Nombre del equipo 2</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Lista de jugadores -->
+  <ion-list *ngIf="players.length > 0">
+    <ion-item *ngFor="let player of players">
+      <ion-label>
+        <h2>{{ player.first_name }} {{ player.last_name }}</h2>
+        <p>Número de camiseta: {{ player.shirt_number }}</p>
+      </ion-label>
+      <ion-button color="primary" (click)="viewPlayer(player)">Ver</ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Mensaje en caso de no encontrar jugadores -->
+  <ion-item *ngIf="players.length === 0">
+    <ion-label>No se encontraron jugadores.</ion-label>
+  </ion-item>
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button expand="full" color="danger" (click)="terminarPartido()">Finalizar partido</ion-button>
+  </ion-toolbar>
+</ion-footer>
