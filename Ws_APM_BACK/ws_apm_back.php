@@ -1801,11 +1801,11 @@ if ($post['accion'] == "deleteDate") {
 if ($post['accion'] == "cargagroupstage") {
     // Obtenemos el código de grupo
     $sentencia = sprintf(
-        "SELECT gs.GRS_CODE, sg.SPG_CODE, sg.SPG_TEAM_NAME, gg.GRUP_CODE, gg.GRUP_NAME,sg.SPG_STATE_MATCH
+        "SELECT gs.GRS_CODE, sg.SPG_CODE, sg.SPG_TEAM_NAME, gg.GRUP_CODE, gg.GRUP_NAME
                 FROM groupstage gs
                 LEFT JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
                 LEFT JOIN groups gg ON gs.GRUP_CODE = gg.GRUP_CODE
-                WHERE s.GRS_CODE = '%s'",
+                WHERE gs.GRS_CODE = '%s'",
         mysqli_real_escape_string($mysqli, $post['cod'])
     );
     
