@@ -460,27 +460,76 @@ if ($post['accion'] == 'editarusuario') {
 
 
 //insertcredentials
+// if ($post['accion'] == "insertcredentials") {
+//     $password_hashed = password_hash($post['password'], PASSWORD_BCRYPT);
+
+
+//     $update_query = sprintf(
+//         "UPDATE user_admin SET USAD_USERNAME='%s', USAD_EMAIL='%s',USAD_PASSWORD='%s', USAD_EMAIL_RECOVERY='%s' WHERE USAD_CODE='%s'",
+//         $post['username'],
+//         $post['email'],
+//         $password_hashed,
+//         $post['emailr'],
+//         $post['cod']
+//     );
+
+//     if (mysqli_query($mysqli, $update_query)) {
+//         $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+//     } else {
+//         $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar los datos"));
+//     }
+
+//     echo $respuesta;
+// }
 if ($post['accion'] == "insertcredentials") {
-    $password_hashed = password_hash($post['password'], PASSWORD_BCRYPT);
-
-
-    $update_query = sprintf(
-        "UPDATE user_admin SET USAD_USERNAME='%s', USAD_EMAIL='%s',USAD_PASSWORD='%s', USAD_EMAIL_RECOVERY='%s' WHERE USAD_CODE='%s'",
-        $post['username'],
+    // Validar que el correo, el correo de recuperación y el nombre de usuario no existan
+    $check_query = sprintf(
+        "SELECT * FROM user_admin WHERE (USAD_EMAIL='%s' OR USAD_EMAIL_RECOVERY='%s' OR USAD_USERNAME='%s') AND USAD_CODE != '%s'",
         $post['email'],
-        $password_hashed,
         $post['emailr'],
+        $post['username'],
         $post['cod']
     );
 
-    if (mysqli_query($mysqli, $update_query)) {
-        $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+    $result = mysqli_query($mysqli, $check_query);
+    $mensaje_error = array();
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            if ($row['USAD_EMAIL'] == $post['email']) {
+                $mensaje_error[] = "El correo electrónico ya existe.";
+            }
+            if ($row['USAD_EMAIL_RECOVERY'] == $post['emailr']) {
+                $mensaje_error[] = "El correo de recuperación ya existe.";
+            }
+            if ($row['USAD_USERNAME'] == $post['username']) {
+                $mensaje_error[] = "El nombre de usuario ya existe.";
+            }
+        }
+        $respuesta = json_encode(array('estado' => false, "mensaje" => implode(" ", $mensaje_error)));
     } else {
-        $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar los datos"));
+        // Si no existen, proceder a actualizar
+        $password_hashed = password_hash($post['password'], PASSWORD_BCRYPT);
+
+        $update_query = sprintf(
+            "UPDATE user_admin SET USAD_USERNAME='%s', USAD_EMAIL='%s', USAD_PASSWORD='%s', USAD_EMAIL_RECOVERY='%s' WHERE USAD_CODE='%s'",
+            $post['username'],
+            $post['email'],
+            $password_hashed,
+            $post['emailr'],
+            $post['cod']
+        );
+
+        if (mysqli_query($mysqli, $update_query)) {
+            $respuesta = json_encode(array('estado' => true, "mensaje" => "Datos actualizados correctamente"));
+        } else {
+            $respuesta = json_encode(array('estado' => false, "mensaje" => "Error al actualizar los datos"));
+        }
     }
 
     echo $respuesta;
 }
+
 //loadinfo
 if ($post['accion'] == "loadinfo") {
     $sentencia = sprintf("SELECT * FROM info_client WHERE ICLI_CODE = '%s'", $post['codigo']);
