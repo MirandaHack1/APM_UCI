@@ -37,7 +37,7 @@ export class LoginPage implements OnInit {
         this.servicio.showToast(res.mensaje);
         this.navCtrl.navigateRoot(['/home']);
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }
