@@ -39,7 +39,7 @@ export class SearchGroupsPage implements OnInit {
       if (res.estado === true) {
         this.groups = res.datos; // Asignar los resultados de la búsqueda
       } else {
-        this.authService.showToast('No se encontraron grupos con ese nombre.');
+        this.authService.showToast('No se encontraron grupos con ese nombre.', true);
       }
     });
 }
