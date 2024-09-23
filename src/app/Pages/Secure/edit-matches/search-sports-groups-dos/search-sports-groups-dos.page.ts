@@ -58,7 +58,7 @@ export class SearchSportsGroupsDosPage implements OnInit {
           toast.present();
         }
       } else {
-        this.authService.showToast('No se encontraron equipos con ese nombre.');
+        this.authService.showToast('No se encontraron equipos con ese nombre.', true);
         this.groupedTeams = [];
       }
     });
