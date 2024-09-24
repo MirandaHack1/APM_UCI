@@ -41,7 +41,7 @@ export class EditRulesPage implements OnInit {
           this.nombreRegla = regla.nombrer;
           this.archivoUrl = regla.pdf; // Asignar la URL del archivo PDF
         } else {
-          this.authService.showToast('No se encontró la regla');
+          this.authService.showToast('No se encontró la regla', true);
         }
       },
       (error) => {
@@ -70,7 +70,7 @@ export class EditRulesPage implements OnInit {
       reader.readAsDataURL(file);
     } else {
       this.authService.showToast(
-        'Por favor, selecciona un archivo PDF válido.'
+        'Por favor, selecciona un archivo PDF válido.', true
       );
     }
   }
@@ -95,12 +95,12 @@ export class EditRulesPage implements OnInit {
       if (result.estado) {
         return result.archivo_url; // URL del archivo en el servidor
       } else {
-        this.authService.showToast('Error al subir el archivo');
+        this.authService.showToast('Error al subir el archivo', true);
         return this.archivoUrl; // Retorna la URL existente en caso de error
       }
     } catch (error) {
       console.error('Error al subir el archivo:', error);
-      this.authService.showToast('Error al subir el archivo');
+      this.authService.showToast('Error al subir el archivo', true);
       return this.archivoUrl; // Retorna la URL existente en caso de error
     }
   }
@@ -126,7 +126,7 @@ export class EditRulesPage implements OnInit {
           );
           this.navCtrl.back();
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje, true);
         }
       },
       (error) => {

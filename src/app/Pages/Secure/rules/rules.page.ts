@@ -30,7 +30,7 @@ export class RulesPage implements OnInit {
       if (res.estado === true) {
         this.reglas = res.datos;
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     },
     (error) => {
@@ -47,7 +47,7 @@ export class RulesPage implements OnInit {
       if (res.estado === true) {
         this.reglas = res.datos;
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }
@@ -67,14 +67,14 @@ export class RulesPage implements OnInit {
           this.authService.showToast(res.mensaje);
         }
       } catch (error) {
-        this.authService.showToast("No se puede eliminar, tiene registros relacionados.");
+        this.authService.showToast("No se puede eliminar, tiene registros relacionados.", true);
       }
       },
       (error) => {
-        this.authService.showToast("No se puede eliminar, tiene registros relacionados.");
+        this.authService.showToast("No se puede eliminar, tiene registros relacionados.", true);
       });
     } else {
-      this.authService.showToast('ID de la regla no encontrado');
+      this.authService.showToast('ID de la regla no encontrado', true);
     }
   }
 

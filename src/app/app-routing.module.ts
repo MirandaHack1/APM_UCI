@@ -338,10 +338,15 @@ const routes: Routes = [
   {
     path: 'search-vocalia-sheet',
     loadChildren: () => import('./Pages/Secure/edit-vocalia-sheet/search-vocalia-sheet/search-vocalia-sheet.module').then( m => m.SearchVocaliaSheetPageModule)
-  },  {
+  },
+  {
     path: 'standings-groups',
     loadChildren: () => import('./Pages/Secure/standings-groups/standings-groups.module').then( m => m.StandingsGroupsPageModule)
-  }
+  },
+  {
+    path: 'reports',
+    loadChildren: () => import('./Pages/Secure/reports/reports.module').then( m => m.ReportsPageModule)
+  },
 
 
 ];

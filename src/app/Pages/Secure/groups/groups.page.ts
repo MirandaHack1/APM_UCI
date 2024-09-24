@@ -64,17 +64,17 @@ export class GroupsPage implements OnInit {
           this.authService.showToast('Grupo eliminado correctamente');
           this.obtenerGrupos(); 
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje, true);
         } 
       } catch (error) {
-        this.authService.showToast("No se puede eliminar, tiene equipos en este grupo.");
+        this.authService.showToast("No se puede eliminar, tiene equipos en este grupo.", true);
       }
       },
       (error) => {
-        this.authService.showToast("No se puede eliminar, tiene equipos en este grupo.");
+        this.authService.showToast("No se puede eliminar, tiene equipos en este grupo.", true);
       });
     } else {
-      this.authService.showToast('ID del grupo no encontrado');
+      this.authService.showToast('ID del grupo no encontrado', true);
     }
   }
 

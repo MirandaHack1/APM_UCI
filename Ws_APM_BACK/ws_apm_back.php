@@ -3616,7 +3616,6 @@ echo $respuesta;
     
 }
 
-
 if ($post['accion'] == "standingsgroups") {
     $genero = isset($post['genero']) ? $post['genero'] : '';
 
@@ -3662,4 +3661,5 @@ if ($post['accion'] == "standingsgroups") {
         echo json_encode(array('estado' => false, 'mensaje' => 'Error en la consulta: ' . mysqli_error($mysqli)));
     }
 }
+
 

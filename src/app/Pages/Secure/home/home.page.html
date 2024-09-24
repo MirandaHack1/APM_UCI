@@ -67,6 +67,10 @@
             <ion-icon name="football"></ion-icon>
             <ion-label>Partidos</ion-label>
           </ion-tab-button>
+          <ion-tab-button (click)="reports()">
+            <ion-icon name="football"></ion-icon>
+            <ion-label>Reportes</ion-label>
+          </ion-tab-button>
           <ion-tab-button *ngIf="rol === 'lider'" expand="full" (click)="sportGroup()">
             <ion-icon name="people-outline"></ion-icon>
             <ion-label>Mis equipos</ion-label>

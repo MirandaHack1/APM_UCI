@@ -136,6 +136,11 @@ export class HomePage implements OnInit {
   clasificaciones() {
     this.navCtrl.navigateForward('standings-groups');
   }
+  reports(){
+
+    this.navCtrl.navigateForward('reports');
+  }
+  
 
   @HostListener('window:beforeunload', ['$event'])
   async handleBeforeUnload(event: any) {

@@ -31,7 +31,7 @@ export class MatchesPage implements OnInit {
           this.grupos = res.datos;
           this.agrupadosPorGrupo = this.agruparPorMatch(this.grupos);
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje, true);
         }
       },
       (error) => {
@@ -92,7 +92,7 @@ agruparPorMatch(matches: any[]) {
           this.grupos = res.datos;
           this.agrupadosPorGrupo = this.agruparPorMatch(this.grupos);
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje, true);
         }
       },
       (error) => {
@@ -131,7 +131,7 @@ agruparPorMatch(matches: any[]) {
             this.authService.showToast('Match eliminado correctamente');
             this.obtenerMatches();
           } else {
-            this.authService.showToast(res.mensaje);
+            this.authService.showToast(res.mensaje, true);
           }
         },
         (error) => {
@@ -139,7 +139,7 @@ agruparPorMatch(matches: any[]) {
         }
       );
     } else {
-      this.authService.showToast('Código del match no encontrado');
+      this.authService.showToast('Código del match no encontrado', true);
     }
   }
 

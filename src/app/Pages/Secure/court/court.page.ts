@@ -27,7 +27,7 @@ export class CourtPage implements OnInit {
         if (res.estado === true) {
           this.canchas = res.datos;
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje, true);
         }
       },
       (error) => {
@@ -46,7 +46,7 @@ export class CourtPage implements OnInit {
       if (res.estado === true) {
         this.canchas = res.datos;
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }
@@ -79,7 +79,7 @@ export class CourtPage implements OnInit {
             this.authService.showToast('Canchas eliminado correctamente');
             this.obtenerCancha();
           } else {
-            this.authService.showToast(res.mensaje);
+            this.authService.showToast(res.mensaje, true);
           }
         },
         (error) => {
@@ -87,7 +87,7 @@ export class CourtPage implements OnInit {
         }
       );
     } else {
-      this.authService.showToast('Código del Canchas no encontrado');
+      this.authService.showToast('Código del Canchas no encontrado', true);
     }
   }
 

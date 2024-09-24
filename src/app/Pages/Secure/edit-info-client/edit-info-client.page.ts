@@ -136,7 +136,7 @@ export class EditInfoClientPage implements OnInit {
         this.txt_dateOfBirth = info.dateOfBirth;
         this.sede = info.sede;
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }

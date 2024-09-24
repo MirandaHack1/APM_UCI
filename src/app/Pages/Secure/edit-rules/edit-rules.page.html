@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button (click)="cancelar()"></ion-back-button>
+      <ion-back-button (click)="cancelar()" defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-title>Editar Regla</ion-title>
   </ion-toolbar>
@@ -21,12 +21,12 @@
     </ion-text>
   </ion-item>
 
-  <ion-item>
+  <!-- <ion-item> -->
     <ion-button (click)="guardarRegla()" expand="block" color="success" shape="round">
       Guardar
     </ion-button>
-    <ion-button (click)="cancelar()" expand="block" color="danger" shape="round">
+    <!-- <ion-button (click)="cancelar()" expand="block" color="danger" shape="round">
       Cancelar
-    </ion-button>
-  </ion-item>
+    </ion-button> -->
+  <!-- </ion-item> -->
 </ion-content>

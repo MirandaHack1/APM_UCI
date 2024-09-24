@@ -72,7 +72,7 @@
 
   <ion-item>
     <ion-label position="stacked" class="bold-label">Contacto:</ion-label>
-    <ion-input type="number" [(ngModel)]="contacto"></ion-input>
+    <ion-input type="text" [(ngModel)]="contacto"  (ionInput)="validatePhoneNumber(contacto)"></ion-input>
   </ion-item>
 
   <!-- Botón para guardar o actualizar -->

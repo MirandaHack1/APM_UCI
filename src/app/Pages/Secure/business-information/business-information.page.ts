@@ -27,7 +27,7 @@ export class BusinessInformationPage implements OnInit {
         if (res.estado === true) {
           this.empresas = res.datos;
         } else {
-          this.authService.showToast(res.mensaje);
+          this.authService.showToast(res.mensaje, true);
         }
       },
       (error) => {
@@ -46,7 +46,7 @@ export class BusinessInformationPage implements OnInit {
       if (res.estado === true) {
         this.empresas = res.datos;
       } else {
-        this.authService.showToast(res.mensaje);
+        this.authService.showToast(res.mensaje, true);
       }
     });
   }
@@ -79,7 +79,7 @@ export class BusinessInformationPage implements OnInit {
             this.authService.showToast('Empresa eliminado correctamente');
             this.obtenerEmpresa();
           } else {
-            this.authService.showToast(res.mensaje);
+            this.authService.showToast(res.mensaje, true);
           }
         },
         (error) => {
@@ -87,7 +87,7 @@ export class BusinessInformationPage implements OnInit {
         }
       );
     } else {
-      this.authService.showToast('Código del Empresa no encontrado');
+      this.authService.showToast('Código del Empresa no encontrado', true);
     }
   }
 

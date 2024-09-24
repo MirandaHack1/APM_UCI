@@ -42,12 +42,12 @@ export class SearchSportsGroupsPage implements OnInit {
       if (res.estado === true) {
         this.groupedTeams = this.agruparEquiposPorFecha(res.datos); // Agrupar resultados
       } else {
-        this.authService.showToast('No se encontraron equipos con ese nombre.');
+        this.authService.showToast('No se encontraron equipos con ese nombre.', true);
         this.groupedTeams = []; // Limpiar si no hay resultados
       }
     }, err => {
       console.error('Error during searchTeams:', err);
-      this.authService.showToast('Error al buscar equipos.');
+      this.authService.showToast('Error al buscar equipos.', true);
       this.groupedTeams = []; // Limpiar en caso de error
     });
   }

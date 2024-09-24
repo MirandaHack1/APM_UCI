@@ -28,7 +28,7 @@ export class SearchGroupPlayersPage implements OnInit {
       if (res.estado) {
         this.persons = res.datos;
       } else {
-        this.servicio.showToast(res.mensaje);
+        this.servicio.showToast(res.mensaje, true);
       }
     });
   }

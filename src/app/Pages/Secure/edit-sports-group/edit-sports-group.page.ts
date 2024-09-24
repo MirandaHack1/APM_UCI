@@ -176,7 +176,7 @@ export class EditSportsGroupPage implements OnInit {
         console.error('Error en la solicitud:', error);
       });
     } else {
-      this.servicio.showToast('Por favor complete todos los campos.');
+      this.servicio.showToast('Por favor complete todos los campos.', true);
     }
   }
 
@@ -191,7 +191,7 @@ export class EditSportsGroupPage implements OnInit {
       };
       reader.readAsDataURL(file);
     } else {
-      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).');
+      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).', true);
     }
   }
 
@@ -206,7 +206,7 @@ export class EditSportsGroupPage implements OnInit {
       };
       reader.readAsDataURL(file);
     } else {
-      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).');
+      this.servicio.showToast('Por favor, selecciona una imagen válida (PNG o JPEG).', true);
     }
   }
   
@@ -227,12 +227,12 @@ export class EditSportsGroupPage implements OnInit {
     if (result.estado) {
       return result.archivo_url; // URL del logo en el servidor
     } else {
-      this.servicio.showToast('Error al subir el logo');
+      this.servicio.showToast('Error al subir el logo', true);
       return ''; // Retorna vacío en caso de error
     }
   } catch (error) {
     console.error('Error al subir el logo:', error);
-    this.servicio.showToast('Error al subir el logo');
+    this.servicio.showToast('Error al subir el logo', true);
     return ''; // Retorna vacío en caso de error
   }
 }
@@ -254,12 +254,12 @@ async subirImagen(): Promise<string> {
     if (result.estado) {
       return result.archivo_url; // URL de la imagen en el servidor
     } else {
-      this.servicio.showToast('Error al subir la imagen');
+      this.servicio.showToast('Error al subir la imagen', true);
       return ''; // Retorna vacío en caso de error
     }
   } catch (error) {
     console.error('Error al subir la imagen:', error);
-    this.servicio.showToast('Error al subir la imagen');
+    this.servicio.showToast('Error al subir la imagen', true);
     return ''; // Retorna vacío en caso de error
   }
 }
