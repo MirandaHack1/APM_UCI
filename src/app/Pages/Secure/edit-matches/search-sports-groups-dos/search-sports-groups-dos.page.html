@@ -32,7 +32,8 @@
             <!-- Iterar sobre los equipos del grupo -->
             <ion-item *ngFor="let team of group.equipos">
               <ion-label>
-                <h3>{{ team.nombre }}</h3> <!-- Nombre del equipo -->
+                <h3>{{ team.nombre }}</h3>
+                <p>{{ team.estado }}</p>  <!-- Nombre del equipo -->
               </ion-label>
 
               <!-- Verificar si el equipo está en un partido -->

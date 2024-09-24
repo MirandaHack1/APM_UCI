@@ -86,6 +86,7 @@ export class SearchSportsGroupsDosPage implements OnInit {
       grupoExistente.equipos.push({
         codigo: team.codigo,
         nombre: team.nombre,
+        estado:team.estado,
         en_partido: estaEnPartido // Usar valor booleano
       });
   

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/Services/auth/auth.service';
-import { NavController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-standings-groups',
@@ -13,7 +13,7 @@ export class StandingsGroupsPage implements OnInit {
   generoSeleccionado: string = '';
   mostrarBotonAgregar: boolean = false;
   search: string = '';
-  constructor(private authService: AuthService, public navCtrl: NavController) { }
+  constructor(private authService: AuthService, public navCtrl: NavController, private alertCtrl: AlertController,) { }
 
   ngOnInit() {
     this.loadGroupStandings();
@@ -96,8 +96,71 @@ export class StandingsGroupsPage implements OnInit {
     this.navCtrl.back();
   }
 
-  agregarMatch() {
-    // Navegar a la página de agregar partido
-    this.navCtrl.navigateRoot(['add-match']);
+  async agregarMatch() {
+    const alert = await this.alertCtrl.create({
+        header: 'Agregar Finalistas',
+        message: '¿Seguro que quieres agregar los finalistas al grupo Finales?',
+        buttons: [
+            {
+                text: 'No',
+                role: 'cancel',
+            },
+            {
+                text: 'Sí',
+                handler: async () => {
+                    const equiposGanadores = this.groupedTeams.map(group => {
+                        const topTeam = group.teams.find((team: { isTopTeam: any; }) => team.isTopTeam);
+                        return {
+                            nombreEquipo: topTeam?.name || '',
+                            grupo: group.name
+                        };
+                    }).filter(equipo => equipo.nombreEquipo !== '');
+
+                    if (equiposGanadores.length === 0) {
+                        await this.mostrarAlerta('No hay equipos ganadores para agregar.');
+                        return;
+                    }
+
+                    const postData = {
+                        accion: 'agregarFinalistas',
+                        genero: this.generoSeleccionado || '',
+                        equiposGanadores: equiposGanadores
+                    };
+
+                    this.authService.postData(postData).subscribe(
+                        (response: any) => {
+                            if (response.estado) {
+                                this.mostrarAlerta('Los equipos finalistas se han agregado correctamente al grupo Finales.');
+                                this.loadGroupStandings();  
+                            } else {
+                                console.error('Error al agregar finalistas:', response.mensaje);
+                                this.mostrarAlerta('Error al agregar finalistas. Intenta de nuevo.');
+                            }
+                        },
+                        (error) => {
+                            console.error('Error en la llamada al API:', error);
+                            this.mostrarAlerta('Error en la conexión. Intenta de nuevo.');
+                        }
+                    );
+                }
+            }
+        ]
+    });
+    await alert.present();
+}
+
+  
+  // Método para mostrar una alerta simple
+  async mostrarAlerta(mensaje: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Información',
+      message: mensaje,
+      buttons: ['OK']
+    });
+  
+    await alert.present();
   }
+  
+  
+  
 }

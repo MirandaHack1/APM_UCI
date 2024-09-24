@@ -1191,7 +1191,7 @@ if ($post['accion'] == "ConGroupstage") {
                         icl_leader.ICLI_FIRST_NAME AS leader_name, 
                         icl_mascot.ICLI_FIRST_NAME AS mascot_name, 
                         r.RU_RULES_FOR_SPORTS AS sport_name, 
-                        sg.SPG_CREATION_DATE, sg.SPG_GENDER_TEAM, sg.SPG_STATE_MATCH
+                        sg.SPG_STATE_MATCH, sg.SPG_GENDER_TEAM, sg.SPG_STATE_MATCH
                  FROM groups g
                  INNER JOIN groupstage gs ON g.GRUP_CODE = gs.GRUP_CODE
                  INNER JOIN sports_groups sg ON gs.SPG_CODE = sg.SPG_CODE
@@ -1229,7 +1229,7 @@ if ($post['accion'] == "ConGroupstage") {
                     'leader_name' => $row['leader_name'],
                     'mascot_name' => $row['mascot_name'],
                     'sport_name' => $row['sport_name'],
-                    'SPG_CREATION_DATE' => $row['SPG_CREATION_DATE'],
+                    'SPG_STATE_MATCH' => $row['SPG_STATE_MATCH'],
                     'SPG_GENDER_TEAM' => $row['SPG_GENDER_TEAM'],
                     'SPG_STATE_MATCH' => $row['SPG_STATE_MATCH']
                 );
@@ -2647,7 +2647,7 @@ if ($post['accion'] == "searchTeamsdos") {
     $matchDate = $post['match_date'];
 
     $sentencia = sprintf(
-        "SELECT g.GRUP_NAME AS grupo, sg.SPG_CODE, sg.SPG_TEAM_NAME, 
+        "SELECT g.GRUP_NAME AS grupo, sg.SPG_CODE, sg.SPG_TEAM_NAME,sg.SPG_STATE_MATCH, 
         CASE 
             WHEN EXISTS (
                 SELECT 1 FROM matches m 
@@ -2677,6 +2677,7 @@ if ($post['accion'] == "searchTeamsdos") {
                 'grupo' => $row['grupo'],
                 'codigo' => $row['SPG_CODE'],
                 'nombre' => $row['SPG_TEAM_NAME'],
+                'estado' => $row['SPG_STATE_MATCH'],
                 'en_partido' => $row['en_partido']
             );
         }
@@ -3616,6 +3617,7 @@ echo $respuesta;
     
 }
 
+/////////////////////////////////////////////////////////////////////////
 if ($post['accion'] == "standingsgroups") {
     $genero = isset($post['genero']) ? $post['genero'] : '';
 
@@ -3635,6 +3637,9 @@ if ($post['accion'] == "standingsgroups") {
     if ($genero != '') {
         $sentencia .= " AND gs.GRS_TYPE_GANDER = '" . mysqli_real_escape_string($mysqli, $genero) . "'";
     }
+
+    // Excluir el grupo "Finales" si no se han jugado partidos
+    $sentencia .= " AND (g.GRUP_NAME != 'Finales' OR (g.GRUP_NAME = 'Finales' AND sg.STAG_POINTS IS NULL))";
 
     $sentencia .= " ORDER BY g.GRUP_NAME, sg.STAG_POINTS DESC";
 
@@ -3661,5 +3666,71 @@ if ($post['accion'] == "standingsgroups") {
         echo json_encode(array('estado' => false, 'mensaje' => 'Error en la consulta: ' . mysqli_error($mysqli)));
     }
 }
+
+
+if ($post['accion'] == "agregarFinalistas") {
+    $genero = isset($post['genero']) ? $post['genero'] : '';
+    $equiposGanadores = isset($post['equiposGanadores']) ? $post['equiposGanadores'] : [];
+
+    if (count($equiposGanadores) === 0) {
+        echo json_encode(array('estado' => false, 'mensaje' => 'No se proporcionaron equipos ganadores.'));
+        exit;
+    }
+
+    // Procesar cada equipo ganador
+    foreach ($equiposGanadores as $equipo) {
+        $nombreEquipo = $equipo['nombreEquipo'];
+        $grupo = $equipo['grupo'];
+
+        // Actualizar el estado del equipo ganador a "Ganador del grupo [grupo]"
+        $updateGanador = "UPDATE sports_groups 
+            SET SPG_STATE_MATCH = 'Ganador del grupo $grupo' 
+            WHERE SPG_TEAM_NAME = '" . mysqli_real_escape_string($mysqli, $nombreEquipo) . "'";
+        mysqli_query($mysqli, $updateGanador) or die(mysqli_error($mysqli)); // Debugging
+
+        // Actualizar el estado de los otros equipos en el grupo a "Eliminado"
+       // Actualizar el estado de los otros equipos en el grupo a "Eliminado"
+            $updateEliminados = "UPDATE sports_groups 
+            SET SPG_STATE_MATCH = 'Eliminado' 
+            WHERE SPG_CODE IN (
+                SELECT SPG_CODE FROM groupstage 
+                WHERE GRUP_CODE = (SELECT GRUP_CODE FROM groups WHERE GRUP_NAME = '" . mysqli_real_escape_string($mysqli, $grupo) . "')
+            ) 
+            AND SPG_TEAM_NAME != '" . mysqli_real_escape_string($mysqli, $nombreEquipo) . "'";
+            mysqli_query($mysqli, $updateEliminados) or die(mysqli_error($mysqli)); // Debugging
+
+    }
+
+    // Verificar si existe un grupo "Finales"
+    $checkGroupFinales = "SELECT GRUP_CODE FROM groups WHERE GRUP_NAME = 'Finales'";
+    $resultFinales = mysqli_query($mysqli, $checkGroupFinales);
+    if (mysqli_num_rows($resultFinales) == 0) {
+        // Crear grupo "Finales" si no existe
+        $createGroup = "INSERT INTO groups (GRUP_NAME) VALUES ('Finales')";
+        mysqli_query($mysqli, $createGroup) or die(mysqli_error($mysqli)); // Debugging
+        $finalesGroupId = mysqli_insert_id($mysqli);
+    } else {
+        $row = mysqli_fetch_assoc($resultFinales);
+        $finalesGroupId = $row['GRUP_CODE'];
+    }
+
+    // Insertar los equipos ganadores en el grupo "Finales"
+    foreach ($equiposGanadores as $equipo) {
+        $nombreEquipo = $equipo['nombreEquipo'];
+
+        $updateFinalista = "UPDATE groupstage 
+        SET GRUP_CODE = $finalesGroupId 
+        WHERE SPG_CODE = (
+            SELECT SPG_CODE FROM sports_groups 
+            WHERE SPG_TEAM_NAME = '" . mysqli_real_escape_string($mysqli, $nombreEquipo) . "'
+        )";
+    mysqli_query($mysqli, $updateFinalista) or die(mysqli_error($mysqli)); // Debugging
+}
+
+    echo json_encode(array('estado' => true, 'mensaje' => 'Finalistas agregados correctamente'));
+}
+
+
+
 
 

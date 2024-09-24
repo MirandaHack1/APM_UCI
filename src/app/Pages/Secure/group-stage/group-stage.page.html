@@ -40,7 +40,7 @@
               <p>Líder: {{ equipo.leader_name }}</p>
               <p>Mascota: {{ equipo.mascot_name }}</p>
               <p>Deporte: {{ equipo.sport_name }}</p>
-              <p>Creado el: {{ equipo.SPG_CREATION_DATE | date }}</p>
+              <p>Estado: {{ equipo.SPG_STATE_MATCH}}</p>
             </ion-label>
             <ion-buttons slot="end">
               <ion-button (click)="irEditar(equipo.GRS_CODE, equipo.SPG_GENDER_TEAM)">

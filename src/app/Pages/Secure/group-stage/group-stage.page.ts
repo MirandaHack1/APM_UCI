@@ -72,7 +72,7 @@ export class GroupStagePage implements OnInit {
         leader_name: grupo.leader_name,
         mascot_name: grupo.mascot_name,
         sport_name: grupo.sport_name,
-        SPG_CREATION_DATE: grupo.SPG_CREATION_DATE,
+        SPG_STATE_MATCH: grupo.SPG_STATE_MATCH,
         SPG_CODE: grupo.SPG_CODE,
       });
       return acc;
