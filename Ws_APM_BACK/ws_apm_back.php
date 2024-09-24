@@ -3618,20 +3618,26 @@ echo $respuesta;
 
 
 if ($post['accion'] == "standingsgroups") {
+    $genero = isset($post['genero']) ? $post['genero'] : '';
+
     $sentencia = "SELECT 
-            g.GRUP_NAME,gs.GRS_TYPE_GANDER, 
+            g.GRUP_NAME, gs.GRS_TYPE_GANDER, 
             sg.STAG_POINTS AS SPG_POINTS, 
             sg.STAG_GOAL_DIFFERENCE AS SPG_GOAL_DIFFERENCE, 
             sg.STAG_PLAYED_MATCH AS SPG_STAG_PLAYED_MATCH, 
             spg.SPG_TEAM_NAME AS SPG_TEAM_NAME
         FROM groupstage gs
         INNER JOIN standings_groups sg ON gs.GRS_CODE = sg.GRS_CODE
-        INNER JOIN sports_groups spg ON gs.SPG_CODE=spg.SPG_CODE
+        INNER JOIN sports_groups spg ON gs.SPG_CODE = spg.SPG_CODE
         INNER JOIN vocalia_general vg ON sg.VOGE_CODE = vg.VOGE_CODE
         INNER JOIN groups g ON gs.GRUP_CODE = g.GRUP_CODE
-       
-        AND sg.STAG_POINTS IS NOT NULL
-        ORDER BY g.GRUP_NAME, sg.STAG_POINTS DESC";
+        WHERE sg.STAG_POINTS IS NOT NULL";
+
+    if ($genero != '') {
+        $sentencia .= " AND gs.GRS_TYPE_GANDER = '" . mysqli_real_escape_string($mysqli, $genero) . "'";
+    }
+
+    $sentencia .= " ORDER BY g.GRUP_NAME, sg.STAG_POINTS DESC";
 
     $result = mysqli_query($mysqli, $sentencia);
 

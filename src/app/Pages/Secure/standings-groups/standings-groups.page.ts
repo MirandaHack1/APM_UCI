@@ -1,32 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/Services/auth/auth.service';
 import { NavController } from '@ionic/angular';
+
 @Component({
   selector: 'app-standings-groups',
   templateUrl: './standings-groups.page.html',
   styleUrls: ['./standings-groups.page.scss'],
 })
 export class StandingsGroupsPage implements OnInit {
-  search:string='';
-  groupedTeams: any[] = [];
 
-  constructor(private authService: AuthService,   public navCtrl: NavController) { }
+  groupedTeams: any[] = [];
+  generoSeleccionado: string = '';
+  mostrarBotonAgregar: boolean = false;
+  search: string = '';
+  constructor(private authService: AuthService, public navCtrl: NavController) { }
 
   ngOnInit() {
     this.loadGroupStandings();
   }
 
-  // Load standings data from PHP backend
+  // Cargar clasificaciones desde el backend
   loadGroupStandings() {
     const postData = {
-      accion: 'standingsgroups'
+      accion: 'standingsgroups',
+      genero: this.generoSeleccionado || ''
     };
 
     this.authService.postData(postData).subscribe(
       (response: any) => {
         if (response.estado === true) {
           const standingsData = response.datos;
-          // Process and group teams by groupName
           const groups = this.groupTeamsByGroupName(standingsData);
           this.groupedTeams = this.sortTeamsAndMarkTop(groups);
         } else {
@@ -39,8 +42,7 @@ export class StandingsGroupsPage implements OnInit {
     );
   }
 
-  
-  // Group teams by groupName
+  // Agrupar equipos por nombre de grupo
   groupTeamsByGroupName(teams: any[]) {
     const grouped = teams.reduce((acc, team) => {
       let group = acc.find((g: { name: any; }) => g.name === team.GRUP_NAME);
@@ -50,22 +52,20 @@ export class StandingsGroupsPage implements OnInit {
       }
       group.teams.push({
         name: team.SPG_TEAM_NAME,
-        points: team.SPG_POINTS, 
-        goalDifference: team.SPG_GOAL_DIFFERENCE, 
-        playedMatches: team.SPG_STAG_PLAYED_MATCH, 
-        isTopTeam: false 
+        points: team.SPG_POINTS,
+        goalDifference: team.SPG_GOAL_DIFFERENCE,
+        playedMatches: team.SPG_STAG_PLAYED_MATCH,
+        isTopTeam: false
       });
       return acc;
     }, []);
     return grouped;
   }
 
-  // Sort teams by points and mark the top team
+  // Ordenar equipos por puntos y marcar al equipo con más puntos
   sortTeamsAndMarkTop(groups: any[]) {
     groups.forEach(group => {
-      // Sort teams by points in descending order
       group.teams.sort((a: { points: number; }, b: { points: number; }) => b.points - a.points);
-      // Mark the first team as the top team
       if (group.teams.length > 0) {
         group.teams[0].isTopTeam = true;
       }
@@ -73,7 +73,31 @@ export class StandingsGroupsPage implements OnInit {
     return groups;
   }
 
-  cancelar(){
+  // Filtrar por género
+  filtrarPorGenero(genero: string) {
+    this.generoSeleccionado = genero;
+    this.mostrarBotonAgregar = true;
+    this.loadGroupStandings();
+  }
+
+  // Cargar ambos géneros
+  cargarAmbosGeneros() {
+    this.generoSeleccionado = '';
+    this.mostrarBotonAgregar = false;
+    this.loadGroupStandings();
+  }
+
+  // Buscar grupos según la entrada de búsqueda
+  buscarGrupos() {
+    this.loadGroupStandings();
+  }
+
+  cancelar() {
     this.navCtrl.back();
+  }
+
+  agregarMatch() {
+    // Navegar a la página de agregar partido
+    this.navCtrl.navigateRoot(['add-match']);
   }
 }

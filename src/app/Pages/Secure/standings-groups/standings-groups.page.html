@@ -1,22 +1,26 @@
+<ion-header collapse="condense">
+  <ion-toolbar>
+    <ion-title>Clasificaciones</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelar()"> Menu </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
+<ion-content [fullscreen]="true">
+  <!-- Botones para filtrar por género -->
+  <ion-item>
+    <ion-button (click)="filtrarPorGenero('Masculino')">Masculino</ion-button>
+    <ion-button (click)="filtrarPorGenero('Femenino')">Femenino</ion-button>
+    <ion-button (click)="cargarAmbosGeneros()">Ambos Géneros</ion-button>
+  </ion-item>
 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title >Clasificaciones</ion-title>
-      <ion-buttons slot="start">
-        <ion-button (click)="cancelar()"> Menu </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content [fullscreen]="true">
-    <ion-item>
-      <ion-input [(ngModel)]="search" placeholder="Buscar por grupos"></ion-input>
-      <ion-button expand="full">Buscar</ion-button>
-    </ion-item>
+  <ion-item>
+    <ion-input [(ngModel)]="search" placeholder="Buscar por grupos"></ion-input>
+    <ion-button expand="full" (click)="buscarGrupos()">Buscar</ion-button>
+  </ion-item>
 
   <ion-accordion-group>
-    <!-- Iterate through groups and display teams within them -->
     <ion-accordion *ngFor="let group of groupedTeams">
       <ion-item slot="header">
         <ion-label>
@@ -26,7 +30,6 @@
       </ion-item>
       <div class="ion-padding" slot="content">
         <ion-list>
-          <!-- Table header -->
           <ion-item>
             <ion-grid>
               <ion-row>
@@ -35,7 +38,6 @@
                 <ion-col size="2"><strong>DG</strong></ion-col>
                 <ion-col size="2"><strong>PTS</strong></ion-col>
               </ion-row>
-              <!-- Iterate through teams in each group -->
               <ion-row *ngFor="let team of group.teams" [ngClass]="{'top-team': team.isTopTeam}">
                 <ion-col size="4">{{ team.name }}</ion-col>
                 <ion-col size="2">{{ team.playedMatches }}</ion-col>
@@ -48,4 +50,11 @@
       </div>
     </ion-accordion>
   </ion-accordion-group>
+
+  <!-- Mostrar el botón de agregar solo si se ha seleccionado un género -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="mostrarBotonAgregar">
+    <ion-fab-button (click)="agregarMatch()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
